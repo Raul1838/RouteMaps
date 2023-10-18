@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { OpenrouteserviceControllerInterface } from "./controller/interfaces/OpenrouteserviceControllerInterface";
+import { Step } from "./model/Openroutingservice/DirectionsResponse";
 
 /* 
  * Esta clase genera los endpoints de la api y desde los mismos llama al controller para
@@ -37,6 +38,18 @@ class Routes {
           res.status(500).send(this.getErrorMessage(error));
         });
     });
+
+    this.router.get("/getDirections", async (req: any, res: any) => {
+      console.log("getDirections");
+      const promise: Promise<Step[]> =
+      this.OpenrouteserviceController.getDirections(req);
+      promise.then((response) => {
+        res.status(200).json(response);
+      })
+      .catch((error) => {
+        res.status(500).send(this.getErrorMessage(error));
+      });
+    })
 
   }
 
