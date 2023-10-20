@@ -5,7 +5,6 @@ import { Routes } from "./Routes";
 import { Controller } from "./controller/Controller";
 import * as dotenv from 'dotenv';
 
-
 dotenv.config();
 
 const app = express();
@@ -20,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: "30mb" }));
 
 const controller = new Controller();
-const routes = new Routes(controller);
+const routes = new Routes(controller, controller);
 app.use(routes.getRouter());
 
 app.listen(port);

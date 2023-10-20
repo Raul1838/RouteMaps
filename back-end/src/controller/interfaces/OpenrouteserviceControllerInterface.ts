@@ -1,6 +1,6 @@
-import { Step } from "../../model/Openroutingservice/DirectionsResponse";
+import { Segment } from "../../model/Openroutingservice/DirectionsResponse";
 
 export interface OpenrouteserviceControllerInterface {
     getGeocode(req: any): Promise<Number[]>;
-    getDirections(req: any): Promise<Step[]>;
+    getDirections(req: any): Promise<Segment[]>;
 }
