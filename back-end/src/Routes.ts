@@ -2,6 +2,8 @@ import { Router } from "express";
 import { OpenrouteserviceControllerInterface } from "./controller/interfaces/OpenrouteserviceControllerInterface";
 import { Segment, Step } from "./model/Openroutingservice/DirectionsResponse";
 import { PreciodelaluzControllerInterface } from "./controller/interfaces/PreciodelaluzControllerInterface";
+import { GeoportalgasolinerasControllerInterface } from "./controller/interfaces/GeoportalgasolinerasControllerInterface";
+import { ListaEESSPrecio } from "./model/Geoportalgasolineras/Geoportalgasolineras";
 
 /* 
  * Esta clase genera los endpoints de la api y desde los mismos llama al controller para
@@ -12,13 +14,16 @@ class Routes {
   private router;
   private OpenrouteserviceController: OpenrouteserviceControllerInterface;
   private PreciodelaluzController: PreciodelaluzControllerInterface;
+  private GeoportalgasolinerasController: GeoportalgasolinerasControllerInterface;
 
   constructor(
     openrouteserviceController: OpenrouteserviceControllerInterface,
-    preciodelaluzController: PreciodelaluzControllerInterface
+    preciodelaluzController: PreciodelaluzControllerInterface,
+    geoportalgasolinerasController: GeoportalgasolinerasControllerInterface
   ) {
     this.OpenrouteserviceController = openrouteserviceController;
     this.PreciodelaluzController = preciodelaluzController;
+    this.GeoportalgasolinerasController = geoportalgasolinerasController;
     this.router = Router();
     this.setRoutes();
   }
@@ -65,6 +70,18 @@ class Routes {
       console.log("get-light-price");
       const promise: Promise<Number | any> =
         this.PreciodelaluzController.getLightPrice(req);
+      promise.then((response) => {
+        res.status(200).json(response);
+      })
+        .catch((error) => {
+          res.status(500).send(this.getErrorMessage(error));
+        });
+    });
+
+    this.router.get("/get-fuel-price", async (req: any, res: any) => {
+      console.log("get-fuel-price");
+      const promise: Promise<ListaEESSPrecio[] | any> =
+        this.GeoportalgasolinerasController.getFuelPrice(req);
       promise.then((response) => {
         res.status(200).json(response);
       })

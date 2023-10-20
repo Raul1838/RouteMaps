@@ -4,12 +4,16 @@ import { error } from "console";
 import { DirectionsResponse, ErrorResponse, Segment, Step } from "../model/Openroutingservice/DirectionsResponse";
 import { PreciodelaluzControllerInterface } from "./interfaces/PreciodelaluzControllerInterface";
 import { PreciodelaluzResponse } from "../model/Preciodelaluz/PreciodelaluzResponse";
+import { GeoportalgasolinerasControllerInterface } from "./interfaces/GeoportalgasolinerasControllerInterface";
+import { GeoportalgasolinerasResponse, ListaEESSPrecio } from "../model/Geoportalgasolineras/Geoportalgasolineras";
 
 class Controller
   implements
   OpenrouteserviceControllerInterface,
-  PreciodelaluzControllerInterface {
+  PreciodelaluzControllerInterface,
+  GeoportalgasolinerasControllerInterface {
   constructor() { }
+
 
 
   /**
@@ -21,7 +25,7 @@ class Controller
     try {
       var location = req.query.location as string;
       console.log(`La localización insertada es ${location}`);
-      const response = await fetch(`${process.env.URL_OPENROUTESERVICE}/geocode/search?api_key=${process.env.APIKEY_OPENROUTESERVICE}&text=${location}`,
+      const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${process.env.APIKEY_OPENROUTESERVICE}&text=${location}`,
         {
           method: "GET",
           headers: {
@@ -62,7 +66,7 @@ class Controller
       }
 
 
-      const response = await fetch(`${process.env.URL_OPENROUTESERVICE}/v2/directions/${mode}`, {
+      const response = await fetch(`https://api.openrouteservice.org/v2/directions/${mode}`, {
         body: `{\"coordinates\":[[${start}],[${end}]],\"preference\":\"${preference}\"}`,
         headers: {
           Accept: "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
@@ -109,12 +113,13 @@ class Controller
 
   async getLightPrice(req: any): Promise<Number | any> {
     try {
-      const response = await fetch(`${process.env.URL_LUZ}`, {
-        headers: {
-          Accept: "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-        },
-        method: "GET"
+      console.log(`http://api.preciodelaluz.org/prices/avg?zone=PCB`);
+
+      const response = await fetch(`http://api.preciodelaluz.org/prices/avg?zone=PCB`, {
+        method: "GET",
+        credentials: 'include'
       });
+
 
 
       const result: PreciodelaluzResponse | any = await response.json();
@@ -142,6 +147,39 @@ class Controller
     }
   }
 
+  /**
+   * 
+   * Geoportalgasolineras methods
+   * 
+   */
+
+  async getFuelPrice(req: any): Promise<ListaEESSPrecio[] | any> {
+    try {
+
+      const response = await fetch(`https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/`, {
+        method: "GET"
+      });
+
+      const result: GeoportalgasolinerasResponse | any = await response.json();
+      if (response.ok) {
+        const resultGasolineras = result as GeoportalgasolinerasResponse;
+        if ('ListaEESSPrecio' in resultGasolineras) {
+          return resultGasolineras.ListaEESSPrecio;
+        }
+      } else {
+        console.error("Request failed with status:", response.status);
+        const errorResponse = result as any;
+        if (typeof errorResponse.error.message !== undefined) {
+          throw new Error(`Request failed with status: ${response.status}\nError: ${errorResponse.error.message}`);
+        } else {
+          throw new Error(`Request failed with status: ${response.status}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  }
 }
 
 

@@ -68,6 +68,11 @@ Ejemplo para probar el Spike:
 ### Obtener precio de la luz
 `http://localhost:8080/get-light-price`
 
+
+### Obtener el precio del combustible
+`http://localhost:8080/get-fuel-price`
+
+
 ## Los desarrolladores 
 
 * Raúl Espinosa Pablo
