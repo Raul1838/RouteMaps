@@ -27,11 +27,13 @@ export const App = () => {
       }
     });
 
-    const { bbox } = data;
+    const { geometry } = data.features[0];
 
-    // console.log(bbox);
+    // console.log({ geometry });
 
-    const [ nuevaLongitud, nuevaLatitud ] = bbox; //? Las cojo al revés porque vienen en el sistema inglés
+    const { coordinates } = geometry;
+
+    const [ nuevaLongitud, nuevaLatitud ] = coordinates; //? Las cojo al revés porque vienen en el sistema inglés
 
     // console.log({ nuevaLongitud, nuevaLatitud });
 
