@@ -1,46 +1,24 @@
-# Getting Started with Create React App
+# Route Maps Front End - Spike 0
+## Pasos previos
+1. **Instalar Yarn**: Yarn es un gestor de paquetes que también sirve como gestor de proyectos. Es rápido, seguro y confiable. Para instalarlo, necesitarás Node.js en tu máquina. Puedes descargar Node.js desde su página oficial. Una vez que hayas instalado Node.js, puedes instalar Yarn utilizando el comando `npm install -g yarn` en tu terminal.
+2. **Clonar el repositorio de Git**: Necesitarás tener Git instalado en tu máquina. Una vez instalado, puedes clonar el repositorio utilizando el comando `git clone [url_del_repositorio]` en la terminal. Si prefieres utilizar la interfaz gráfica, puedes hacerlo abriendo Git GUI, seleccionando 'Clonar repositorio existente' e introduciendo la URL del repositorio y la ruta donde deseas clonarlo.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Arrancando el spike
+1. **Abrir el proyecto en VSCode**: Puedes hacer esto desde la terminal utilizando el comando `code [ruta_del_proyecto]`, o puedes abrir VSCode y seleccionar 'Abrir...' desde el menú 'Archivo'.
+2. **Abrir la terminal de VSCode**: Puedes hacer esto seleccionando 'Nueva Terminal' desde el menú 'Terminal', o utilizando el atajo de teclado `Ctrl + ``.
+3. **Ejecutar Yarn**: En la terminal, ejecuta el comando `yarn` para instalar las dependencias del proyecto.
+4. **Instalar Axios usando Yarn**: Axios es una biblioteca de JavaScript muy popular que se utiliza para realizar solicitudes HTTP. Puedes instalarla con el comando `yarn add axios`.
+5. **Instalar Redux usando Yarn**: Redux es una biblioteca de JavaScript para administrar y actualizar el estado de tu aplicación. Puedes instalarla con el comando `yarn add @reduxjs/toolkit react-redux`.
+6. **Instalar React Router Dom usando Yarn**: React Router Dom es una biblioteca que te permite manejar rutas en tus aplicaciones React. Puedes instalarla con el comando `yarn add react-router-dom`.
 
-## Available Scripts
+## Dibujando el mapa
+1. **Instalar Mapbox GL usando Yarn**: Mapbox GL es una biblioteca para incrustar mapas interactivos en tu aplicación web. Puedes instalarla con el comando `yarn add mapbox-gl`.
 
-In the project directory, you can run:
+## Posibles warnings o errores
+Si te encuentras con alguna advertencia o error, es posible que TypeScript no reconozca los tipos de alguna biblioteca. Colocando el cursor sobre el error, generalmente se muestra un mensaje con el comando que debes ejecutar para instalar los tipos desconocidos. Si no es así, puedes buscar en línea o preguntarme a mí, estaré encantado de ayudarte.
 
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## APIs y conexiones externas
+Este es un esquema de los campos del fichero .env que necesitarás para poder conectarte a las APIs. Tendrás que poner tus API keys:
+VITE_API_URL=
+VITE_ROUTES_API_KEY=
+VITE_MAP_API_KEY=
