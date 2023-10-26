@@ -25,7 +25,7 @@ export const RoutesMap = () => {
         new Marker().setLngLat( [ longitud, latitud ] ).addTo( map.current );
         map.current.flyTo({
             zoom: 6,
-            center: [ longitud, latitud ]
+            center: [ longitud, latitud ],
         });
     }, [ longitud, latitud ]);
    
