@@ -1,4 +1,5 @@
 import './App.css';
+import { RegisterPage } from './auth/pages/RegisterPage';
 import { Buscador } from './components/Buscador';
 import { RoutesMap } from './components/Map';
 
@@ -15,6 +16,7 @@ export const App = () => {
           <RoutesMap />
         </div>
       </div>
+      {/* <RegisterPage /> */}
     </>
   )
 }
