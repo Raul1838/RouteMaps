@@ -44,5 +44,39 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
 
     });
 
+    test('HU02 - E1 - Login exitoso', () => {
+
+        const testUser = {
+            email: 'usuario.prueba@test.com',
+            password: '123456789',
+        }
+
+        const user: UserModel = authController.loginWithEmailAndPassword( testUser );
+
+        expect(user).toBeTruthy();
+        expect(user.email).toBe(testUser.email);
+        expect(user.displayName).toBeTruthy();
+        expect(user.uid).toBeTruthy();
+    });
+
+    test('HU02 - E3 - Login fallido con contraseña inválida', () => {
+
+        const testUser = {
+            email: 'usuario.prueba@test.com',
+            password: '123456789',
+        }
+
+        try {
+            authController.loginWithEmailAndPassword( testUser );
+            throw new Error();
+        } catch (error) {
+            if (error instanceof AuthException) {
+                expect(error.message).toBe(AuthExceptionMessages.InvalidLogin);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+    });
+
 
 });

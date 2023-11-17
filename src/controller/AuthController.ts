@@ -20,4 +20,12 @@ export class AuthController {
         }
     }
 
+    public loginWithEmailAndPassword({ email, password }): UserModel {
+        return {
+            uid: '',
+            email: '',
+            displayName: ''
+        }
+    }
+
 }
