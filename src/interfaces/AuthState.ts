@@ -1,5 +1,5 @@
-import { User } from "./User";
+import { UserModel } from "./UserModel.ts";
 
 export interface State {
-    user: User;
+    user: UserModel;
 }
