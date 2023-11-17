@@ -12,12 +12,8 @@ export class AuthController {
         return this._authController;
     }
 
-    public registerUserWithEmailAndPassword({ email, password, displayName }): UserModel {
-        return {
-            uid: '',
-            email: '',
-            displayName: ''
-        }
+    public registerUserWithEmailAndPassword( email: string, password: string, displayName: string ): UserModel {
+        throw new Error('Not implemented');
     }
 
 }

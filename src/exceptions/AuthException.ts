@@ -1,8 +1,8 @@
 
 export class AuthException extends Error {
 
-    constructor( authExceptionMessages: AuthExceptionMessages ) {
-        super(authExceptionMessages);
+    constructor( authExceptionMessage: AuthExceptionMessages ) {
+        super(authExceptionMessage);
     }
 
 }

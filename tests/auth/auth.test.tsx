@@ -16,7 +16,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             displayName: 'Usuario Prueba'
         }
 
-        const user: UserModel = authController.registerUserWithEmailAndPassword( testUser );
+        const user: UserModel = authController.registerUserWithEmailAndPassword( testUser.email, testUser.password, testUser.displayName );
 
         expect(user).toBeTruthy();
         expect(user.email).toBe(testUser.email);
@@ -32,7 +32,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         }
 
         try {
-            authController.registerUserWithEmailAndPassword( testUser );
+            authController.registerUserWithEmailAndPassword( testUser.email, testUser.password, testUser.displayName );
             throw new Error();
         } catch (error) {
             if (error instanceof AuthException) {
