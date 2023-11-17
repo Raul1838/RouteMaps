@@ -12,16 +12,12 @@ export class AuthController {
         return this._authController;
     }
 
-    public registerUserWithEmailAndPassword({ email, password, displayName }): UserModel {
-        return {
-            uid: '',
-            email: '',
-            displayName: ''
-        }
-    }
 
     public deleteUser() {
         throw new Error('Not implemented');
     }
 
+    loginWithEmailAndPassword( email: string, password: string ): UserModel {
+        throw new Error('Not implemented');
+    }
 }
