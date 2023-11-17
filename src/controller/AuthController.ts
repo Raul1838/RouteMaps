@@ -20,4 +20,8 @@ export class AuthController {
         }
     }
 
+    public deleteUser() {
+        throw new Error('Not implemented');
+    }
+
 }
