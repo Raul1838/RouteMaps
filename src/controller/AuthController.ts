@@ -20,4 +20,8 @@ export class AuthController {
         }
     }
 
+    public logout() {
+        throw new Error('Not implented');
+    }
+
 }
