@@ -44,9 +44,9 @@ describe('Pruebas de la Iteración 1', () => {
                         Longitud: -0.0576800,
                         Latitud: 39.9929000
                     }
-                );
+                ).then(() => expect(placesController.getPlaces()).toHaveLength(2));
                 // Then
-                expect(placesController.getPlaces()).toHaveLength(2);
+                
             });
 
             test('E03 - Las coordenadas insertadas no son válidas.', () => {
