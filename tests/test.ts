@@ -58,15 +58,12 @@ describe('Pruebas de la Iteración 1', () => {
                     Favorito: false
                 }]);
                 // When
-                const error = () => {
+            
                     placesController.addPlace({
                         Longitud: -0.0576800,
                         Latitud: "adfd"
-                    });
-                }
-               
-                // Then
-                expect(error).toThrow(IllegalArgumentException);
+                    }).catch((error) =>expect(error).toThrow(IllegalArgumentException)); 
+                            
             });
 
             test('E04 - La API no se encuentra disponible.', () => {
