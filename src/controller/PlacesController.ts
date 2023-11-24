@@ -12,7 +12,7 @@ export default class PlacesController implements PlacesInterface {
     private apiService : APIPlacesInterface;
     constructor(apiService : APIPlacesInterface) {
         this.apiService = apiService;
-        this.places = [];
+        this.places = new Array();
     }
     async addPlace(coordenadas: Coords): Promise<Boolean> {
         var result : Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);

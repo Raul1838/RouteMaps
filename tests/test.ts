@@ -11,7 +11,7 @@ describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
 
         describe('HU05 - Como usuario quiero poder dar de alta un lugar de interés usando sus coordenadas para poder usarlo en una ruta.', () => {
-            test('E01 - Se insertan unas coordenadas válidas con la API disponible y para las que existe un topónimo.', () => {
+            test('E01 - Se insertan unas coordenadas válidas con la API disponible y para las que existe un topónimo.', async () => {
                 // Given
                 placesController.setPlaces([{
                     Nombre: "Valencia",
@@ -25,9 +25,9 @@ describe('Pruebas de la Iteración 1', () => {
                         Longitud: -0.0576800,
                         Latitud: 39.9929000
                     }
-                );
+                ).then(() => expect(placesController.getPlaces()).toHaveLength(2));
                 // Then
-                expect(placesController.getPlaces()).toHaveLength(2);
+                
             });
 
             test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', () => {
