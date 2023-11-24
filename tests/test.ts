@@ -1,9 +1,11 @@
 import Place from '../src/interfaces/Place';
-import Controller from '../src/controller/Controller';
 import IllegalArgumentException from '../src/exceptions/IllegalArgumentException';
 import APINotAvailableExeption from '../src/exceptions/APINotAvailableExeption';
+import PlacesController from '../src/controller/PlacesController';
+import MockAPIPlacesService from './helpers/MockApiPlacesService';
 
-var controller: Controller = new Controller();
+var mockedApiService = new MockAPIPlacesService();
+var placesController: PlacesController = new PlacesController(mockedApiService);
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -11,45 +13,45 @@ describe('Pruebas de la Iteración 1', () => {
         describe('HU05 - Como usuario quiero poder dar de alta un lugar de interés usando sus coordenadas para poder usarlo en una ruta.', () => {
             test('E01 - Se insertan unas coordenadas válidas con la API disponible y para las que existe un topónimo.', () => {
                 // Given
-                controller.setPlaces([{
+                placesController.setPlaces([{
                     Nombre: "Valencia",
                     Longitud: -0.3773900,
                     Latitud: 39.4697500,
                     Favorito: false,
                 }]);
                 // When
-                controller.addPlace(
+                placesController.addPlace(
                     {
                         Longitud: -0.0576800,
                         Latitud: 39.9929000
                     }
                 );
                 // Then
-                expect(controller.getPlaces()).toHaveLength(2);
+                expect(placesController.getPlaces()).toHaveLength(2);
             });
 
             test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', () => {
                 // Given
-                controller.setPlaces([{
+                placesController.setPlaces([{
                     Nombre: "Valencia",
                     Longitud: -0.3773900,
                     Latitud: 39.4697500,
                     Favorito: false
                 }]);
                 // When
-                controller.addPlace(
+                placesController.addPlace(
                     {
                         Longitud: -0.0576800,
                         Latitud: 39.9929000
                     }
                 );
                 // Then
-                expect(controller.getPlaces()).toHaveLength(2);
+                expect(placesController.getPlaces()).toHaveLength(2);
             });
 
             test('E03 - Las coordenadas insertadas no son válidas.', () => {
                 // Given
-                controller.setPlaces([{
+                placesController.setPlaces([{
                     Nombre: "Valencia",
                     Longitud: -0.3773900,
                     Latitud: 39.4697500,
@@ -57,7 +59,7 @@ describe('Pruebas de la Iteración 1', () => {
                 }]);
                 // When
                 const error = () => {
-                    controller.addPlace({
+                    placesController.addPlace({
                         Longitud: -0.0576800,
                         Latitud: "adfd"
                     });
@@ -69,7 +71,7 @@ describe('Pruebas de la Iteración 1', () => {
 
             test('E04 - La API no se encuentra disponible.', () => {
                 // Given
-                controller.setPlaces([{
+                placesController.setPlaces([{
                     Nombre: "Valencia",
                     Longitud: -0.3773900,
                     Latitud: 39.4697500,
@@ -77,7 +79,7 @@ describe('Pruebas de la Iteración 1', () => {
                 }]);
               // When
               const error = () => {
-                controller.addPlace({
+                placesController.addPlace({
                     Longitud: -0.0576800,
                     Latitud: "adfd"
                 });

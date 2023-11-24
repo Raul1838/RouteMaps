@@ -13,9 +13,9 @@ export default class PlacesController implements PlacesInterface {
     constructor(apiService : APIPlacesInterface) {
         this.apiService = apiService;
         this.places = [];
-    } 
-    addPlace(coordenadas: Coords): Boolean {
-        var result : Place | undefined = this.apiService.getPlaceByCoord(coordenadas);
+    }
+    async addPlace(coordenadas: Coords): Promise<Boolean> {
+        var result : Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
         if (result.Nombre !== undefined) {
             this.places.push(result);
             return true;
@@ -24,29 +24,12 @@ export default class PlacesController implements PlacesInterface {
         }
     }
     getPlaces(): Place[] {
-        throw new Error("Method not implemented.");
+        return this.places
     }
     setPlaces(places: Place[]): Boolean {
-        throw new Error("Method not implemented.");
+        this.places = places;
+        return this.places === places;
     }
     
-
-}
-
-const { VITE_ROUTES_API_KEY } = getEnvVariables();
-
-export class APIPlacesService implements APIPlacesInterface {
-    async getPlaceByCoord(coordinates: Coords): Place {
-        var result : Place = {
-            Latitud: coordinates.Latitud!,
-            Longitud: coordinates.Longitud!,
-            Nombre: "",
-            Favorito: false
-        };
-        var res : GetPlaceByCoord | undefined = await openRouteApi.get(`/geocode/reverse?${VITE_ROUTES_API_KEY}&point.lon=${coordinates.Longitud!}&point.lat=${coordinates.Latitud!}`);
-        if (res?.features[0].properties.name !== undefined) {
-            result = {...Nombre: res?.features[0].properties.name}
-        }
-    }
 
 }
