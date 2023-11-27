@@ -7,38 +7,43 @@ import { openRouteApi } from "../api/openRouteApi";
 import { getEnvVariables } from "../helpers/getEnvVariables";
 import { GetPlaceByCoord } from "../interfaces/OpenRoutingInterface";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
+import APINotAvailableExeption from "../exceptions/APINotAvailableExeption";
 
 export default class PlacesController implements PlacesInterface {
-    private places : Array<Place>;
-    private apiService : APIPlacesInterface;
-    constructor(apiService : APIPlacesInterface) {
+    private places: Array<Place>;
+    private apiService: APIPlacesInterface;
+    constructor(apiService: APIPlacesInterface) {
         this.apiService = apiService;
         this.places = new Array();
     }
     async addPlace(coordenadas: Coords): Promise<Boolean> {
-    try{
-        this.checkValidCoordinates(coordenadas);
-        var result : Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
-        if (result.Nombre !== undefined) {
-            this.places.push(result);
-            return true;
-        } else {
+        try {
+            this.checkValidCoordinates(coordenadas);
+            var result: Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
+            if (result.Nombre !== undefined) {
+                this.places.push(result);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            if (error instanceof IllegalArgumentException) {
+                // Handle IllegalArgumentException
+                console.error('Invalid coordinates:', error.message);
+                throw error;
+            } else if (error instanceof APINotAvailableExeption) {
+                console.error('API not available: ', error);
+                throw error;
+            } else {
+                // Handle other errors
+                console.error('An error occurred:', error);
+            }
             return false;
         }
-    } catch (error) {
-        if (error instanceof IllegalArgumentException) {
-          // Handle IllegalArgumentException
-          console.error('Invalid coordinates:', error.message);
-        } else {
-          // Handle other errors
-          console.error('An error occurred:', error);
-        }
-        return false;
-    }
     }
     private checkValidCoordinates(coordenadas: Coords) {
         if ((typeof coordenadas.Latitud !== 'number') || (typeof coordenadas.Longitud !== 'number')) {
-            throw IllegalArgumentException;
+            throw new IllegalArgumentException();
         }
     }
 
@@ -49,6 +54,6 @@ export default class PlacesController implements PlacesInterface {
         this.places = places;
         return this.places === places;
     }
-    
+
 
 }
