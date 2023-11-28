@@ -1,9 +1,9 @@
-import Controller from '../src/controller/Controller';
+import VehiclesController from '../src/controller/VehiclesController';
 import Combustible from '../src/enums/combustible';
 import EmptyVehiclesException from '../src/exceptions/EmptyVehiclesException';
 import Vehicle from '../src/interfaces/Vehicle';
 
-var controller: Controller = new Controller();
+var vehiclesController: VehiclesController = new VehiclesController();
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -37,20 +37,20 @@ describe('Pruebas de la Iteración 1', () => {
             test.todo('Los datos del vehículo no son correctos.');
         });
         describe('HU10 - Consultar lista de vehículos', () => {
-            test('Existe una lista con vehículos dados de alta.', () => {
+            test('E01 - Existe una lista con vehículos dados de alta.', () => {
                 //Given
-                controller.setVehicles([{ id: 1683, Nombre: "Coche empresa", propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+                vehiclesController.setVehicles([{ id: 1683, Nombre: "Coche empresa", propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
                 //When
-                var vehicles : Vehicle[] = controller.getVehicles();
+                var vehicles : Vehicle[] = vehiclesController.getVehicles();
                 //Then
-                expect(vehicles).toBe([{ id: 1683, Nombre: "Coche empresa", propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+                expect(vehicles).toStrictEqual([{ id: 1683, Nombre: "Coche empresa", propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
             });
-            test('No contamos con una lista con vehículos dados de alta.', () => {
+            test('E02 - No contamos con una lista con vehículos dados de alta.', () => {
                 //Given
-                controller.setVehicles([]);
+                vehiclesController.setVehicles([]);
                 //When
                 const error = () => {
-                    var vehicles : Vehicle[] = controller.getVehicles();    
+                    var vehicles : Vehicle[] = vehiclesController.getVehicles();    
                 }
                 //Then
                 expect(error).toThrow(EmptyVehiclesException);
@@ -63,9 +63,9 @@ describe('Pruebas de la Iteración 1', () => {
 
         });
         describe('HU12 - Modificar datos de un vehículo', () => {
-            test.todo('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.');
-            test.todo('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.');
-            test.todo('No hay vehículos dados de alta.');
+            test.todo('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.');
+            test.todo('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.');
+            test.todo('E03 - No hay vehículos dados de alta.');
 
         });
     });
