@@ -1,9 +1,9 @@
-import Controller from '../src/controller/Controller';
+import VehiclesController from '../src/controller/VehiclesController';
 import Combustible from '../src/enums/combustible';
 import VehicleAlreadyExistException from '../src/exceptions/VehicleAlreadyExistException';
 import InvalidVehicleException from '../src/exceptions/InvalidVehicleException';
 
-var controller: Controller = new Controller();
+var vehiclesController: VehiclesController = new VehiclesController();
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -32,9 +32,9 @@ describe('Pruebas de la Iteración 1', () => {
 
     describe('Vehicles', () => {
         describe('HU09 - Dar de alta un vehículo', () => {
-            test('Se añade un vehículo no registrado anteriormente con datos correctos.', () => {
+            test('E01 - Se añade un vehículo no registrado anteriormente con datos correctos.', () => {
                 //Given
-                controller.setVehicles([{
+                vehiclesController.setVehicles([{
                     id: 1683,
                     Nombre: "Coche empresa",
                     propulsion: Combustible.Diesel,
@@ -43,7 +43,7 @@ describe('Pruebas de la Iteración 1', () => {
                     Defecto: false
                 }]);
                 //When
-                controller.addVehicle({
+                vehiclesController.addVehicle({
                     id: 1684,
                     Nombre: "Coche personal",
                     propulsion: Combustible.Gasolina,
@@ -52,7 +52,7 @@ describe('Pruebas de la Iteración 1', () => {
                     Defecto: false
                 })
                 //Then
-                expect(controller.getVehicles()).toBe([{
+                expect(vehiclesController.getVehicles()).toStrictEqual([{
                     id: 1683,
                     Nombre: "Coche empresa",
                     propulsion: Combustible.Diesel,
@@ -69,9 +69,9 @@ describe('Pruebas de la Iteración 1', () => {
                     Defecto: false
                 }])
             });
-            test.todo('El vehículo ya se encuentra dado de alta.', () => {
+            test('E02 - El vehículo ya se encuentra dado de alta.', () => {
                 //Given
-                controller.setVehicles([{
+                vehiclesController.setVehicles([{
                     id: 1683,
                     Nombre: "Coche empresa",
                     propulsion: Combustible.Diesel,
@@ -81,7 +81,7 @@ describe('Pruebas de la Iteración 1', () => {
                 }]);
                 //When
                 const error = () => {
-                    controller.addVehicle({
+                    vehiclesController.addVehicle({
                         id: 1683,
                         Nombre: "Coche empresa",
                         propulsion: Combustible.Diesel,
@@ -93,9 +93,9 @@ describe('Pruebas de la Iteración 1', () => {
                 //Then
                 expect(error).toThrow(VehicleAlreadyExistException)
             });
-            test('Los datos del vehículo no son correctos.', () => {
+            test('E03 - Los datos del vehículo no son correctos.', () => {
                 //Given
-                controller.setVehicles([{
+                vehiclesController.setVehicles([{
                     id: 1683,
                     Nombre: "Coche empresa",
                     propulsion: Combustible.Diesel,
@@ -105,7 +105,7 @@ describe('Pruebas de la Iteración 1', () => {
                 }])
                 //When
                 const error = () => {
-                    controller.addVehicle({
+                    vehiclesController.addVehicle({
                         id: "sdbs",
                         Nombre: "Coche empresa",
                         propulsion: Combustible.Caballo,
