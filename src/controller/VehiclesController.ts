@@ -1,3 +1,4 @@
+import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
 import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
 
@@ -15,7 +16,7 @@ export default class VehiclesController implements VehiclesInterface {
             console.log('Vehicle updated:', this.vehicles[index]);
             return true;
         } else {
-            return false;
+            throw new VehicleNotFoundException();
         }
     }
 
