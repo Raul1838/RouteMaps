@@ -21,6 +21,9 @@ export default class VehiclesController implements VehiclesInterface {
         return this.vehicles === vehicles;
     }
     getVehicles(): Vehicle[] {
+        if (this.vehicles.length === 0) {
+            throw new EmptyVehiclesException();
+        }
         return this.vehicles;
     }
 
