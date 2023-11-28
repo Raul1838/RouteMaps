@@ -1,10 +1,9 @@
-import Place from '../src/interfaces/Place';
-import Controller from '../src/controller/Controller';
 import PlaceNotFoundException from '../src/exceptions/PlaceNotFoundException';
 import EmptyPlacesException from '../src/exceptions/EmptyPlacesException';
+import PlacesController from '../src/controller/PlacesController';
 
 
-var controller: Controller = new Controller();
+var placesController: PlacesController = new PlacesController();
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -24,9 +23,9 @@ describe('Pruebas de la Iteración 1', () => {
             test.todo('No contamos con una lista con lugares dados de alta.');
         });
         describe('HU08 - Eliminar un lugar de interés', () => {
-            test('Existe el lugar que se quiere eliminar y está dado de alta en la lista de lugares de interés.', () => {
+            test('E01 - Existe el lugar que se quiere eliminar y está dado de alta en la lista de lugares de interés.', () => {
                 //Given
-                controller.setPlaces([{
+                placesController.setPlaces([{
                     Nombre: "Valencia",
                     Longitud: -0.3773900,
                     Latitud: 39.4697500,
@@ -39,18 +38,18 @@ describe('Pruebas de la Iteración 1', () => {
                     Favorito: false
                 }]);
                 //When
-                controller.deletePlace({Nombre: "Castellón", Longitud: -0.0576800, Latitud: 39.9929000, Favorito: false })
+                placesController.deletePlace({Nombre: "Castellón", Longitud: -0.0576800, Latitud: 39.9929000, Favorito: false })
                 //Then
-                expect(controller.getPlaces()).toBe([{
+                expect(placesController.getPlaces()).toStrictEqual([{
                     Nombre: "Valencia",
                     Longitud: -0.3773900,
                     Latitud: 39.4697500,
                     Favorito: false
                 }]);
             });
-            test('Hay lugares dados de alta, pero no se encuentra el que se quiere eliminar.', () => {
+            test('E02 - Hay lugares dados de alta, pero no se encuentra el que se quiere eliminar.', () => {
                 //Given
-                controller.setPlaces([{
+                placesController.setPlaces([{
                     Nombre: "Valencia",
                     Longitud: -0.3773900,
                     Latitud: 39.4697500,
@@ -58,17 +57,17 @@ describe('Pruebas de la Iteración 1', () => {
                 }]);
                 //When
                 const error = () => {
-                    controller.deletePlace({Nombre: "Castellón", Longitud: -0.0576800, Latitud: 39.9929000, Favorito: false });
+                    placesController.deletePlace({Nombre: "Castellón", Longitud: -0.0576800, Latitud: 39.9929000, Favorito: false });
                 }
                 //Then
                 expect(error).toThrow(PlaceNotFoundException);
             });
-            test('No contamos con una lista con lugares dados de alta.', () => {
+            test('E03 - No contamos con una lista con lugares dados de alta.', () => {
                 //Given
-                controller.setPlaces([]);
+                placesController.setPlaces([]);
                 //When
                 const error = () => {
-                    controller.deletePlace({Nombre: "Castellón", Longitud: -0.0576800, Latitud: 39.9929000, Favorito: false });
+                    placesController.deletePlace({Nombre: "Castellón", Longitud: -0.0576800, Latitud: 39.9929000, Favorito: false });
                 }
                 //Then
                 expect(error).toThrow(EmptyPlacesException);
