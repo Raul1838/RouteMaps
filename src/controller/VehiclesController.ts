@@ -1,3 +1,4 @@
+import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
 import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
 
@@ -14,7 +15,7 @@ export default class VehiclesController implements VehiclesInterface {
             console.log('Vehicle deleted:', paramId);
             return true;
         } else {
-            return false;
+            throw new PlaceNotFoundException();
         }
     }
     setVehicles(vehicles: Vehicle[]): Boolean {
