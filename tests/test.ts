@@ -1,9 +1,9 @@
 import Place from '../src/interfaces/Place';
-import Controller from '../src/controller/Controller';
 import EmptyPlacesException from '../src/exceptions/EmptyPlacesException';
+import PlacesController from '../src/controller/PlacesController';
 
 
-var controller: Controller = new Controller();
+var placesController: PlacesController = new PlacesController();
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -20,9 +20,9 @@ describe('Pruebas de la Iteración 1', () => {
         });
 
         describe('HU07 - Consultar lista de lugares de interés', () => {
-            test('Existe una lista con lugares dados de alta.', () => {
+            test('E01 - Existe una lista con lugares dados de alta.', () => {
                 //Given
-                controller.setPlaces([
+                placesController.setPlaces([
                     {
                         Nombre: "Valencia",
                         Longitud: -0.3773900,
@@ -36,9 +36,9 @@ describe('Pruebas de la Iteración 1', () => {
                         Favorito: false
                     }]);
                 //When
-                var lugares: Place[] = controller.getPlaces();
+                var lugares: Place[] = placesController.getPlaces();
                 //Then
-                expect(lugares).toBe([
+                expect(lugares).toStrictEqual([
                     {
                         Nombre: "Valencia",
                         Longitud: -0.3773900,
@@ -52,12 +52,12 @@ describe('Pruebas de la Iteración 1', () => {
                         Favorito: false
                     }]);
             });
-            test('No contamos con una lista con lugares dados de alta.', () => {
+            test('E02 - No contamos con una lista con lugares dados de alta.', () => {
                 //Given
-                controller.setPlaces([]);
+                placesController.setPlaces([]);
                 //When
                 const error = () => {
-                    var lugares: Place[] = controller.getPlaces();   
+                    var lugares: Place[] = placesController.getPlaces();   
                 }
                 //Then
                 expect(error).toThrow(EmptyPlacesException);
