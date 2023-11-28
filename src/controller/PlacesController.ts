@@ -1,4 +1,5 @@
 import EmptyPlacesException from "../exceptions/EmptyPlacesException";
+import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
 import PlacesInterface from "../interfaces/LugaresInterface";
 import Place from "../interfaces/Place";
 
@@ -18,7 +19,7 @@ export default class PlacesController implements PlacesInterface {
             console.log('Place deleted:', paramPlace);
             return true;
         } else {
-            return false;
+            throw new PlaceNotFoundException();
         }
     }
     getPlaces(): Place[] {
