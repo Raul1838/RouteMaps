@@ -12,6 +12,15 @@ export default class VehiclesController implements VehiclesInterface {
         this.vehicles = new Array();
     }
     addVehicle(paramVehicle: Vehicle): Boolean {
+        if (typeof paramVehicle.id !== 'number'
+            || typeof paramVehicle.Nombre !== 'string'
+            || !Object.values(Combustible).includes(paramVehicle.propulsion)
+            || typeof paramVehicle.consumo !== 'number'
+            || typeof paramVehicle.Favorito !== 'boolean'
+            || typeof paramVehicle.Defecto !== 'boolean') {
+            throw new InvalidVehicleException();
+        }
+
         const index = this.vehicles.findIndex(vehicle => vehicle.id === paramVehicle.id);
 
         if (index === -1) {
