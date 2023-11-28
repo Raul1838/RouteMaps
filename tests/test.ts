@@ -1,9 +1,9 @@
-import Controller from '../src/controller/Controller';
+import VehiclesController from '../src/controller/VehiclesController';
 import Combustible from '../src/enums/combustible';
 import PlaceNotFoundException from '../src/exceptions/PlaceNotFoundException';
 import EmptyVehiclesException from '../src/exceptions/EmptyVehiclesException';
 
-var controller: Controller = new Controller();
+var vehiclesController: VehiclesController = new VehiclesController();
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -43,28 +43,28 @@ describe('Pruebas de la Iteración 1', () => {
         describe('HU11 - Eliminar un vehículo', () => {
             test('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', () => {
                 //Given
-                controller.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }])
+                vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }])
                 //When
-                controller.deleteVehicle(1683);
+                vehiclesController.deleteVehicle(1683);
                 //Then
-                expect(controller.getVehicles()).toHaveLength(0);
+                expect(vehiclesController.getVehicles()).toHaveLength(0);
             });
             test('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', () => {
                 //Given
-                controller.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+                vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
                 //When
                 const error = () => {
-                    controller.deleteVehicle(1000);
+                    vehiclesController.deleteVehicle(1000);
                 }
                 //Then
                 expect(error).toThrow(PlaceNotFoundException);
             });
-            test('No hay vehículos dados de alta.', () => {
+            test('E03 - No hay vehículos dados de alta.', () => {
                 //Given
-                controller.setVehicles([]);
+                vehiclesController.setVehicles([]);
                 //When
                 const error = () => {
-                    controller.deleteVehicle(1000);
+                    vehiclesController.deleteVehicle(1000);
                 }
                 //Then
                 expect(error).toThrow(EmptyVehiclesException);
