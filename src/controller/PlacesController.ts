@@ -10,6 +10,9 @@ export default class PlacesController implements PlacesInterface {
     }
 
     deletePlace(paramPlace: Place): Boolean {
+        if (this.places.length === 0) {
+            throw new EmptyPlacesException();
+        }
         const index = this.places.findIndex(place => (place.Nombre === paramPlace.Nombre &&
             place.Latitud === paramPlace.Latitud &&
             place.Longitud === paramPlace.Longitud));
