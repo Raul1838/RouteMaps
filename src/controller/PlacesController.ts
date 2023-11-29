@@ -1,3 +1,4 @@
+import InvalidCoordinatesException from "../exceptions/InvalidCoordinatesException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
 import { Coords } from "../interfaces/Coords";
 import PlacesInterface from "../interfaces/LugaresInterface";
@@ -13,6 +14,7 @@ export default class PlacesController implements PlacesInterface {
     async addPlace(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
         var result: Place | undefined;
         if (typeof placeName !== undefined) {
+            this.checkForValidToponym(placeName);
             result = await this.apiService.getPlaceByToponym(placeName!);
         } else if (coordenadas !== undefined) {
             result = await this.apiService.getPlaceByCoord(coordenadas!);
@@ -35,5 +37,17 @@ export default class PlacesController implements PlacesInterface {
         return this.places === places;
     }
 
+    //Other methods
+
+    checkForValidToponym(placeName: string | undefined) {
+        if (this.containsNumber(placeName!)) {
+            throw new InvalidCoordinatesException();
+        }
+    }
+
+    containsNumber(text: string): boolean {
+        const numberRegex = /\d/;
+        return numberRegex.test(text);
+    }
 
 }
