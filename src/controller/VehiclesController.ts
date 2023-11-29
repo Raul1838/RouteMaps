@@ -1,16 +1,20 @@
-import { type } from "os";
 import VehicleAlreadyExistException from "../exceptions/VehicleAlreadyExistException";
 import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
-import { string } from "yargs";
-import Combustible from "../enums/Combustible";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
+import Combustible from "../enums/combustible";
+import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
+import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 
 export default class VehiclesController implements VehiclesInterface {
     private vehicles: Array<Vehicle>;
     constructor() {
         this.vehicles = new Array();
     }
+    setDefault({ id }: { id: number; }): Boolean {
+        throw new Error("Method not implemented.");
+    }
+
     addVehicle(paramVehicle: Vehicle): Boolean {
         if (typeof paramVehicle.id !== 'number'
             || typeof paramVehicle.Nombre !== 'string'

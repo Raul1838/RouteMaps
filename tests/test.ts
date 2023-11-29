@@ -2,7 +2,8 @@ import VehiclesController from '../src/controller/VehiclesController';
 import Combustible from '../src/enums/combustible';
 import VehicleAlreadyExistException from '../src/exceptions/VehicleAlreadyExistException';
 import InvalidVehicleException from '../src/exceptions/InvalidVehicleException';
-
+import VehicleNotFoundException from '../src/exceptions/VehicleNotFoundException';
+import EmptyVehiclesException from '../src/exceptions/EmptyVehiclesException';
 var vehiclesController: VehiclesController = new VehiclesController();
 
 describe('Pruebas de la Iteración 1', () => {
@@ -136,3 +137,45 @@ describe('Pruebas de la Iteración 1', () => {
         });
     });
 });
+
+describe('Pruebas de la iteración 2', () => {
+    describe('Vehicles', () => {
+        describe('HU21 - Marcar como favorito vehículos', () => {
+            test.todo('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere marcar como favorito.');
+            test.todo('E02 - Existe una lista con vehículos dados de alta y no existe el vehículo que se quiere marcar como favorito.');
+            test.todo('E03 - No hay vehículos dados de alta.');
+        });
+        describe('HU23 - Como usuario quiero establecer un vehículo/modo de transporte por defecto a emplear en las nuevas rutas que calcule para no tener que indicarlo a mano.', () => {
+            test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere establecer por defecto.', () => {
+                //Given
+                vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }])
+
+                //When
+                vehiclesController.setDefault({ id: 1683 });
+
+                //Then
+                expect(vehiclesController.getVehicles()).toStrictEqual([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: true }]);
+            });
+            test('E02 - Existe una lista con vehículos dados de alta y no existe el vehículo que se quiere establecer por defecto.', () => {
+                //Given
+                vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+
+                //When
+                const error = () => vehiclesController.setDefault({ id: 1000 });
+
+                //Then
+                expect(error).toThrow(VehicleNotFoundException);
+            });
+            test('E03 - No hay vehículos dados de alta.', () => {
+                //Given
+                vehiclesController.setVehicles([]);
+
+                //When
+                const error = () => vehiclesController.setDefault({ id: 1000 });
+
+                //Then
+                expect(error).toThrow(EmptyVehiclesException);
+            })
+        });
+    })
+})
