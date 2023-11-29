@@ -1,9 +1,11 @@
 import Place from '../src/interfaces/Place';
-import Controller from '../src/controller/Controller';
+import PlacesController from '../src/controller/PlacesController';
+import MockAPIPlacesService from './helpers/MockApiPlacesService';
 import InvalidCoordinatesException from '../src/exceptions/InvalidCoordinatesException';
 
+var mockedApiService : MockAPIPlacesService = new MockAPIPlacesService();
+var placesController: PlacesController = new PlacesController(mockedApiService);
 
-var controller: Controller = new Controller();
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -17,25 +19,26 @@ describe('Pruebas de la Iteración 1', () => {
 
 
         describe('HU06 - Dar de alta un lugar de interés con topónimo', () => {
-            test('Se insertan unas coordenadas válidas.', () => {
-                //Given
-                var lugares: Place[] = [
+            test('E01 - Se insertan unas coordenadas válidas.', () => {
+                // Given
+                placesController.setPlaces([
                     {
                         Nombre: "Valencia",
                         Longitud: -0.3773900,
                         Latitud: 39.4697500,
                         Favorito: false
                     }
-                ];
-                //When
-                controller.addPlace({
-                    Nombre: "Castellón"
-                });
-                //Then
-                expect(lugares).toHaveLength(2);
+                ]);
+                // When
+
+                placesController.addPlace("Castellón").then(() =>
+                    expect(placesController.getPlaces()).toHaveLength(2)
+                );
             });
-            test('Las coordenadas insertadas no son válidas.', () => {
+
+            test('E02 - Las coordenadas insertadas no son válidas.', async() => {
                 //Given
+                expect.assertions(1);
                 var lugares: Place[] = [
                     {
                         Nombre: "Valencia",
@@ -44,14 +47,10 @@ describe('Pruebas de la Iteración 1', () => {
                         Favorito: false
                     }]
                 //When
-                const error = () => {
-                    controller.addPlace({
-                        Nombre: "1234"
-                    });
-                }
-                
-                //Then
-                expect(error).toThrow(InvalidCoordinatesException);
+
+                await placesController.addPlace("1234").then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(InvalidCoordinatesException));
+                // If no error is thrown, fail the test;
+
             });
         });
         describe('HU07 - Consultar lista de lugares de interés', () => {
