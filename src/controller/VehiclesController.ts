@@ -21,8 +21,7 @@ export default class VehiclesController implements VehiclesInterface {
             }));
             return true;
         } else {
-            console.log(`Vehicle with id ${id} not found.`);
-            return false
+            throw new VehicleNotFoundException();
         }
     }
 
