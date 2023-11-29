@@ -12,6 +12,9 @@ export default class VehiclesController implements VehiclesInterface {
         this.vehicles = new Array();
     }
     setDefault({ id }: { id: number; }): Boolean {
+        if (this.vehicles.length === 0){
+            throw new EmptyVehiclesException();
+        }
         const idExists = this.vehicles.some((vehicle) => vehicle.id === id);
 
         if (idExists) {
