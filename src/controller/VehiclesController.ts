@@ -12,7 +12,18 @@ export default class VehiclesController implements VehiclesInterface {
         this.vehicles = new Array();
     }
     setDefault({ id }: { id: number; }): Boolean {
-        throw new Error("Method not implemented.");
+        const idExists = this.vehicles.some((vehicle) => vehicle.id === id);
+
+        if (idExists) {
+            this.vehicles = this.vehicles.map((vehicle) => ({
+                ...vehicle,
+                Defecto: vehicle.id === id,
+            }));
+            return true;
+        } else {
+            console.log(`Vehicle with id ${id} not found.`);
+            return false
+        }
     }
 
     addVehicle(paramVehicle: Vehicle): Boolean {
