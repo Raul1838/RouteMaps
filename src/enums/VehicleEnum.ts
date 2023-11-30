@@ -1,7 +1,7 @@
 enum VehicleEnum {
-    Vehicle = 'vehículo',
-    Bike = 'bicicleta',
-    Walking = 'andando'
+    Vehicle = 'Vehículo',
+    Bike = 'Bicicleta',
+    Walking = 'Andando'
 }
 
 export default VehicleEnum;

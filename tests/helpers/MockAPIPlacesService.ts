@@ -9,13 +9,13 @@ import Vehicle from "../../src/interfaces/Vehicle";
 
 
 export default class MockAPIPlacesService implements APIPlacesInterface {
-    getRoute(Inicio: Coords, Final: Coords, Vehicle: VehicleEnum | Vehicle): Promise<APIRouteModel> {
+    getRoute(Inicio: Coords, Final: Coords, Vehicle: string): Promise<APIRouteModel> {
         var route: APIRouteModel;
         if (Inicio.Latitud === 39.988126910927626
             && Inicio.Longitud === -0.05202140449041774
             && Final.Latitud === 39.986597808112535
             && Final.Longitud === -0.05682265874338428
-            && Vehicle === VehicleEnum.Vehicle) {
+            && Vehicle === 'driving-car') {
             route = {
                 "type": "FeatureCollection",
                 "metadata": {
