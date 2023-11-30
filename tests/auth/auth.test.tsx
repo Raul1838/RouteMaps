@@ -1,12 +1,11 @@
-import {AuthController} from "../../src/controller/AuthController";
-import {UserModel} from "../../src/interfaces/UserModel";
+import {AuthController, getAuthController} from "../../src/controller/AuthController";
 import {AuthException, AuthExceptionMessages} from "../../src/exceptions/AuthException";
 
 describe('Tests sobre gestión de usuarios en Firebase', () => {
 
     let authController: AuthController;
 
-    beforeEach(() => authController = AuthController.authController)
+    beforeEach(() => authController = getAuthController());
 
     test('HU04 - E1 - borrado exitoso', () => {
 
