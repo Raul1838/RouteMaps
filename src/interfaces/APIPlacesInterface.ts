@@ -1,8 +1,8 @@
 import VehicleEnum from "../enums/VehicleEnum";
+import { APIRouteModel } from "./APIRouteModel";
 import { Coords } from "./Coords";
-import Route from "./Route";
 import Vehicle from "./Vehicle";
 
 export default interface APIPlacesInterface{
-    getRoute(Inicio: Coords, Final: Coords, Vehicle: VehicleEnum | Vehicle): Promise<Route>
+    getRoute(Inicio: Coords, Final: Coords, Vehicle: VehicleEnum | Vehicle): Promise<APIRouteModel>
 }

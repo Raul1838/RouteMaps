@@ -15,30 +15,29 @@ describe('Pruebas de la Iteración 2', () => {
             routesController.setRoutes([]);
 
             //When
-            routesController.addRoute({ Latitud: 39.988126910927626, Longitud: -0.05202140449041774 }, { Latitud: 39.986597808112535, Longitud: -0.05682265874338428 }, VehicleEnum.Vehicle).
+            routesController.getNewRoute({ Latitud: 39.988126910927626, Longitud: -0.05202140449041774 }, { Latitud: 39.986597808112535, Longitud: -0.05682265874338428 }, VehicleEnum.Vehicle).
                 then(() => expect(routesController.getRoutes()).toStrictEqual([{
-                    Inicio: [39.988126910927626, -0.05202140449041774],
-                    Fin: [39.986597808112535, -0.05682265874338428],
+                    Inicio: { Latitud: 39.988126910927626, Longitud: -0.05202140449041774 },
+                    Fin: { Latitud: 39.986597808112535, Longitud: -0.05682265874338428 },
                     Trayecto: [
                         {
-                            "distance": 267.2,
-                            "duration": 49.2,
-                            "instruction": "Head southwest on Calle Pintor Oliet",
-                            "name": "Calle Pintor Oliet",
+                            Distancia: 267.2,
+                            Duracion: 49.2,
+                            Instruccion: "Head southwest on Calle Pintor Oliet",
+                            Nombre: "Calle Pintor Oliet",
                         },
                         {
-                            "distance": 285.3,
-                            "duration": 53.8,
-                            "instruction": "Enter the roundabout and take the 1st exit onto Avenida Alcora, CV-1540",
-                            "name": "Avenida Alcora, CV-1540",
-                            "exit_number": 1,
+                            Distancia: 285.3,
+                            Duracion: 53.8,
+                            Instruccion: "Enter the roundabout and take the 1st exit onto Avenida Alcora, CV-1540",
+                            Nombre: "Avenida Alcora, CV-1540",
+                            Salida: 1,
                         },
                         {
-                            "distance": 0.0,
-                            "duration": 0.0,
-                            "type": 10,
-                            "instruction": "Arrive at Avenida Alcora, CV-1540, on the right",
-                            "name": "-",
+                            Distancia: 0.0,
+                            Duracion: 0.0,
+                            Instruccion: "Arrive at Avenida Alcora, CV-1540, on the right",
+                            Nombre: "-",
                         }
                     ],
                     Duracion: 103.0,
@@ -51,7 +50,7 @@ describe('Pruebas de la Iteración 2', () => {
             routesController.setRoutes([]);
 
             //When
-            await routesController.addRoute(
+            await routesController.getNewRoute(
                 { Latitud: 39.988126910927626, Longitud: -0.05202140449041774 },
                 { Latitud: 39.986597808112535, Longitud: -0.05682265874338428 },
                 VehicleEnum.Buceando)
@@ -62,7 +61,7 @@ describe('Pruebas de la Iteración 2', () => {
             routesController.setRoutes([]);
 
             //When
-            await routesController.addRoute({ Latitud: 39.988126910927626, Longitud: -0.05202140449041774 }, { Latitud: 39.03385, Longitud: 125.75432 }, VehicleEnum.Vehicle)
+            await routesController.getNewRoute({ Latitud: 39.988126910927626, Longitud: -0.05202140449041774 }, { Latitud: 39.03385, Longitud: 125.75432 }, VehicleEnum.Vehicle)
                 .then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(RouteNotFoundException));
 
         });
@@ -71,7 +70,7 @@ describe('Pruebas de la Iteración 2', () => {
             routesController.setRoutes([]);
 
             //When
-            await routesController.addRoute({ Latitud: 39.988126910927626, Longitud: -0.05202140449041774 }, {Latitud: null, Longitud: null}, VehicleEnum.Vehicle)
+            await routesController.getNewRoute({ Latitud: 39.988126910927626, Longitud: -0.05202140449041774 }, { Latitud: null, Longitud: null }, VehicleEnum.Vehicle)
                 .then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(PlaceNotFoundException));
         });
         test('E05 - No existe el lugar de inicio.', async () => {
@@ -79,7 +78,7 @@ describe('Pruebas de la Iteración 2', () => {
             routesController.setRoutes([]);
 
             //When
-            await routesController.addRoute({ Latitud: null, Longitud: null}, {Latitud: 39.986597808112535, Longitud: -0.05682265874338428}, VehicleEnum.Vehicle)
+            await routesController.getNewRoute({ Latitud: null, Longitud: null }, { Latitud: 39.986597808112535, Longitud: -0.05682265874338428 }, VehicleEnum.Vehicle)
                 .then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(PlaceNotFoundException));
         });
     });
