@@ -9,14 +9,14 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
     beforeEach(() => authController = getAuthController());
 
 
-    test('HU02 - E1 - Login exitoso', () => {
+    test('HU02 - E1 - Login exitoso', async () => {
 
         const testUser = {
             email: 'usuario.permanente@test.com',
             password: '123456789',
         }
 
-        const user: UserModel = authController.loginWithEmailAndPassword( testUser.email, testUser.password );
+        const user: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
 
         expect(user).toBeTruthy();
         expect(user.email).toBe(testUser.email);
@@ -24,7 +24,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         expect(user.uid).toBeTruthy();
     });
 
-    test('HU02 - E3 - Login fallido con contraseña inválida', () => {
+    test('HU02 - E3 - Login fallido con contraseña inválida', async () => {
 
         const testUser = {
             email: 'usuario.permanente@test.com',
@@ -32,7 +32,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         }
 
         try {
-            authController.loginWithEmailAndPassword( testUser.email, testUser.password );
+            await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
             throw new Error();
         } catch (error) {
             if (error instanceof AuthException) {
