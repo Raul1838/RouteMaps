@@ -1,5 +1,6 @@
 import {UserModel} from "../interfaces/UserModel.ts";
 import {FirebaseService} from "../firebase/FirebaseService.ts";
+
 export class AuthController {
 
     constructor( private firebaseService: FirebaseService ) { }
