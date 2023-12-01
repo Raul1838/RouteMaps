@@ -21,11 +21,12 @@ export class FirebaseService {
     }
 
     async startLogout(): Promise<void> {
-        try {
-            await FirebaseAuth.signOut();
-        } catch (error) {
+        if( FirebaseAuth.currentUser === null ) {
             throw new AuthException(AuthExceptionMessages.InvalidLogout);
         }
+        await FirebaseAuth.signOut().catch(() => {
+            throw new AuthException(AuthExceptionMessages.InvalidLogout);
+        });
     }
 
 }
