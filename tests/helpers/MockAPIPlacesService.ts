@@ -1,6 +1,6 @@
 import VehicleEnum from "../../src/enums/VehicleEnum";
 import APIPlacesInterface from "../../src/interfaces/APIPlacesInterface";
-import { APIRouteModel } from "../../src/interfaces/APIRouteModel";
+import { APIRouteModel, APIRouteNotFound } from "../../src/interfaces/APIRouteModel";
 import { Coords } from "../../src/interfaces/Coords";
 import Place from "../../src/interfaces/Place";
 import Route from "../../src/interfaces/Route";
@@ -9,8 +9,8 @@ import Vehicle from "../../src/interfaces/Vehicle";
 
 
 export default class MockAPIPlacesService implements APIPlacesInterface {
-    getRoute(Inicio: Coords, Final: Coords, Vehicle: string): Promise<APIRouteModel> {
-        var route: APIRouteModel;
+    getRoute(Inicio: Coords, Final: Coords, Vehicle: String): Promise<APIRouteModel | APIRouteNotFound> {
+        var route: APIRouteModel | APIRouteNotFound;
         if (Inicio.Latitud === 39.988126910927626
             && Inicio.Longitud === -0.05202140449041774
             && Final.Latitud === 39.986597808112535
@@ -189,7 +189,29 @@ export default class MockAPIPlacesService implements APIPlacesInterface {
             };
             return Promise.resolve(route);
 
+        };
+        if (Inicio.Latitud === 39.988126910927626
+            && Inicio.Longitud === -0.05202140449041774
+            && Final.Latitud === 39.03385
+            && Final.Longitud === 125.75432
+            && Vehicle === 'driving-car') {
+            var NotFound: APIRouteNotFound;
+            NotFound = {
+                "error": {
+                    "code": 2010,
+                    "message": "Could not find routable point within a radius of 350.0 meters of specified coordinate 0: -2.0520214 39.9881269."
+                },
+                "info": {
+                    "engine": {
+                        "build_date": "2023-07-09T01:31:50Z",
+                        "version": "7.1.0"
+                    },
+                    "timestamp": 1701338267640
+                }
+            };
+            return Promise.resolve(NotFound);
         }
-        throw new Error();
+        console.log('Soy un fallo');
+
     }
 }

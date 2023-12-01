@@ -57,11 +57,26 @@ export interface Metadata {
 export interface Engine {
     version:    string;
     build_date: string;
-    graph_date: string;
+    graph_date?: string;
 }
 
 export interface Query {
     coordinates: Array<number[]>;
     profile:     string;
     format:      string;
+}
+
+export interface APIRouteNotFound {
+    error: Error;
+    info:  Info;
+}
+
+export interface Error {
+    code:    number;
+    message: string;
+}
+
+export interface Info {
+    engine:    Engine;
+    timestamp: number;
 }

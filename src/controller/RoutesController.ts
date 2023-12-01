@@ -1,7 +1,8 @@
 import VehicleEnum from "../enums/VehicleEnum";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
+import RouteNotFoundException from "../exceptions/RouteNotFoundException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
-import { APIRouteModel } from "../interfaces/APIRouteModel";
+import { APIRouteModel, APIRouteNotFound } from "../interfaces/APIRouteModel";
 import { Coords } from "../interfaces/Coords";
 import Route from "../interfaces/Route";
 import RoutesInterface from "../interfaces/RoutesInterface";
@@ -34,10 +35,50 @@ export default class RoutesController implements RoutesInterface {
         } else {
             throw new InvalidVehicleException();
         }
-        
 
-        const result: APIRouteModel | undefined = await this.apiService.getRoute(startCoords, endCoords, drivingMethod);
 
+        const result: APIRouteModel | APIRouteNotFound = await this.apiService.getRoute(startCoords, endCoords, drivingMethod);
+
+        if (this.isAPIRouteModel(result)) {
+            this.manageResponseAsRouteModel(result, startCoords, endCoords);
+        } else if (this.isAPIRouteNotFound(result)) {
+            this.manageResponseAsNotFound(result);
+        } else {
+            throw new Error();
+        }
+
+    }
+
+
+    // Other methods
+    // Type guard function
+    isVehicleEnum(vehicle: Vehicle | VehicleEnum): vehicle is VehicleEnum {
+        return typeof vehicle === 'string';
+    }
+
+    // Function to map VehicleEnum to string
+    mapVehicleEnumToString(vehicleEnum: VehicleEnum): string {
+        switch (vehicleEnum) {
+            case VehicleEnum.Vehicle:
+                return 'driving-car';
+            case VehicleEnum.Bike:
+                return 'bike';
+            case VehicleEnum.Walking:
+                return 'walk';
+            default:
+                throw new InvalidVehicleException();
+        }
+    }
+
+    isAPIRouteModel(result: APIRouteModel | APIRouteNotFound): result is APIRouteModel {
+        return (result as APIRouteModel).features !== undefined;
+    }
+
+    isAPIRouteNotFound(result: APIRouteModel | APIRouteNotFound): result is APIRouteNotFound {
+        return (result as APIRouteNotFound).error !== undefined;
+    }
+
+    manageResponseAsRouteModel(result: APIRouteModel, startCoords: Coords, endCoords: Coords): Boolean {
         if (result?.features.length && result.features[0]?.properties?.summary.distance > 0) {
             const routeSteps: Ubicacion[] = [];
 
@@ -71,24 +112,9 @@ export default class RoutesController implements RoutesInterface {
         }
     }
 
-
-    // Other methods
-    // Type guard function
-    isVehicleEnum(vehicle: Vehicle | VehicleEnum): vehicle is VehicleEnum {
-        return typeof vehicle === 'string';
-    }
-
-    // Function to map VehicleEnum to string
-    mapVehicleEnumToString(vehicleEnum: VehicleEnum): string {
-        switch (vehicleEnum) {
-            case VehicleEnum.Vehicle:
-                return 'driving-car';
-            case VehicleEnum.Bike:
-                return 'bike';
-            case VehicleEnum.Walking:
-                return 'walk';
-            default:
-                throw new InvalidVehicleException();
+    manageResponseAsNotFound(response: APIRouteNotFound) {
+        if (response.error.code === 2010) {
+            throw new RouteNotFoundException(response.error.message);
         }
     }
 
