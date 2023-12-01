@@ -83,8 +83,22 @@ export default class RoutesController implements RoutesInterface {
     }
 
     checkValidPlaces(start: Coords, end: Coords): Boolean {
-        if ((end.Latitud > 90 || end.Latitud < -90)
-            || (end.Longitud > 180 || end.Longitud < -180)) {
+        if (
+            !end ||
+            !end.Latitud ||
+            !end.Longitud ||
+            !start ||
+            !start.Latitud ||
+            !start.Longitud ||
+            end.Latitud > 90 ||
+            end.Latitud < -90 ||
+            end.Longitud > 180 ||
+            end.Longitud < -180 ||
+            start.Latitud > 90 ||
+            start.Latitud < -90 ||
+            start.Longitud > 180 ||
+            start.Longitud < -180
+        ) {
             throw new PlaceNotFoundException();
         }
         return true;
