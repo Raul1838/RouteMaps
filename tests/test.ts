@@ -82,4 +82,26 @@ describe('Pruebas de la Iteración 2', () => {
                 .then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(PlaceNotFoundException));
         });
     });
+    describe('HU24 - Establecer un tipo de ruta por defecto.', () => {
+        test('E01 - Usuario identificado.', () => {
+            //Given
+
+
+            //When
+
+
+            //Then
+
+        });
+        test('E02 - Usuario no identificado.', () => {
+            //Given
+
+
+            //When
+
+            
+            //Then
+
+        })
+    })
 });

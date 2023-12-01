@@ -1,3 +1,4 @@
+import DefaultRuteEnum from "../enums/DefaultRuteEnum";
 import VehicleEnum from "../enums/VehicleEnum";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
@@ -13,11 +14,13 @@ import Vehicle from "../interfaces/Vehicle";
 
 export default class RoutesController implements RoutesInterface {
     private routes: Array<Route>;
+    private DefaultRoute: DefaultRuteEnum;
     private apiService: APIPlacesInterface;
 
     constructor(apiService: APIPlacesInterface) {
         this.routes = new Array();
         this.apiService = apiService;
+        this.DefaultRoute = DefaultRuteEnum.Recommended;
     }
     setRoutes(routes: Route[]): Boolean {
         this.routes = routes;
