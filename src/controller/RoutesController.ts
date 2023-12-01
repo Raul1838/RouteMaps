@@ -1,5 +1,6 @@
 import VehicleEnum from "../enums/VehicleEnum";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
+import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
 import RouteNotFoundException from "../exceptions/RouteNotFoundException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
 import { APIRouteModel, APIRouteNotFound } from "../interfaces/APIRouteModel";
@@ -26,6 +27,9 @@ export default class RoutesController implements RoutesInterface {
         return this.routes;
     }
     async getNewRoute(startCoords: Coords, endCoords: Coords, vehicle: VehicleEnum | Vehicle): Promise<boolean> {
+
+        this.checkValidPlaces(startCoords, endCoords);
+
         var drivingMethod;
 
         if (this.isVehicleEnum(vehicle)) {
@@ -76,6 +80,14 @@ export default class RoutesController implements RoutesInterface {
 
     isAPIRouteNotFound(result: APIRouteModel | APIRouteNotFound): result is APIRouteNotFound {
         return (result as APIRouteNotFound).error !== undefined;
+    }
+
+    checkValidPlaces(start: Coords, end: Coords): Boolean {
+        if ((end.Latitud > 90 || end.Latitud < -90)
+            || (end.Longitud > 180 || end.Longitud < -180)) {
+            throw new PlaceNotFoundException();
+        }
+        return true;
     }
 
     manageResponseAsRouteModel(result: APIRouteModel, startCoords: Coords, endCoords: Coords): Boolean {
