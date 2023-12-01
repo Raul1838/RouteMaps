@@ -1,9 +1,10 @@
-import RoutesController from '../src/controller/RoutesController.ts'
+import RoutesController from '../src/controller/RoutesController.ts';
 import VehicleEnum from '../src/enums/VehicleEnum.ts';
 import MockAPIPlacesService from './helpers/MockAPIPlacesService.ts';
-import InvalidVehicleException from '../src/exceptions/InvalidVehicleException.ts'
-import RouteNotFoundException from '../src/exceptions/RouteNotFoundException.ts'
-import PlaceNotFoundException from '../src/exceptions/PlaceNotFoundException.ts'
+import InvalidVehicleException from '../src/exceptions/InvalidVehicleException.ts';
+import RouteNotFoundException from '../src/exceptions/RouteNotFoundException.ts';
+import PlaceNotFoundException from '../src/exceptions/PlaceNotFoundException.ts';
+import RouteTypeEnum from '../src/enums/RuteTypeEnum.ts';
 
 var mockedAPIService = new MockAPIPlacesService();
 var routesController: RoutesController = new RoutesController(mockedAPIService);
@@ -76,10 +77,87 @@ describe('Pruebas de la Iteración 2', () => {
         test('E05 - No existe el lugar de inicio.', async () => {
             //Given
             routesController.setRoutes([]);
-
+            "name"
             //When
             await routesController.getNewRoute({ Latitud: null, Longitud: null }, { Latitud: 39.986597808112535, Longitud: -0.05682265874338428 }, VehicleEnum.Vehicle)
                 .then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(PlaceNotFoundException));
+        });
+    });
+    describe('HU14 - Calcular coste de una ruta en coche', () => {
+        test('E01 - Existe una ruta, un vehículo asignado y se conoce el precio actual del combustible.', () => {
+            //Given
+            routesController.setRoutes([
+                {
+                    Id: 1200,
+                    Inicio: { Latitud: 39.988126910927626, Longitud: -0.05202140449041774 },
+                    Fin: { Latitud: 39.986597808112535, Longitud: -0.05682265874338428 },
+                    Trayecto: [
+                        {
+                            Distancia: 267.2,
+                            Duracion: 49.2,
+                            Instruccion: "Head southwest on Calle Pintor Oliet",
+                            Nombre: "Calle Pintor Oliet",
+                        },
+                        {
+                            Distancia: 285.3,
+                            Duracion: 53.8,
+                            Instruccion: "Enter the roundabout and take the 1st exit onto Avenida Alcora, CV-1540",
+                            Nombre: "Avenida Alcora, CV-1540",
+                            Salida: 1,
+                        },
+                        {
+                            Distancia: 0.0,
+                            Duracion: 0.0,
+                            Instruccion: "Arrive at Avenida Alcora, CV-1540, on the right",
+                            Nombre: "-",
+                        }
+                    ],
+                    Duracion: 103.0,
+                    Distancia: 552.5,
+                    Tipo: RouteTypeEnum.Recommended,
+                    Favorito: false,
+                    Vehiculo: 1683
+                }]);
+
+            //When
+
+
+            //Then
+
+
+        });
+        test('E02 - Existe una ruta, un vehículo asignado pero se desconoce el precio actual del combustible.', () => {
+            //Given
+
+
+            //When
+
+
+            //Then
+
+
+        });
+        test('E03 - Existe una ruta pero se desconoce el vehículo a usar.', () => {
+            //Given
+
+
+            //When
+
+
+            //Then
+
+
+        });
+        test('E04 - No hay ninguna ruta', () => {
+            //Given
+
+
+            //When
+
+
+            //Then
+
+
         });
     });
 });
