@@ -40,7 +40,7 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
         <>
             <form onSubmit={ handleOnSubmit }>
                 {formFields.map((field) => (
-                    <div className="form-group" key={field.id}>
+                    <div className="form-group" key={field.id} style={{ marginBottom: '20px' }}>
                         <label htmlFor={field.id}>{field.label}</label>
                         <input
                             className="form-control"
@@ -57,7 +57,7 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
                         }
                     </div>
                 ))}
-                <div className="row d-flex align-items-center" style={{ margin: "20px 2px" }}>
+                <div className="row d-flex align-items-center" style={{ margin: "40px 2px" }}>
                     <button type="submit" className="btn btn-primary col-6">{ submitButtonLabel }</button>
                     {
                         additionalFormLink &&  <p className="col-6 m-0">{ additionalFormLink.name }<Link to={ additionalFormLink.url } style={{ marginLeft: "10px" }}>{ additionalFormLink.clickable }</Link></p>

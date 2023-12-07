@@ -51,24 +51,29 @@ export const LoginPage = () => {
 
     return(
         <>
-            <div className="row" style={{ margin: '20px' }}>
+            <div className="row d-flex align-items-center" style={{ margin: '20px', minHeight: '80vh' }}>
                 <div className="col-6">
-                    <h2>Iniciar Sesión</h2>
-                    <hr />
-                    <SmartForm formData={ formData } formFields={ formFields } additionalFormLink={ formLink }
-                               onSubmit={ onSubmit } submitButtonLabel="Iniciar sesión" validations={ validations } />
+                    <div className="card">
+                        <div className="card-body">
+                            <h2 className="card-title" style={{ marginBottom: '20px' }}>Iniciar Sesión</h2>
+                            <hr style={{ marginBottom: '20px' }} />
+                            <SmartForm formData={ formData } formFields={ formFields } additionalFormLink={ formLink }
+                                       onSubmit={ onSubmit } submitButtonLabel="Iniciar sesión" validations={ validations } />
+                        </div>
+                    </div>
                 </div>
                 <div className="col-6">
                     <img src="https://i.pinimg.com/originals/89/54/f8/8954f88c60dfde5438e2a5233579b580.jpg"  alt="map image | auth"/>
                 </div>
             </div>
-            <div>
-                <ul>
-                    <li>{ authContext?.user.uid }</li>
-                    <li>{ authContext?.user.displayName }</li>
-                    <li>{ authContext?.user.email }</li>
+            <div className="row" style={{ margin: 20 }}>
+                <ul className="list-group col-6">
+                    <li className="list-group-item"><strong>UID:</strong> { authContext?.user.uid }</li>
+                    <li className="list-group-item"><strong>Nombre:</strong> { authContext?.user.displayName }</li>
+                    <li className="list-group-item"><strong>Email:</strong> { authContext?.user.email }</li>
                 </ul>
             </div>
         </>
     )
+
 }
