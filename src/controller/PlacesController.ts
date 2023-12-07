@@ -8,9 +8,6 @@ export default class PlacesController implements PlacesInterface {
     constructor() {
         this.places = new Array();
     }
-    addPlace(coordenadas: Coords): Promise<Boolean> {
-        throw new Error("Method not implemented.");
-    }
 
     getPlaces(): Place[] {
         if (this.places.length === 0){
