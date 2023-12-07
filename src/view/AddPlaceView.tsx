@@ -14,7 +14,7 @@ const AddPlaceComponent = ({ placesViewModel }: AddPlaceComponentProps) => {
     const handleAddPlace = async () => {
         try {
             const coordenadas = { Latitud: parseFloat(latitud), Longitud: parseFloat(longitud) };
-            const result = await placesViewModel.addPlace(coordenadas);
+            const result = await placesViewModel.addPlaceByCoords(coordenadas);
             setResultado(result ? 'Lugar añadido con éxito' : 'Error al añadir lugar');
         } catch (error) {
             console.error('Error:', error);

@@ -16,7 +16,7 @@ export default class PlacesController implements PlacesInterface {
         this.apiService = apiService;
         this.places = new Array();
     }
-    async addPlace(coordenadas: Coords): Promise<Boolean> {
+    async addPlaceByCoords(coordenadas: Coords): Promise<Boolean> {
         try {
             this.checkValidCoordinates(coordenadas);
             var result: Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);

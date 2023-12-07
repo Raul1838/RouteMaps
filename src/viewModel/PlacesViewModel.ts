@@ -10,8 +10,8 @@ export default class PlacesViewModel {
         this.placesController = placesController;
     }
 
-    async addPlace(coordenadas: Coords): Promise<Boolean> {
-        return await this.placesController.addPlace(coordenadas);
+    async addPlaceByCoords(coordenadas: Coords): Promise<Boolean> {
+        return await this.placesController.addPlaceByCoords(coordenadas);
     }
 
     getPlaces(): Place[] {
