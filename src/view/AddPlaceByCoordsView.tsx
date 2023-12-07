@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import PlacesViewModel from "../viewModel/PlacesViewModel";
 import { Coords } from "../interfaces/Coords";
 
-interface AddPlaceComponentProps {
+interface AddPlaceByCoordsComponentProps {
     placesViewModel: PlacesViewModel;
 }
 
-const AddPlaceComponent = ({ placesViewModel }: AddPlaceComponentProps) => {
+const AddPlaceByCoordsComponent = ({ placesViewModel }: AddPlaceByCoordsComponentProps) => {
     const [latitud, setLatitud] = useState('');
     const [longitud, setLongitud] = useState('');
     const [resultado, setResultado] = useState('');
@@ -24,7 +24,7 @@ const AddPlaceComponent = ({ placesViewModel }: AddPlaceComponentProps) => {
 
     return (
         <div>
-            <h1>Añadir un Nuevo Lugar</h1>
+            <h1>Añadir un nuevo lugar por coordenadas</h1>
             <input
                 type="number"
                 value={latitud}
@@ -43,4 +43,4 @@ const AddPlaceComponent = ({ placesViewModel }: AddPlaceComponentProps) => {
     );
 };
 
-export default AddPlaceComponent;
+export default AddPlaceByCoordsComponent;
