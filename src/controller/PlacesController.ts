@@ -1,4 +1,4 @@
-import InvalidCoordinatesException from "../exceptions/InvalidCoordinatesException";
+import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
 import { Coords } from "../interfaces/Coords";
 import PlacesInterface from "../interfaces/LugaresInterface";
@@ -11,15 +11,16 @@ export default class PlacesController implements PlacesInterface {
         this.apiService = apiService;
         this.places = new Array();
     }
+
     async addPlace(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
         var result: Place | undefined;
-        if (typeof placeName !== undefined) {
+        if (placeName !== undefined) {
             this.checkForValidToponym(placeName);
             result = await this.apiService.getPlaceByToponym(placeName!);
         } else if (coordenadas !== undefined) {
             result = await this.apiService.getPlaceByCoord(coordenadas!);
         } else {
-            throw new Error();
+            throw new Error("Input inválido: debe especificar un nombre o coordenadas");
         }
         if (result?.Nombre !== undefined) {
             this.places.push(result);
@@ -32,16 +33,15 @@ export default class PlacesController implements PlacesInterface {
     getPlaces(): Place[] {
         return this.places
     }
-    setPlaces(places: Place[]): Boolean {
+    setPlaces(places: Place[]): void {
         this.places = places;
-        return this.places === places;
     }
 
-    //Other methods
+    //Otros métodos
 
     checkForValidToponym(placeName: string | undefined) {
         if (this.containsNumber(placeName!)) {
-            throw new InvalidCoordinatesException();
+            throw new InvalidToponymException("El nombre del lugar no puede contener números");
         }
     }
 
