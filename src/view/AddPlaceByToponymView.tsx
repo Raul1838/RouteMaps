@@ -21,7 +21,7 @@ const AddPlaceByToponymComponent = ({ placesViewModel }: AddPlaceByToponymCompon
 
     return (
         <div>
-            <h1>Añadir un lugar por Topónimo</h1>
+            <h1>Añadir un lugar por topónimo</h1>
             <input
                 type="text"
                 value={toponym}

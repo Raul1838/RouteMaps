@@ -10,7 +10,7 @@ export default class PlacesViewModel {
     }
 
     async addPlaceByToponym(placeName: string): Promise<Boolean> {
-        return await this.placesController.addPlace(placeName);
+        return await this.placesController.addPlaceByToponym(placeName);
     }
 
 }

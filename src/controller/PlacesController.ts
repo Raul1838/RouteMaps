@@ -12,7 +12,7 @@ export default class PlacesController implements PlacesInterface {
         this.places = new Array();
     }
 
-    async addPlace(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
+    async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
         var result: Place | undefined;
         if (placeName !== undefined) {
             this.checkForValidToponym(placeName);
@@ -30,9 +30,6 @@ export default class PlacesController implements PlacesInterface {
         }
     }
 
-    getPlaces(): Place[] {
-        return this.places
-    }
     setPlaces(places: Place[]): void {
         this.places = places;
     }
