@@ -1,7 +1,5 @@
-import { createContext, useState } from "react";
-import { UserModel } from "../interfaces/UserModel.ts";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { LoginPage } from "../auth/pages/LoginPage.tsx";
+import {createContext, useState} from "react";
+import {UserModel} from "../interfaces/UserModel.ts";
 
 export interface AuthContextInterface {
     user: UserModel,
@@ -25,7 +23,7 @@ export const AuthProvider = ({ children }: any) => {
     return (
         <>
             <AuthContext.Provider value={value}>
-                {children}
+                { children }
             </AuthContext.Provider>
         </>
     );
