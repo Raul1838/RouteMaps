@@ -5,7 +5,7 @@ import PlacesInterface from "../interfaces/LugaresInterface";
 import Place from "../interfaces/Place";
 import { openRouteApi } from "../api/openRouteApi";
 import { getEnvVariables } from "../helpers/getEnvVariables";
-import { GetPlaceByCoord } from "../interfaces/OpenRoutingInterface";
+import  GetPlaceByCoord  from "../interfaces/OpenRoutingInterface";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import APINotAvailableExeption from "../exceptions/APINotAvailableExeption";
 

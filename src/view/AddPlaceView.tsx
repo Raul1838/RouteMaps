@@ -43,4 +43,4 @@ const AddPlaceComponent = ({ placesViewModel }: AddPlaceComponentProps) => {
     );
 };
 
-export default AddPlaceComponent
+export default AddPlaceComponent;
