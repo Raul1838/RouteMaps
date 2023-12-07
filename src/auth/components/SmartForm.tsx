@@ -1,18 +1,38 @@
 import {useForm} from '../../hooks/useForm.ts'
-import React, {SyntheticEvent, useState} from "react";
+import React, {SyntheticEvent, useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {FormProps} from "../../interfaces/FormProps.ts";
 
+interface Errors {
+    [key: string]: string | null;
+}
+
 
 export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additionalFormLink,
-                                               onSubmit, submitButtonLabel}) => {
+                                                   onSubmit, submitButtonLabel, validations}) => {
     const { formState, onInputChange } = useForm( formData );
     const [dirty, setDirty] = useState(false);
+    const [errors, setErrors] = useState<Errors>({});
+
+    useEffect(() => {
+        let newErrors: Errors = {};
+        for (let validationsKey in validations) {
+            const errorFunction = validations[validationsKey];
+            const errorMessage = errorFunction(formState[validationsKey]);
+            if (errorMessage) {
+                newErrors = {
+                    ...newErrors,
+                    [validationsKey]: errorMessage
+                }
+            }
+        }
+        setErrors(newErrors);
+    }, [formState]);
 
     const handleOnSubmit = ( event: SyntheticEvent ) => {
         event.preventDefault();
         setDirty(true);
-        if (formState.password.length < 6) return;
+        if (Object.keys(errors).length > 0) return;
         onSubmit(formState);
     }
 
@@ -33,14 +53,14 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
                             required={ true }
                         />
                         {
-                            field.id === 'password' && formState[field.id].length < 6 && dirty ? <small className="text-danger">Debe tener al menos 6 carácteres</small> : null
+                            dirty && errors[field.id] ? <small className="text-danger">{errors[field.id]}</small> : null
                         }
                     </div>
                 ))}
-                <div className="row" style={{ marginTop: 20 }}>
+                <div className="row d-flex align-items-center" style={{ margin: "20px 2px" }}>
                     <button type="submit" className="btn btn-primary col-6">{ submitButtonLabel }</button>
                     {
-                        additionalFormLink &&  <p className="col-6">{ additionalFormLink.name }<Link to={ additionalFormLink.url }>{ additionalFormLink.clickable }</Link></p>
+                        additionalFormLink &&  <p className="col-6 m-0">{ additionalFormLink.name }<Link to={ additionalFormLink.url } style={{ marginLeft: "10px" }}>{ additionalFormLink.clickable }</Link></p>
                     }
                 </div>
 
@@ -48,3 +68,4 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
         </>
     )
 }
+

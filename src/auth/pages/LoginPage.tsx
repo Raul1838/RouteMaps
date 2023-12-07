@@ -6,6 +6,7 @@ import {AuthController, getAuthController} from "../../controller/AuthController
 import {UserModel} from "../../interfaces/UserModel.ts";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {FormState} from "../../hooks/useForm.ts";
+import {FormValidations} from "../../interfaces/FormValidations.ts";
 
 export const LoginPage = () => {
     const authContext : AuthContextInterface | undefined = useContext(AuthContext);
@@ -26,6 +27,21 @@ export const LoginPage = () => {
         clickable: 'Creala'
     }
 
+    const validations: FormValidations = {
+        email: (value: string) => {
+            if (!value.includes('@')) {
+                return 'Debe ser una dirección de correo electrónico válida';
+            }
+            return null;
+        },
+        password: (value: string) => {
+            if (value.length < 6) {
+                return 'Debe tener al menos 6 carácteres';
+            }
+            return null;
+        }
+    };
+
     const onSubmit = async ( formState: FormState ) => {
         const authController: AuthController = getAuthController();
         const user: UserModel = await authController.loginWithEmailAndPassword(formState.email, formState.password);
@@ -40,7 +56,7 @@ export const LoginPage = () => {
                     <h2>Iniciar Sesión</h2>
                     <hr />
                     <SmartForm formData={ formData } formFields={ formFields } additionalFormLink={ formLink }
-                               onSubmit={ onSubmit } submitButtonLabel="Iniciar sesión" />
+                               onSubmit={ onSubmit } submitButtonLabel="Iniciar sesión" validations={ validations } />
                 </div>
                 <div className="col-6">
                     <img src="https://i.pinimg.com/originals/89/54/f8/8954f88c60dfde5438e2a5233579b580.jpg"  alt="map image | auth"/>
