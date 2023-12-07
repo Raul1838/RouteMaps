@@ -4,11 +4,11 @@ import {FormLink} from "../../interfaces/FormLink.ts";
 import {useContext} from "react";
 import {AuthController, getAuthController} from "../../controller/AuthController.ts";
 import {UserModel} from "../../interfaces/UserModel.ts";
-import {AuthContext} from "../../context/AuthContext.tsx";
+import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {FormState} from "../../hooks/useForm.ts";
 
 export const LoginPage = () => {
-    const authContext = useContext(AuthContext);
+    const authContext : AuthContextInterface | undefined = useContext(AuthContext);
 
     const formData = {
         email: '',
@@ -29,7 +29,7 @@ export const LoginPage = () => {
     const onSubmit = async ( formState: FormState ) => {
         const authController: AuthController = getAuthController();
         const user: UserModel = await authController.loginWithEmailAndPassword(formState.email, formState.password);
-        authContext?.setUser(user);
+        authContext!.setUser(user);
         console.log(user);
     };
 

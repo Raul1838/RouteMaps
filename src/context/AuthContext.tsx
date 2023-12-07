@@ -1,6 +1,7 @@
-import {createContext, useState} from "react";
-import {UserModel} from "../interfaces/UserModel.ts";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import { createContext, useState } from "react";
+import { UserModel } from "../interfaces/UserModel.ts";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { LoginPage } from "../auth/pages/LoginPage.tsx";
 
 export interface AuthContextInterface {
     user: UserModel,
@@ -9,7 +10,7 @@ export interface AuthContextInterface {
 
 export const AuthContext = createContext<AuthContextInterface | undefined>(undefined);
 
-export const Auth = () => {
+export const AuthProvider = ({ children }: any) => {
     const [user, setUser] = useState<UserModel>({
         uid: "",
         email: "",
@@ -23,12 +24,8 @@ export const Auth = () => {
 
     return (
         <>
-            <AuthContext.Provider value={ value }>
-                <Router>
-                    <Routes>
-                        <Route path="/" element={<></>} />
-                    </Routes>
-                </Router>
+            <AuthContext.Provider value={value}>
+                {children}
             </AuthContext.Provider>
         </>
     );
