@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import PlacesViewModel from '../viewModel/PlacesViewModel';
 
-interface AddPlaceByToponymViewProps {
+interface AddPlaceByToponymComponentProps {
     placesViewModel: PlacesViewModel;
 }
 
-const AddPlaceByToponymView = ({ placesViewModel }: AddPlaceByToponymViewProps) => {
+const AddPlaceByToponymComponent = ({ placesViewModel }: AddPlaceByToponymComponentProps) => {
     const [toponym, setToponym] = useState('');
     const [resultado, setResultado] = useState('');
 
@@ -34,4 +34,4 @@ const AddPlaceByToponymView = ({ placesViewModel }: AddPlaceByToponymViewProps) 
     );
 };
 
-export default AddPlaceByToponymView;
+export default AddPlaceByToponymComponent;
