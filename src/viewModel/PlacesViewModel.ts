@@ -14,11 +14,7 @@ export default class PlacesViewModel {
         return await this.placesController.addPlaceByCoords(coordenadas);
     }
 
-    getPlaces(): Place[] {
-        return this.placesController.getPlaces();
-    }
-
-    setPlaces(places: Place[]): Boolean {
+    setPlaces(places: Place[]): void {
         return this.placesController.setPlaces(places);
     }
 

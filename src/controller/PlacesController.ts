@@ -47,12 +47,8 @@ export default class PlacesController implements PlacesInterface {
         }
     }
 
-    getPlaces(): Place[] {
-        return this.places
-    }
-    setPlaces(places: Place[]): Boolean {
+    setPlaces(places: Place[]): void {
         this.places = places;
-        return this.places === places;
     }
 
 
