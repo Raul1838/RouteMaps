@@ -11,7 +11,7 @@ export default class PlacesController implements PlacesInterface {
 
     deletePlace(paramPlace: Place): Boolean {
         if (this.places.length === 0) {
-            throw new EmptyPlacesException();
+            throw new EmptyPlacesException("No hay lugares para eliminar.");
         }
         const index = this.places.findIndex(place => (place.Nombre === paramPlace.Nombre &&
             place.Latitud === paramPlace.Latitud &&
@@ -19,22 +19,12 @@ export default class PlacesController implements PlacesInterface {
 
         if (index !== -1) {
             this.places.splice(index, 1);
-            console.log('Place deleted:', paramPlace);
             return true;
         } else {
-            throw new PlaceNotFoundException();
+            throw new PlaceNotFoundException("No se encontró el lugar a eliminar.");
         }
     }
-    getPlaces(): Place[] {
-        if (this.places.length === 0) {
-            throw new EmptyPlacesException();
-        }
-        return this.places
-    }
-    setPlaces(places: Place[]): Boolean {
+    setPlaces(places: Place[]): void {
         this.places = places;
-        return this.places === places;
     }
-
-
 }
