@@ -15,7 +15,6 @@ export default class VehiclesController implements VehiclesInterface {
         const index = this.vehicles.findIndex(vehicle => vehicle.id === paramVehicle.id);
 
         if (index !== -1) {
-            // Use the spread operator to create a new object with the updated values
             this.vehicles[index] = { ...this.vehicles[index], ...paramVehicle };
             console.log('Vehicle updated:', this.vehicles[index]);
             return true;
@@ -24,11 +23,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    setVehicles(vehicles: Vehicle[]): Boolean {
+    setVehicles(vehicles: Vehicle[]): void {
         this.vehicles = vehicles;
-        return this.vehicles === vehicles;
-    }
-    getVehicles(): Vehicle[] {
-        return this.vehicles;
     }
 }
