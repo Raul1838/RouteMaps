@@ -1,8 +1,6 @@
-import { type } from "os";
 import VehicleAlreadyExistException from "../exceptions/VehicleAlreadyExistException";
 import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
-import { string } from "yargs";
 import Combustible from "../enums/Combustible";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 
@@ -31,11 +29,8 @@ export default class VehiclesController implements VehiclesInterface {
             throw new VehicleAlreadyExistException();
         }
     }
-    setVehicles(vehicles: Vehicle[]): Boolean {
+    
+    setVehicles(vehicles: Vehicle[]): void {
         this.vehicles = vehicles;
-        return this.vehicles === vehicles;
-    }
-    getVehicles(): Vehicle[] {
-        return this.vehicles;
     }
 }

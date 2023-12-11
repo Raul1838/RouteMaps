@@ -1,4 +1,4 @@
-import Combustible from "../enums/combustible";
+import Combustible from "../enums/Combustible";
 
 export default interface Vehicle {
     id: number,
