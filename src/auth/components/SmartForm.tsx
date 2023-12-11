@@ -63,7 +63,7 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
                         additionalFormLink &&  <p className="col-6 m-0">{ additionalFormLink.name }<Link to={ additionalFormLink.url } style={{ marginLeft: "10px" }}>{ additionalFormLink.clickable }</Link></p>
                     }
                 </div>
-
+                
             </form>
         </>
     )
