@@ -1,5 +1,5 @@
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
-import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
+import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
 import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
 
@@ -19,14 +19,10 @@ export default class VehiclesController implements VehiclesInterface {
             console.log('Vehicle deleted:', paramId);
             return true;
         } else {
-            throw new PlaceNotFoundException();
+            throw new VehicleNotFoundException();
         }
     }
-    setVehicles(vehicles: Vehicle[]): Boolean {
+    setVehicles(vehicles: Vehicle[]): void {
         this.vehicles = vehicles;
-        return this.vehicles === vehicles;
-    }
-    getVehicles(): Vehicle[] {
-        return this.vehicles;
     }
 }
