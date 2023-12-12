@@ -1,20 +1,22 @@
 import {UserModel} from "../interfaces/UserModel.ts";
+import {FirebaseService} from "../firebase/FirebaseService.ts";
 
 export class AuthController {
-    public registerUserWithEmailAndPassword( email: string, password: string, displayName: string ): UserModel {
-        throw new Error('Not implemented');
+
+    constructor( private firebaseService: FirebaseService ) { }
+    async loginWithEmailAndPassword(email: string, password: string): Promise<UserModel> {
+        return await this.firebaseService.startLoginWithEmailAndPassword(email, password);
     }
 
-    public loginWithEmailAndPassword( email: string, password: string ): UserModel {
-        throw new Error('Not implemented');
+    async deleteUser() {
+        return await this.firebaseService.startDeletingUser();
     }
-
 }
 
 let _instance: AuthController;
-export function getAuthController(): AuthController {
+export function getAuthController(firebaseService?: FirebaseService): AuthController {
     if (!_instance) {
-        _instance = new AuthController();
+        _instance = new AuthController((!firebaseService ? new FirebaseService() : firebaseService));
     }
     return _instance;
 }
