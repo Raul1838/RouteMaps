@@ -1,10 +1,13 @@
 import './App.css';
-import {NavBar} from "./components/NavBar.tsx";
+import {AppRouter} from "./router/AppRouter.tsx";
 
 
 export const App = () => {
 
     return (
-        <NavBar />
+        <>
+            <AppRouter />
+        </>
+
     )
 }

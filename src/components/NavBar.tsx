@@ -1,5 +1,4 @@
-import {UserDropDown} from "../auth/UserDropDown.tsx";
-
+import {UserDropDown} from "../auth/components/UserDropDown.tsx";
 
 export const NavBar = () => {
 

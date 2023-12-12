@@ -1,4 +1,4 @@
-import {signInWithEmailAndPassword} from "firebase/auth";
+import {deleteUser, signInWithEmailAndPassword} from "firebase/auth";
 import {FirebaseAuth} from "./config";
 import {UserModel} from "../interfaces/UserModel.ts";
 import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
@@ -29,4 +29,13 @@ export class FirebaseService {
         });
     }
 
+    async startDeletingUser() {
+        if (FirebaseAuth.currentUser) {
+            await deleteUser(FirebaseAuth.currentUser).catch(() => {
+                throw new AuthException(AuthExceptionMessages.InvalidDelete);
+            });
+        } else {
+            throw new AuthException(AuthExceptionMessages.InvalidDelete);
+        }
+    }
 }
