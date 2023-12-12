@@ -53,19 +53,24 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
                             required={ true }
                         />
                         {
-                            dirty && errors[field.id] ? <small className="text-danger">{errors[field.id]}</small> : null
+                            dirty && errors[field.id] ? <small className="text-danger">{ errors[field.id] }</small> : null
                         }
                     </div>
                 ))}
                 <div className="row d-flex align-items-center" style={{ margin: "40px 2px" }}>
                     <button type="submit" className="btn btn-primary col-6">{ submitButtonLabel }</button>
                     {
-                        additionalFormLink &&  <p className="col-6 m-0">{ additionalFormLink.name }<Link to={ additionalFormLink.url } style={{ marginLeft: "10px" }}>{ additionalFormLink.clickable }</Link></p>
+                        additionalFormLink &&
+                        <p className="col-6 m-0">
+                            { additionalFormLink.name }
+                            <Link to={ additionalFormLink.url } className="text-nowrap" style={{ marginLeft: "10px" }}>
+                                { additionalFormLink.clickable }
+                            </Link>
+                        </p>
                     }
                 </div>
-                
+
             </form>
         </>
     )
 }
-

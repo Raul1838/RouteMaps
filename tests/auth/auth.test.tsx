@@ -7,8 +7,37 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
 
     let authController: AuthController;
 
+    const testUser = {
+        email: 'usuario.prueba@test.com',
+        password: '123456789',
+        displayName: 'Usuario Prueba'
+    }
+
     beforeAll(() => authController = getAuthController());
     beforeEach(() => FirebaseAuth.signOut());
+
+    test('HU01 - E1 - registro exitoso', async () => {
+
+        let user: UserModel = await authController.registerUserWithEmailAndPassword(testUser.email, testUser.password, testUser.displayName);
+        expect(user).toBeTruthy();
+        expect(user.email).toBe(testUser.email);
+        expect(user.displayName).toBe(testUser.displayName);
+    });
+
+    test('HU01 - E3 - registro fallido con email inválido', async () => {
+
+        try {
+            await authController.registerUserWithEmailAndPassword(testUser.email, testUser.password, testUser.displayName);
+            throw new Error();
+        } catch (error) {
+            if (error instanceof AuthException) {
+                expect(error.message).toBe(AuthExceptionMessages.InvalidRegister);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+
+    });
 
     test('HU02 - E1 - Login exitoso', async () => {
 
@@ -44,16 +73,16 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         }
     });
 
-    test('HU03 - E1 - logout exitoso', () => {
+    test('HU03 - E1 - logout exitoso', async () => {
 
         const testUser = {
             email: 'usuario.permanente@test.com',
             password: '123456789',
         }
 
-        authController.loginWithEmailAndPassword( testUser.email, testUser.password);
+        await authController.loginWithEmailAndPassword( testUser.email, testUser.password);
 
-        authController.logout();
+        await authController.logout();
 
     });
 

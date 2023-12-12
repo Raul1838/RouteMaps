@@ -4,6 +4,11 @@ import {FirebaseService} from "../firebase/FirebaseService.ts";
 export class AuthController {
 
     constructor( private firebaseService: FirebaseService ) { }
+
+    public async registerUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
+        return await this.firebaseService.createUserWithEmailAndPassword(email, password, displayName);
+    }
+
     async loginWithEmailAndPassword(email: string, password: string): Promise<UserModel> {
         return await this.firebaseService.startLoginWithEmailAndPassword(email, password);
     }
