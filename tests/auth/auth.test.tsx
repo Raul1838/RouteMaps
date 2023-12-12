@@ -44,6 +44,34 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         }
     });
 
+    test('HU03 - E1 - logout exitoso', () => {
+
+        const testUser = {
+            email: 'usuario.permanente@test.com',
+            password: '123456789',
+        }
+
+        authController.loginWithEmailAndPassword( testUser.email, testUser.password);
+
+        authController.logout();
+
+    });
+
+    test('HU03 - E2 - no se ha iniciado sesión', async () => {
+
+        try {
+            await authController.logout();
+            throw new Error();
+        } catch (error) {
+            if (error instanceof AuthException) {
+                expect(error.message).toBe(AuthExceptionMessages.InvalidLogout);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+
+    });
+
     test('HU04 - E1 - borrado exitoso', async () => {
 
         const testUser = {
@@ -68,7 +96,6 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
-
     });
 
 });

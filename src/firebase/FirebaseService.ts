@@ -12,12 +12,21 @@ export class FirebaseService {
         } catch (error) {
             throw new AuthException(AuthExceptionMessages.InvalidLogin);
         }
-        const {uid, displayName} = resp.user;
+        const { uid, displayName } = resp.user;
         return {
             uid,
             email,
             displayName: displayName || ''
         }
+    }
+
+    async startLogout(): Promise<void> {
+        if( FirebaseAuth.currentUser === null ) {
+            throw new AuthException(AuthExceptionMessages.InvalidLogout);
+        }
+        await FirebaseAuth.signOut().catch(() => {
+            throw new AuthException(AuthExceptionMessages.InvalidLogout);
+        });
     }
 
     async startDeletingUser() {

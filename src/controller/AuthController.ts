@@ -8,9 +8,14 @@ export class AuthController {
         return await this.firebaseService.startLoginWithEmailAndPassword(email, password);
     }
 
+    async logout() {
+        await this.firebaseService.startLogout();
+    }
+
     async deleteUser() {
         return await this.firebaseService.startDeletingUser();
     }
+
 }
 
 let _instance: AuthController;
