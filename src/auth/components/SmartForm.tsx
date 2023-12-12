@@ -38,33 +38,33 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
 
     return(
         <>
-            <form onSubmit={handleOnSubmit}>
+            <form onSubmit={ handleOnSubmit }>
                 {formFields.map((field) => (
-                    <div className="form-group" key={field.id} style={{marginBottom: '20px'}}>
+                    <div className="form-group" key={field.id} style={{ marginBottom: '20px' }}>
                         <label htmlFor={field.id}>{field.label}</label>
                         <input
                             className="form-control"
-                            id={field.id}
-                            type={field.type}
-                            name={field.id}
-                            value={formState[field.id]}
-                            onChange={onInputChange}
-                            placeholder={field.placeholder || ''}
-                            required={true}
+                            id={ field.id }
+                            type={ field.type }
+                            name={ field.id }
+                            value={ formState[field.id] }
+                            onChange={ onInputChange }
+                            placeholder={ field.placeholder || '' }
+                            required={ true }
                         />
                         {
-                            dirty && errors[field.id] ? <small className="text-danger">{errors[field.id]}</small> : null
+                            dirty && errors[field.id] ? <small className="text-danger">{ errors[field.id] }</small> : null
                         }
                     </div>
                 ))}
-                <div className="row d-flex align-items-center" style={{margin: "40px 2px"}}>
-                    <button type="submit" className="btn btn-primary col-6">{submitButtonLabel}</button>
+                <div className="row d-flex align-items-center" style={{ margin: "40px 2px" }}>
+                    <button type="submit" className="btn btn-primary col-6">{ submitButtonLabel }</button>
                     {
                         additionalFormLink &&
                         <p className="col-6 m-0">
-                            {additionalFormLink.name}
-                            <Link to={additionalFormLink.url} className="text-nowrap" style={{marginLeft: "10px"}}>
-                                {additionalFormLink.clickable}
+                            { additionalFormLink.name }
+                            <Link to={ additionalFormLink.url } className="text-nowrap" style={{ marginLeft: "10px" }}>
+                                { additionalFormLink.clickable }
                             </Link>
                         </p>
                     }
