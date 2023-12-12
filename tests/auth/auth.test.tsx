@@ -1,6 +1,7 @@
 import {AuthController, getAuthController} from "../../src/controller/AuthController";
 import {UserModel} from "../../src/interfaces/UserModel";
 import {AuthException, AuthExceptionMessages} from "../../src/exceptions/AuthException";
+import {FirebaseAuth} from "../../src/firebase/config";
 
 describe('Tests sobre gestión de usuarios en Firebase', () => {
 
@@ -72,16 +73,16 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         }
     });
 
-    test('HU03 - E1 - logout exitoso', () => {
+    test('HU03 - E1 - logout exitoso', async () => {
 
         const testUser = {
             email: 'usuario.permanente@test.com',
             password: '123456789',
         }
 
-        authController.loginWithEmailAndPassword( testUser.email, testUser.password);
+        await authController.loginWithEmailAndPassword( testUser.email, testUser.password);
 
-        authController.logout();
+        await authController.logout();
 
     });
 
@@ -125,6 +126,5 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             }
         }
     });
-import {FirebaseAuth} from "../../src/firebase/config";
 
 });
