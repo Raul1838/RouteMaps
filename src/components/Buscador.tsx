@@ -1,9 +1,9 @@
-import React, { SyntheticEvent, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCoordenates } from '../helpers/getCoordenates';
-import { Coords } from '../interfaces/Coords';
-import { RootState } from '../interfaces/RootState';
-import { searchNewPlace } from '../store/map/map.slice';
+import React, {SyntheticEvent, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {getCoordenates} from '../helpers/getCoordenates';
+import {Coords} from '../interfaces/Coords';
+import {RootState} from '../interfaces/RootState';
+import {searchNewPlace} from '../store/map/map.slice';
 
 export const Buscador = () => {
 

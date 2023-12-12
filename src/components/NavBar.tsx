@@ -1,7 +1,7 @@
+import {UserDropDown} from "../auth/UserDropDown.tsx";
+
+
 export const NavBar = () => {
-    const onLogout = () => {
-        console.log("¡Adiós mundo cruel, me voy a dormir! 😴");
-    }
 
     return(
         <>
@@ -18,14 +18,9 @@ export const NavBar = () => {
                         />
                         Route Maps
                     </a>
-                    <button className="btn btn-outline-light" onClick={onLogout}>
-                        <i className="bi bi-box-arrow-right"></i>
-                    </button>
+                    <UserDropDown />
                 </div>
             </nav>
-            <div>
-                <h3>Resto de la App</h3>
-            </div>
         </>
     )
 }
