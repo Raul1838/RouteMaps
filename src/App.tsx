@@ -1,16 +1,13 @@
 import './App.css';
-import {NavBar} from "./components/NavBar.tsx";
+import {AppRouter} from "./router/AppRouter.tsx";
 
 
 export const App = () => {
 
     return (
         <>
-            <NavBar/>
-            <div>
-                <h3>Resto de la App</h3>
-            </div>
+            <AppRouter />
         </>
 
-)
+    )
 }

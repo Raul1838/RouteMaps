@@ -12,7 +12,7 @@ export class FirebaseService {
         } catch (error) {
             throw new AuthException(AuthExceptionMessages.InvalidLogin);
         }
-        const { uid, displayName } = resp.user;
+        const {uid, displayName} = resp.user;
         return {
             uid,
             email,
@@ -29,5 +29,4 @@ export class FirebaseService {
             throw new AuthException(AuthExceptionMessages.InvalidDelete);
         }
     }
-
 }
