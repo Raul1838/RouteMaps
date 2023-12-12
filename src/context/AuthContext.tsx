@@ -6,7 +6,14 @@ export interface AuthContextInterface {
     setUser(user: UserModel): void
 }
 
-export const AuthContext = createContext<AuthContextInterface | undefined>(undefined);
+export const AuthContext = createContext<AuthContextInterface>({
+    user: {
+        uid: "",
+        email: "",
+        displayName: ""
+    },
+    setUser: () => {}
+});
 
 export const AuthProvider = ({ children }: any) => {
     const [user, setUser] = useState<UserModel>({

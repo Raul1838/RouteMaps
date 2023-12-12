@@ -1,14 +1,8 @@
 import './App.css';
-import {HomeContext} from './Home.tsx';
-import {AuthContext, AuthProvider} from './context/AuthContext.tsx';
 import {AppRouter} from "./router/AppRouter.tsx";
-import {useContext} from "react";
-
+import {AuthProvider} from './context/AuthContext.tsx';
 
 export const App = () => {
-
-  const homeContext = useContext(HomeContext);
-  const authContext = useContext(AuthContext);
 
   return (
     <>
@@ -17,4 +11,5 @@ export const App = () => {
       </AuthProvider>
     </>
   )
+
 }
