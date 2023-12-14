@@ -1,4 +1,5 @@
 import { type } from "os";
+import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
 import { Coords } from "../interfaces/Coords";
 import PlacesInterface from "../interfaces/LugaresInterface";
@@ -51,5 +52,17 @@ export default class PlacesController implements PlacesInterface {
         this.places = places;
     }
 
+    //Otros métodos
+
+    checkForValidToponym(placeName: string | undefined) {
+        if (this.containsNumber(placeName!)) {
+            throw new InvalidToponymException("El nombre del lugar no puede contener números");
+        }
+    }
+
+    containsNumber(text: string): boolean {
+        const numberRegex = /\d/;
+        return numberRegex.test(text);
+    }
 
 }

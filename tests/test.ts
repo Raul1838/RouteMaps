@@ -3,9 +3,11 @@ import IllegalArgumentException from '../src/exceptions/IllegalArgumentException
 import APINotAvailableExeption from '../src/exceptions/APINotAvailableExeption';
 import PlacesController from '../src/controller/PlacesController';
 import MockAPIPlacesService from './helpers/MockApiPlacesService';
+import InvalidCoordinatesException from '../src/exceptions/InvalidCoordinatesException';
 
-var mockedApiService = new MockAPIPlacesService();
+var mockedApiService : MockAPIPlacesService = new MockAPIPlacesService();
 var placesController: PlacesController = new PlacesController(mockedApiService);
+
 
 describe('Pruebas de la Iteración 1', () => {
     describe('Places', () => {
@@ -92,8 +94,39 @@ describe('Pruebas de la Iteración 1', () => {
 
 
         describe('HU06 - Dar de alta un lugar de interés con topónimo', () => {
-            test.todo('Se insertan unas coordenadas válidas.');
-            test.todo('Las coordenadas insertadas no son válidas.');
+            test('E01 - Se insertan unas coordenadas válidas.', () => {
+                // Given
+                placesController.setPlaces([
+                    {
+                        Nombre: "Valencia",
+                        Longitud: -0.3773900,
+                        Latitud: 39.4697500,
+                        Favorito: false
+                    }
+                ]);
+                // When
+
+                placesController.addPlace("Castellón").then(() =>
+                    expect(placesController.getPlaces()).toHaveLength(2)
+                );
+            });
+
+            test('E02 - Las coordenadas insertadas no son válidas.', async() => {
+                //Given
+                expect.assertions(1);
+                var lugares: Place[] = [
+                    {
+                        Nombre: "Valencia",
+                        Longitud: -0.3773900,
+                        Latitud: 39.4697500,
+                        Favorito: false
+                    }]
+                //When
+
+                await placesController.addPlace("1234").then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(InvalidCoordinatesException));
+                // If no error is thrown, fail the test;
+
+            });
         });
         describe('HU07 - Consultar lista de lugares de interés', () => {
             test.todo('Existe una lista con lugares dados de alta.');

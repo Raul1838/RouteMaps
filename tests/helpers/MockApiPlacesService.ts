@@ -6,6 +6,24 @@ import Place from "../../src/interfaces/Place";
 
 
 export default class MockAPIPlacesService implements APIPlacesInterface {
+
+    async getPlaceByToponym(toponym: string): Promise<Place> {
+        if (toponym === 'Castellón') {
+            return {
+                Longitud: 0.012353,
+                Latitud: 40.409298,
+                Nombre: 'Castellon',
+                Favorito: false
+            }
+        }
+        return {
+            Latitud: -1,
+            Longitud: -1,
+            Nombre: 'Castellon',
+            Favorito: false
+        }
+    }
+
     async getPlaceByCoord(coordinates: Coords): Promise<Place> {
         if ((coordinates.Longitud === -0.0576800) && (coordinates.Latitud === 0)) {
             throw new APINotAvailableExeption();
