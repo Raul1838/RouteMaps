@@ -21,6 +21,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         authController = getAuthController(firebaseService)
     });
 
+    beforeEach(() => jest.clearAllMocks());
 
     test('HU01 - E1 - registro exitoso', async () => {
         jest.spyOn(firebaseService, 'createUserWithEmailAndPassword').mockResolvedValue({
@@ -68,6 +69,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
 
         const user: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
 
+        expect(firebaseService.startLoginWithEmailAndPassword).toHaveBeenCalledWith(testUser.email, testUser.password);
         expect(user).toBeTruthy();
         expect(user.email).toBe(testUser.email);
         expect(user.displayName).toBeTruthy();
@@ -87,6 +89,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             throw new Error();
         } catch (error) {
             if (error instanceof AuthException) {
+                expect(firebaseService.startLoginWithEmailAndPassword).toHaveBeenCalledTimes(0);
                 expect(error.message).toBe(AuthExceptionMessages.InvalidLogin);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
@@ -109,6 +112,8 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
 
         await authController.loginWithEmailAndPassword( testUser.email, testUser.password);
         await authController.logout();
+
+        expect(firebaseService.startLogout).toHaveBeenCalled();
     });
 
     test('HU03 - E2 - no se ha iniciado sesión', async () => {
@@ -119,6 +124,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             throw new Error();
         } catch (error) {
             if (error instanceof AuthException) {
+                expect(firebaseService.startLogout).toHaveBeenCalledTimes(1);
                 expect(error.message).toBe(AuthExceptionMessages.InvalidLogout);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
@@ -142,6 +148,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await authController.deleteUser();
 
+        expect(firebaseService.startDeletingUser).toHaveBeenCalled();
     });
 
     test('HU04 - E2 - borrado fallido con email inválido', async () => {
@@ -152,6 +159,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             throw new Error();
         } catch (error) {
             if (error instanceof AuthException) {
+                expect(firebaseService.startDeletingUser).toHaveBeenCalledTimes(1);
                 expect(error.message).toBe(AuthExceptionMessages.InvalidDelete);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
