@@ -10,7 +10,7 @@ import {UserModel} from "../../interfaces/UserModel.ts";
 
 export const RegisterPage = () => {
 
-    const authContext: AuthContextInterface | undefined = useContext(AuthContext);
+    const authContext: AuthContextInterface = useContext(AuthContext);
 
     const registerFormData = {
         displayName: '',
@@ -70,8 +70,8 @@ export const RegisterPage = () => {
     const handleRegister = async ( formState: FormState ) => {
         const authController: AuthController = getAuthController();
         const user: UserModel = await authController.registerUserWithEmailAndPassword(formState.email, formState.password, formState.displayName);
-        authContext!.setUser(user);
-        console.log(user);
+        authContext.setUser(user);
+        authContext.setIsLogged(true);
     }
 
     return(

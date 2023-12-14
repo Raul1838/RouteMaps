@@ -1,21 +1,21 @@
 import {Route, Routes} from "react-router-dom";
-import {LoginPage} from "../auth/pages/LoginPage.tsx";
-import {RegisterPage} from "../auth/pages/RegisterPage.tsx";
-import {DetailsPage} from "../auth/pages/DetailsPage.tsx";
-import {PreferencesPage} from "../auth/pages/PreferencesPage.tsx";
-import {MapPage} from "../map/pages/MapPage.tsx";
+import {AuthContext, AuthContextInterface} from "../context/AuthContext.tsx";
+import {useContext} from "react";
+import {AuthRouter} from "../auth/router/AuthRouter.tsx";
+import {MapRouter} from "./MapRouter.tsx";
 
 
 export const AppRouter = () => {
+
+    const { isLogged }: AuthContextInterface = useContext(AuthContext);
+
     return (
-        <>
-            <Routes>
-                <Route path='/register' element={ <RegisterPage /> } />
-                <Route path='/login' element={ <LoginPage /> } />
-                <Route path='/account/details' element={ <DetailsPage /> } />
-                <Route path='/account/preferences' element={ <PreferencesPage /> } />
-                <Route path='/*' element={ <MapPage /> } />
-            </Routes>
-        </>
+        <Routes>
+            {
+                isLogged
+                    ? <Route path='/*' element={ <MapRouter /> } />
+                    : <Route path='/*' element={ <AuthRouter /> } />
+            }
+        </Routes>
     )
 }

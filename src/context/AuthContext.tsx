@@ -3,7 +3,9 @@ import {UserModel} from "../interfaces/UserModel.ts";
 
 export interface AuthContextInterface {
     user: UserModel,
-    setUser(user: UserModel): void
+    setUser(user: UserModel): void,
+    isLogged: boolean,
+    setIsLogged(isLogged: boolean): void
 }
 
 export const AuthContext = createContext<AuthContextInterface>({
@@ -12,7 +14,9 @@ export const AuthContext = createContext<AuthContextInterface>({
         email: "",
         displayName: ""
     },
-    setUser: () => {}
+    setUser: () => {},
+    isLogged: false,
+    setIsLogged: () => {}
 });
 
 export const AuthProvider = ({ children }: any) => {
@@ -22,9 +26,13 @@ export const AuthProvider = ({ children }: any) => {
         displayName: ""
     });
 
+    const [isLogged, setIsLogged] = useState<boolean>(false);
+
     const value: AuthContextInterface = {
         user,
-        setUser
+        setUser,
+        isLogged,
+        setIsLogged
     }
 
     return (

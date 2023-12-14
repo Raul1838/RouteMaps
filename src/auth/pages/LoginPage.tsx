@@ -9,7 +9,7 @@ import {FormState} from "../../hooks/useForm.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
 
 export const LoginPage = () => {
-    const authContext : AuthContextInterface | undefined = useContext(AuthContext);
+    const authContext : AuthContextInterface = useContext(AuthContext);
 
     const formData = {
         email: '',
@@ -42,11 +42,11 @@ export const LoginPage = () => {
         }
     };
 
-    const onSubmit = async ( formState: FormState ) => {
+    const handleLogin = async ( formState: FormState ) => {
         const authController: AuthController = getAuthController();
         const user: UserModel = await authController.loginWithEmailAndPassword(formState.email, formState.password);
-        authContext!.setUser(user);
-        console.log(user);
+        authContext.setUser(user);
+        authContext.setIsLogged(true);
     };
 
     return(
@@ -58,20 +58,13 @@ export const LoginPage = () => {
                             <h2 className="card-title" style={{ marginBottom: '20px' }}>Iniciar Sesión</h2>
                             <hr style={{ marginBottom: '20px' }} />
                             <SmartForm formData={ formData } formFields={ formFields } additionalFormLink={ formLink }
-                                       onSubmit={ onSubmit } submitButtonLabel="Iniciar sesión" validations={ validations } />
+                                       onSubmit={ handleLogin } submitButtonLabel="Iniciar sesión" validations={ validations } />
                         </div>
                     </div>
                 </div>
                 <div className="col-6">
                     <img src="https://i.pinimg.com/originals/89/54/f8/8954f88c60dfde5438e2a5233579b580.jpg"  alt="map image | auth"/>
                 </div>
-            </div>
-            <div className="row" style={{ margin: 20 }}>
-                <ul className="list-group col-6">
-                    <li className="list-group-item"><strong>UID:</strong> { authContext?.user.uid }</li>
-                    <li className="list-group-item"><strong>Nombre:</strong> { authContext?.user.displayName }</li>
-                    <li className="list-group-item"><strong>Email:</strong> { authContext?.user.email }</li>
-                </ul>
             </div>
         </>
     )
