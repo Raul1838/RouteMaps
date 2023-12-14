@@ -5,7 +5,9 @@ export interface AuthContextInterface {
     user: UserModel,
     setUser(user: UserModel): void,
     isLogged: boolean,
-    setIsLogged(isLogged: boolean): void
+    setIsLogged(isLogged: boolean): void,
+    wantDetails: boolean,
+    setWantDetails(wantDetails: boolean): void
 }
 
 export const AuthContext = createContext<AuthContextInterface>({
@@ -16,7 +18,9 @@ export const AuthContext = createContext<AuthContextInterface>({
     },
     setUser: () => {},
     isLogged: false,
-    setIsLogged: () => {}
+    setIsLogged: () => {},
+    wantDetails: false,
+    setWantDetails: () => {}
 });
 
 export const AuthProvider = ({ children }: any) => {
@@ -28,11 +32,15 @@ export const AuthProvider = ({ children }: any) => {
 
     const [isLogged, setIsLogged] = useState<boolean>(false);
 
+    const [wantDetails, setWantDetails] = useState(false);
+
     const value: AuthContextInterface = {
         user,
         setUser,
         isLogged,
-        setIsLogged
+        setIsLogged,
+        wantDetails,
+        setWantDetails
     }
 
     return (

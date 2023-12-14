@@ -7,6 +7,10 @@ export const DetailsPage = () => {
     const authContext: AuthContextInterface = useContext(AuthContext);
     const { displayName, email } = authContext.user;
 
+    const closeDetails = () => {
+        authContext.setWantDetails(false);
+    }
+
     const deleteAccount = () => {
         const authController: AuthController = getAuthController();
         authController.deleteUser().then(() => {
@@ -20,14 +24,20 @@ export const DetailsPage = () => {
     };
 
     return (
-        <>
-            <h1>Detalles de la cuenta</h1>
-            <hr />
-            <ul className="list-group">
-                <li className="list-group-item"><strong>Display name</strong> - { displayName }</li>
-                <li className="list-group-item"><strong>e-mail</strong> - { email }</li>
-            </ul>
-            <button className="btn btn-danger mt-3" onClick={ deleteAccount }>Eliminar cuenta</button>
-        </>
+        <div className="card" style={{ width: '24rem', height: 'auto', position: 'absolute', top: '60px', right: '10px' }}>
+            <div className="card-body">
+                <h5 className="card-title">Detalles de la cuenta</h5>
+                <hr />
+                <ul className="list-group list-group-flush">
+                    <li className="list-group-item"><strong>Display name</strong> - { displayName }</li>
+                    <li className="list-group-item"><strong>e-mail</strong> - { email }</li>
+                </ul>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <button className="btn btn-outline-primary mt-3" onClick={ closeDetails }>Cerrar</button>
+                    <button className="btn btn-outline-danger mt-3" onClick={ deleteAccount }>Eliminar cuenta</button>
+                </div>
+            </div>
+        </div>
     )
+
 }

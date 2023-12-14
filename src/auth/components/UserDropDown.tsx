@@ -19,6 +19,10 @@ export const UserDropDown = () => {
         });
     };
 
+    const showDetails = () => {
+        authContext.setWantDetails(true);
+    };
+
     return (
         <Dropdown>
             <Dropdown.Toggle variant="secondary" id="dropdown-basic">
@@ -26,7 +30,7 @@ export const UserDropDown = () => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-                <Dropdown.Item as={Link} to="/account/details">Detalles</Dropdown.Item>
+                <Dropdown.Item onClick={ showDetails }>Detalles</Dropdown.Item>
                 <Dropdown.Item as={Link} to="/account/preferences">Preferencias</Dropdown.Item>
                 <Dropdown.Item onClick={ logout } >Cerrar Sesión</Dropdown.Item>
             </Dropdown.Menu>
