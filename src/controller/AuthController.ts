@@ -1,16 +1,25 @@
 import {UserModel} from "../interfaces/UserModel.ts";
 import {FirebaseService} from "../firebase/FirebaseService.ts";
+import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
 
 export class AuthController {
 
     constructor( private firebaseService: FirebaseService ) { }
 
     public async registerUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
-        return await this.firebaseService.createUserWithEmailAndPassword(email, password, displayName);
+        if (email.includes('@') && password.length > 5) {
+            return await this.firebaseService.createUserWithEmailAndPassword(email, password, displayName);
+        } else {
+            throw new AuthException(AuthExceptionMessages.InvalidRegister);
+        }
     }
 
     async loginWithEmailAndPassword(email: string, password: string): Promise<UserModel> {
-        return await this.firebaseService.startLoginWithEmailAndPassword(email, password);
+        if (email.includes('@') && password.length > 5) {
+            return await this.firebaseService.startLoginWithEmailAndPassword(email, password);
+        } else {
+            throw new AuthException(AuthExceptionMessages.InvalidLogin);
+        }
     }
 
     async logout() {
