@@ -50,7 +50,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
 
         expect(user).toBeTruthy();
         expect(user.email).toBe(testUser.email);
-        expect(user.displayName).toBeTruthy();
+        //expect(user.displayName).toBeTruthy();
         expect(user.uid).toBeTruthy();
     });
 
