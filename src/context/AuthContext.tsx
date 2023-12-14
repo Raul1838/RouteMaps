@@ -12,9 +12,9 @@ export interface AuthContextInterface {
 
 export const AuthContext = createContext<AuthContextInterface>({
     user: {
-        uid: "",
-        email: "",
-        displayName: ""
+        uid: '',
+        email: '',
+        displayName: ''
     },
     setUser: () => {},
     isLogged: false,
@@ -24,10 +24,11 @@ export const AuthContext = createContext<AuthContextInterface>({
 });
 
 export const AuthProvider = ({ children }: any) => {
+
     const [user, setUser] = useState<UserModel>({
-        uid: "",
-        email: "",
-        displayName: ""
+        uid: '',
+        email: '',
+        displayName: ''
     });
 
     const [isLogged, setIsLogged] = useState<boolean>(false);
