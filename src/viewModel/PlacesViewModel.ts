@@ -18,6 +18,10 @@ export default class PlacesViewModel {
         return this.placesController.setPlaces(places);
     }
 
+    getPlaces(): Place[] {
+        return this.placesController.getPlaces();
+    }
+
 
     async addPlaceByToponym(placeName: string): Promise<Boolean> {
         return await this.placesController.addPlaceByToponym(placeName);

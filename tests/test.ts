@@ -4,6 +4,7 @@ import APINotAvailableExeption from '../src/exceptions/APINotAvailableExeption';
 import PlacesController from '../src/controller/PlacesController';
 import MockAPIPlacesService from './helpers/MockApiPlacesService';
 import InvalidCoordinatesException from '../src/exceptions/InvalidCoordinatesException';
+import EmptyPlacesException from '../src/exceptions/EmptyPlacesException';
 
 var mockedApiService : MockAPIPlacesService = new MockAPIPlacesService();
 var placesController: PlacesController = new PlacesController(mockedApiService);
@@ -22,7 +23,7 @@ describe('Pruebas de la Iteración 1', () => {
                     Favorito: false,
                 }]);
                 // When
-                placesController.addPlace(
+                placesController.addPlaceByCoords(
                     {
                         Longitud: -0.0576800,
                         Latitud: 39.9929000
@@ -41,7 +42,7 @@ describe('Pruebas de la Iteración 1', () => {
                     Favorito: false
                 }]);
                 // When
-                placesController.addPlace(
+                placesController.addPlaceByCoords(
                     {
                         Longitud: -0.0576800,
                         Latitud: 39.9929000
@@ -62,7 +63,7 @@ describe('Pruebas de la Iteración 1', () => {
                 }]);
 
                 // When
-                await placesController.addPlace({
+                await placesController.addPlaceByCoords({
                     Longitud: -0.0576800,
                     Latitud: "adfd"
                 }).then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(IllegalArgumentException));
@@ -84,7 +85,7 @@ describe('Pruebas de la Iteración 1', () => {
                 }]);
                 // When
 
-                await placesController.addPlace({
+                await placesController.addPlaceByCoords({
                     Longitud: -0.0576800,
                     Latitud: 0,
                 }).then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(APINotAvailableExeption));
@@ -106,7 +107,7 @@ describe('Pruebas de la Iteración 1', () => {
                 ]);
                 // When
 
-                placesController.addPlace("Castellón").then(() =>
+                placesController.addPlaceByToponym("Castellón").then(() =>
                     expect(placesController.getPlaces()).toHaveLength(2)
                 );
             });
@@ -123,14 +124,54 @@ describe('Pruebas de la Iteración 1', () => {
                     }]
                 //When
 
-                await placesController.addPlace("1234").then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(InvalidCoordinatesException));
+                await placesController.addPlaceByToponym("1234").then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(InvalidCoordinatesException));
                 // If no error is thrown, fail the test;
 
             });
         });
         describe('HU07 - Consultar lista de lugares de interés', () => {
-            test.todo('Existe una lista con lugares dados de alta.');
-            test.todo('No contamos con una lista con lugares dados de alta.');
+            test('E01 - Existe una lista con lugares dados de alta.', () => {
+                //Given
+                placesController.setPlaces([
+                    {
+                        Nombre: "Valencia",
+                        Longitud: -0.3773900,
+                        Latitud: 39.4697500,
+                        Favorito: false
+                    },
+                    {
+                        Nombre: "Castellón",
+                        Longitud: -0.0576800,
+                        Latitud: 39.9929000,
+                        Favorito: false
+                    }]);
+                //When
+                var lugares: Place[] = placesController.getPlaces();
+                //Then
+                expect(lugares).toStrictEqual([
+                    {
+                        Nombre: "Valencia",
+                        Longitud: -0.3773900,
+                        Latitud: 39.4697500,
+                        Favorito: false
+                    },
+                    {
+                        Nombre: "Castellón",
+                        Longitud: -0.0576800,
+                        Latitud: 39.9929000,
+                        Favorito: false
+                    }]);
+            });
+            test('E02 - No contamos con una lista con lugares dados de alta.', () => {
+                //Given
+                placesController.setPlaces([]);
+                //When
+                const error = () => {
+                    var lugares: Place[] = placesController.getPlaces();   
+                }
+                //Then
+                expect(error).toThrow(EmptyPlacesException);
+            });
         });
         describe('HU08 - Eliminar un lugar de interés', () => {
             test.todo('Existe el lugar que se quiere eliminar y está dado de alta en la lista de lugares de interés.');
