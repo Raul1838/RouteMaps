@@ -13,6 +13,7 @@ import Combustible from '../src/enums/Combustible';
 import EmptyVehiclesException from '../src/exceptions/EmptyVehiclesException';
 import Vehicle from '../src/interfaces/Vehicle';
 import VehicleNotFoundException from '../src/exceptions/VehicleNotFoundException';
+import InvalidToponymException from '../src/exceptions/InvalidToponymException';
 
 
 
@@ -132,7 +133,7 @@ describe('Pruebas de la Iteración 1', () => {
                     }]
                 //When
 
-                await placesController.addPlaceByToponym("1234").then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(InvalidCoordinatesException));
+                await placesController.addPlaceByToponym("1234").then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(InvalidToponymException));
                 // If no error is thrown, fail the test;
 
             });
