@@ -2,8 +2,8 @@ import PlacesController from "../controller/PlacesController";
 import { Coords } from "../interfaces/Coords";
 import Place from "../interfaces/Place";
 
-export default class PlacesViewModel {
 
+export default class PlacesViewModel {
     private placesController: PlacesController;
 
     constructor(placesController: PlacesController) {
@@ -12,10 +12,6 @@ export default class PlacesViewModel {
 
     async addPlaceByCoords(coordenadas: Coords): Promise<Boolean> {
         return await this.placesController.addPlaceByCoords(coordenadas);
-    }
-
-    setPlaces(places: Place[]): void {
-        return this.placesController.setPlaces(places);
     }
 
     getPlaces(): Place[] {
@@ -27,4 +23,11 @@ export default class PlacesViewModel {
         return await this.placesController.addPlaceByToponym(placeName);
     }
 
+    deletePlace(place: Place): Boolean {
+        return this.placesController.deletePlace(place);
+    }
+
+    setPlaces(places: Place[]): void {
+        this.placesController.setPlaces(places);
+    }
 }
