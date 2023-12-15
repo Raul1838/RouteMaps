@@ -15,5 +15,9 @@ export default class VehiclesViewModel {
     setVehicles(vehicles: Vehicle[]): void {
         this.vehiclesController.setVehicles(vehicles);
     }
-    
+
+    getVehicles(): Vehicle[] {
+        return this.vehiclesController.getVehicles();
+    }
+
 }

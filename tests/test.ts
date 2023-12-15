@@ -10,6 +10,8 @@ import VehiclesController from '../src/controller/VehiclesController';
 import VehicleAlreadyExistException from '../src/exceptions/VehicleAlreadyExistException';
 import InvalidVehicleException from '../src/exceptions/InvalidVehicleException';
 import Combustible from '../src/enums/Combustible';
+import EmptyVehiclesException from '../src/exceptions/EmptyVehiclesException';
+import Vehicle from '../src/interfaces/Vehicle';
 
 
 var mockedApiService: MockAPIPlacesService = new MockAPIPlacesService();
@@ -310,20 +312,34 @@ describe('Pruebas de la Iteración 1', () => {
             });
         });
         describe('HU10 - Consultar lista de vehículos', () => {
-            test.todo('Existe una lista con vehículos dados de alta.');
-            test.todo('No contamos con una lista con vehículos dados de alta.');
+            test('E01 - Existe una lista con vehículos dados de alta.', () => {
+                //Given
+                vehiclesController.setVehicles([{ id: 1683, Nombre: "Coche empresa", propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+                //When
+                var vehicles: Vehicle[] = vehiclesController.getVehicles();
+                //Then
+                expect(vehicles).toStrictEqual([{ id: 1683, Nombre: "Coche empresa", propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+            });
+            test('E02 - No contamos con una lista con vehículos dados de alta.', () => {
+                //Given
+                vehiclesController.setVehicles([]);
+                //When
+                const error = () => {
+                    var vehicles: Vehicle[] = vehiclesController.getVehicles();
+                }
+                //Then
+                expect(error).toThrow(EmptyVehiclesException);
+            });
         });
         describe('HU11 - Eliminar un vehículo', () => {
             test.todo('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.');
             test.todo('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.');
             test.todo('No hay vehículos dados de alta.');
-
         });
         describe('HU12 - Modificar datos de un vehículo', () => {
-            test.todo('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.');
-            test.todo('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.');
-            test.todo('No hay vehículos dados de alta.');
-
+            test.todo('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.');
+            test.todo('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.');
+            test.todo('E03 - No hay vehículos dados de alta.');
         });
     });
 });

@@ -3,6 +3,8 @@ import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
 import Combustible from "../enums/Combustible";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
+import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
+
 
 export default class VehiclesController implements VehiclesInterface {
     private vehicles: Array<Vehicle>;
@@ -33,4 +35,12 @@ export default class VehiclesController implements VehiclesInterface {
     setVehicles(vehicles: Vehicle[]): void {
         this.vehicles = vehicles;
     }
+
+    getVehicles(): Vehicle[] {
+        if (this.vehicles.length === 0) {
+            throw new EmptyVehiclesException();
+        }
+        return this.vehicles;
+    }
+
 }
