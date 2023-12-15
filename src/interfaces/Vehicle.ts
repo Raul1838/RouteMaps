@@ -5,6 +5,6 @@ export default interface Vehicle {
     Nombre: string;
     propulsion: Combustible;
     consumo: number;
-    Favorito: boolean;
-    Defecto: boolean;
+    Favorito?: boolean;
+    Defecto?: boolean;
 }

@@ -15,6 +15,10 @@ export default class VehiclesViewModel {
     deleteVehicle(id: number): Boolean {
         return this.vehiclesController.deleteVehicle(id);
     }
+    
+    modifyVehicle(vehicle: Vehicle): Boolean {
+        return this.vehiclesController.modifyVehicle(vehicle);
+    }
 
     setVehicles(vehicles: Vehicle[]): void {
         this.vehiclesController.setVehicles(vehicles);

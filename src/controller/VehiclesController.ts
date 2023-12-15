@@ -32,7 +32,7 @@ export default class VehiclesController implements VehiclesInterface {
             throw new VehicleAlreadyExistException();
         }
     }
-    
+
 
     getVehicles(): Vehicle[] {
         if (this.vehicles.length === 0) {
@@ -42,7 +42,7 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     deleteVehicle(paramId: number): Boolean {
-        if (this.vehicles.length === 0){
+        if (this.vehicles.length === 0) {
             throw new EmptyVehiclesException();
         }
         const index = this.vehicles.findIndex(vehicle => vehicle.id === paramId);
@@ -51,10 +51,25 @@ export default class VehiclesController implements VehiclesInterface {
             this.vehicles.splice(index, 1);
             console.log('Vehicle deleted:', paramId);
             return true;
+        }
+        return false;
+    }
+
+    modifyVehicle(paramVehicle: Vehicle): Boolean {
+        if (this.vehicles.length === 0) {
+            throw new EmptyVehiclesException();
+        }
+        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramVehicle.id);
+
+        if (index !== -1) {
+            this.vehicles[index] = { ...this.vehicles[index], ...paramVehicle };
+            console.log('Vehicle updated:', this.vehicles[index]);
+            return true;
         } else {
             throw new VehicleNotFoundException();
         }
     }
+
     setVehicles(vehicles: Vehicle[]): void {
         this.vehicles = vehicles;
     }
