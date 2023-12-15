@@ -2,6 +2,7 @@ import Vehicle from "./Vehicle";
 
 export default interface VehiclesInterface {
     addVehicle(vehicle : Vehicle): Boolean;
-    setVehicles(vehicles: Vehicle[]): void;
     getVehicles(): Vehicle[];
+    setVehicles(vehicles: Vehicle[]): void;
+    deleteVehicle(id: number): Boolean;
 }

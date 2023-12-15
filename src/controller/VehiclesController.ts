@@ -4,6 +4,7 @@ import VehiclesInterface from "../interfaces/VehiclesInterface";
 import Combustible from "../enums/Combustible";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
+import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
 
 
 export default class VehiclesController implements VehiclesInterface {
@@ -32,9 +33,6 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
     
-    setVehicles(vehicles: Vehicle[]): void {
-        this.vehicles = vehicles;
-    }
 
     getVehicles(): Vehicle[] {
         if (this.vehicles.length === 0) {
@@ -43,4 +41,21 @@ export default class VehiclesController implements VehiclesInterface {
         return this.vehicles;
     }
 
+    deleteVehicle(paramId: number): Boolean {
+        if (this.vehicles.length === 0){
+            throw new EmptyVehiclesException();
+        }
+        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramId);
+
+        if (index !== -1) {
+            this.vehicles.splice(index, 1);
+            console.log('Vehicle deleted:', paramId);
+            return true;
+        } else {
+            throw new VehicleNotFoundException();
+        }
+    }
+    setVehicles(vehicles: Vehicle[]): void {
+        this.vehicles = vehicles;
+    }
 }

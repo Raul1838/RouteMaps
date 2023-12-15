@@ -13,7 +13,6 @@ import Combustible from '../src/enums/Combustible';
 import EmptyVehiclesException from '../src/exceptions/EmptyVehiclesException';
 import Vehicle from '../src/interfaces/Vehicle';
 
-
 var mockedApiService: MockAPIPlacesService = new MockAPIPlacesService();
 var placesController: PlacesController = new PlacesController(mockedApiService);
 var vehiclesController: VehiclesController = new VehiclesController();
@@ -325,7 +324,7 @@ describe('Pruebas de la Iteración 1', () => {
                 vehiclesController.setVehicles([]);
                 //When
                 const error = () => {
-                    var vehicles: Vehicle[] = vehiclesController.getVehicles();
+                    vehiclesController.deleteVehicle(1000);
                 }
                 //Then
                 expect(error).toThrow(EmptyVehiclesException);
