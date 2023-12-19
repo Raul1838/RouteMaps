@@ -1,14 +1,15 @@
 import PlacesController from "../../src/controller/PlacesController";
+import VehiclesController from "../../src/controller/VehiclesController";
 import APINotAvailableExeption from "../../src/exceptions/APINotAvailableExeption";
 import EmptyPlacesException from "../../src/exceptions/EmptyPlacesException";
 import IllegalArgumentException from "../../src/exceptions/IllegalArgumentException";
 import InvalidToponymException from "../../src/exceptions/InvalidToponymException";
 import PlaceNotFoundException from "../../src/exceptions/PlaceNotFoundException";
 import Place from "../../src/interfaces/Place";
-import APIPlacesService from "../../src/api/APIPlacesService";
+import MockAPIPlacesService from "../helpers/MockApiPlacesService";
 
-var realApiService: APIPlacesService = new APIPlacesService();
-var placesController: PlacesController = new PlacesController(realApiService);
+var mockedApiService: MockAPIPlacesService = new MockAPIPlacesService();
+var placesController: PlacesController = new PlacesController(mockedApiService);
 
 describe('Tests sobre los lugares', () => {
 
