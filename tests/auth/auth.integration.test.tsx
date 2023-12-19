@@ -38,10 +38,6 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
 
     test('HU01 - E3 - registro fallido con email inválido', async () => {
         jest.spyOn(firebaseService, 'createUserWithEmailAndPassword').mockRejectedValue(new AuthException(AuthExceptionMessages.InvalidRegister));
-
-        firebaseService.createUserWithEmailAndPassword = ((email: string, password: string, displayName: string) => {
-            throw new AuthException(AuthExceptionMessages.InvalidRegister);
-        });
         
         try {
             await authController.registerUserWithEmailAndPassword(testUser.email, testUser.password, testUser.displayName);

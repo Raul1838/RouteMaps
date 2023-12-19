@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import PlacesViewModel from "../viewModel/PlacesViewModel";
-import Place from "../interfaces/Place";
+import PlacesViewModel from "../../viewModel/PlacesViewModel";
+import Place from "../../interfaces/Place";
+import { Link } from "react-router-dom";
 
 interface PlacesComponentProps {
     placesViewModel: PlacesViewModel;
@@ -16,7 +17,7 @@ const PlacesComponent = ({ placesViewModel }: PlacesComponentProps) => {
             setPlaces(loadedPlaces);
         } catch (e) {
             setError("Error al cargar los lugares");
-            console.error(e);
+
         }
     }, [placesViewModel]);
 
@@ -29,6 +30,7 @@ const PlacesComponent = ({ placesViewModel }: PlacesComponentProps) => {
                     <li key={index}>{place.Nombre}</li>
                 ))}
             </ul>
+            <Link to={'/places/getPlacesByToponym'}>Añadir lugar por topónimo</Link>
         </div>
     );
 };

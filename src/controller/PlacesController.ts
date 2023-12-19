@@ -46,18 +46,7 @@ export default class PlacesController implements PlacesInterface {
                 return false;
             }
         } catch (error) {
-            if (error instanceof IllegalArgumentException) {
-                // Handle IllegalArgumentException
-                console.error('Invalid coordinates:', error.message);
-                throw error;
-            } else if (error instanceof APINotAvailableExeption) {
-                console.error('API not available: ', error);
-                throw error;
-            } else {
-                // Handle other errors
-                console.error('An error occurred:', error);
-            }
-            return false;
+            throw error;
         }
     }
     private checkValidCoordinates(coordenadas: Coords) {

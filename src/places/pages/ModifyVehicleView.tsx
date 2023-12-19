@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
-import Vehicle from '../interfaces/Vehicle';
-import Combustible from '../enums/Combustible';
+import { useState } from 'react';
+import VehiclesViewModel from '../../viewModel/VehiclesViewModel';
+import Vehicle from '../../interfaces/Vehicle';
+import Combustible from '../../enums/Combustible';
 
-interface AddVehicleComponentProps {
+interface ModifyVehicleViewProps {
     vehiclesViewModel: VehiclesViewModel;
 }
 
-const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) => {
+const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
     const [id, setId] = useState('');
     const [nombre, setNombre] = useState('');
     const [propulsion, setPropulsion] = useState('');
@@ -16,21 +16,9 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
     const [defecto, setDefecto] = useState(false);
     const [resultado, setResultado] = useState('');
 
-    const isValidVehicle = () => {
-        if (isNaN(parseInt(id)) || nombre.trim() === '' || isNaN(parseFloat(consumo))) {
-            setResultado('Error: Entrada inválida');
-            return false;
-        }
-        return true;
-    };
-
-    const handleAddVehicle = async () => {
-        if (!isValidVehicle()) {
-            return;
-        }
-
+    const handleModifyVehicle = async () => {
         try {
-            const newVehicle: Vehicle = {
+            const vehicleToUpdate: Vehicle = {
                 id: parseInt(id),
                 Nombre: nombre,
                 propulsion: propulsion as Combustible,
@@ -38,17 +26,17 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
                 Favorito: favorito,
                 Defecto: defecto
             };
-            const result = await vehiclesViewModel.addVehicle(newVehicle);
-            setResultado(result ? 'Vehículo añadido con éxito' : 'Error al añadir vehículo');
+            const result = await vehiclesViewModel.modifyVehicle(vehicleToUpdate);
+            setResultado(result ? 'Vehículo modificado con éxito' : 'Error al modificar vehículo');
         } catch (error) {
-            console.error('Error:', error);
+
             setResultado('Error al procesar la solicitud');
         }
     };
 
     return (
         <div>
-            <h1>Añadir Vehículo</h1>
+            <h1>Modificar vehículo</h1>
             <input
                 type="number"
                 value={id}
@@ -61,14 +49,12 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Nombre del Vehículo"
             />
-            <select
+            <input
+                type="text"
                 value={propulsion}
                 onChange={(e) => setPropulsion(e.target.value)}
-            >
-                {Object.values(Combustible).map((tipo, index) => (
-                    <option key={index} value={tipo}>{tipo}</option>
-                ))}
-            </select>
+                placeholder="Tipo de Propulsión"
+            />
             <input
                 type="number"
                 value={consumo}
@@ -91,10 +77,10 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
                     onChange={(e) => setDefecto(e.target.checked)}
                 />
             </label>
-            <button onClick={handleAddVehicle}>Añadir Vehículo</button>
+            <button onClick={handleModifyVehicle}>Modificar vehículo</button>
             <div>{resultado}</div>
         </div>
     );
 };
 
-export default AddVehicleComponent;
+export default ModifyVehicleView;

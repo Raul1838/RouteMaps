@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
-import Vehicle from '../interfaces/Vehicle';
-import EmptyVehiclesException from '../exceptions/EmptyVehiclesException';
+import VehiclesViewModel from '../../viewModel/VehiclesViewModel';
+import Vehicle from '../../interfaces/Vehicle';
+import EmptyVehiclesException from '../../exceptions/EmptyVehiclesException';
 
 interface GetVehiclesComponentProps {
     vehiclesViewModel: VehiclesViewModel;
@@ -22,7 +22,7 @@ const GetVehiclesComponent = ({ vehiclesViewModel }: GetVehiclesComponentProps) 
                 } else {
                     setError("Error al cargar los vehículos");
                 }
-                console.error(e);
+
             }
         };
 
@@ -36,9 +36,9 @@ const GetVehiclesComponent = ({ vehiclesViewModel }: GetVehiclesComponentProps) 
             <ul>
                 {vehicles.map(vehicle => (
                     <li key={vehicle.id}>
-                        {vehicle.Nombre} - Propulsión: {vehicle.propulsion}, 
-                        Consumo: {vehicle.consumo}, 
-                        Favorito: {vehicle.Favorito ? 'Sí' : 'No'}, 
+                        {vehicle.Nombre} - Propulsión: {vehicle.propulsion},
+                        Consumo: {vehicle.consumo},
+                        Favorito: {vehicle.Favorito ? 'Sí' : 'No'},
                         Defecto: {vehicle.Defecto ? 'Sí' : 'No'}
                     </li>
                 ))}

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {UserDropDown} from "../auth/components/UserDropDown.tsx";
 
 export const NavBar = () => {
@@ -17,6 +18,7 @@ export const NavBar = () => {
                         />
                         Route Maps
                     </a>
+                    <Link to={'/places/getPlaces'}>Places</Link>
                     <UserDropDown />
                 </div>
             </nav>

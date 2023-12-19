@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import PlacesViewModel from '../viewModel/PlacesViewModel';
-import Place from '../interfaces/Place';
+import PlacesViewModel from '../../viewModel/PlacesViewModel';
+import Place from '../../interfaces/Place';
 
 interface DeletePlacesViewProps {
     placesViewModel: PlacesViewModel;
@@ -33,7 +33,7 @@ const DeletePlacesView = ({ placesViewModel }: DeletePlacesViewProps) => {
             const result = await placesViewModel.deletePlace(placeToDelete);
             setResultado(result ? 'Lugar eliminado con éxito.' : 'Error al eliminar lugar.');
         } catch (error) {
-            console.error('Error: ', error);
+
             if (error instanceof Error) {
                 setResultado('Error al procesar la solicitud: ' + error.message);
             } else {

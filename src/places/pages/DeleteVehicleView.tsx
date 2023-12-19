@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
+import VehiclesViewModel from '../../viewModel/VehiclesViewModel';
 
 interface DeleteVehicleViewProps {
     vehiclesViewModel: VehiclesViewModel;
@@ -14,7 +14,7 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
             const result = await vehiclesViewModel.deleteVehicle(parseInt(id));
             setResultado(result ? 'Vehículo eliminado con éxito' : 'Error al eliminar vehículo');
         } catch (error) {
-            console.error('Error:', error);
+
             setResultado('Error al procesar la solicitud');
         }
     };

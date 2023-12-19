@@ -1,19 +1,19 @@
-import Place from '../src/interfaces/Place';
-import IllegalArgumentException from '../src/exceptions/IllegalArgumentException';
-import APINotAvailableExeption from '../src/exceptions/APINotAvailableExeption';
-import PlacesController from '../src/controller/PlacesController';
-import MockAPIPlacesService from './helpers/MockApiPlacesService';
-import InvalidCoordinatesException from '../src/exceptions/InvalidCoordinatesException';
-import EmptyPlacesException from '../src/exceptions/EmptyPlacesException';
-import PlaceNotFoundException from '../src/exceptions/PlaceNotFoundException';
-import VehiclesController from '../src/controller/VehiclesController';
-import VehicleAlreadyExistException from '../src/exceptions/VehicleAlreadyExistException';
-import InvalidVehicleException from '../src/exceptions/InvalidVehicleException';
-import Combustible from '../src/enums/Combustible';
-import EmptyVehiclesException from '../src/exceptions/EmptyVehiclesException';
-import Vehicle from '../src/interfaces/Vehicle';
-import VehicleNotFoundException from '../src/exceptions/VehicleNotFoundException';
-import InvalidToponymException from '../src/exceptions/InvalidToponymException';
+import Place from '../../src/interfaces/Place';
+import IllegalArgumentException from '../../src/exceptions/IllegalArgumentException';
+import APINotAvailableExeption from '../../src/exceptions/APINotAvailableExeption';
+import PlacesController from '../../src/controller/PlacesController';
+import MockAPIPlacesService from '../helpers/MockApiPlacesService';
+import InvalidCoordinatesException from '../../src/exceptions/InvalidCoordinatesException';
+import EmptyPlacesException from '../../src/exceptions/EmptyPlacesException';
+import PlaceNotFoundException from '../../src/exceptions/PlaceNotFoundException';
+import VehiclesController from '../../src/controller/VehiclesController';
+import VehicleAlreadyExistException from '../../src/exceptions/VehicleAlreadyExistException';
+import InvalidVehicleException from '../../src/exceptions/InvalidVehicleException';
+import Combustible from '../../src/enums/Combustible';
+import EmptyVehiclesException from '../../src/exceptions/EmptyVehiclesException';
+import Vehicle from '../../src/interfaces/Vehicle';
+import VehicleNotFoundException from '../../src/exceptions/VehicleNotFoundException';
+import InvalidToponymException from '../../src/exceptions/InvalidToponymException';
 
 
 

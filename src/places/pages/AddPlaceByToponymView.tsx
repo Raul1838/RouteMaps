@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PlacesViewModel from '../viewModel/PlacesViewModel';
+import PlacesViewModel from '../../viewModel/PlacesViewModel';
 
 interface AddPlaceByToponymComponentProps {
     placesViewModel: PlacesViewModel;
@@ -14,7 +14,7 @@ const AddPlaceByToponymComponent = ({ placesViewModel }: AddPlaceByToponymCompon
             const result = await placesViewModel.addPlaceByToponym(toponym);
             setResultado(result ? 'Lugar añadido con éxito' : 'Error al añadir lugar');
         } catch (error) {
-            console.error('Error:', error);
+
             setResultado('Error al procesar la solicitud');
         }
     };
