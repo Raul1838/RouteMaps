@@ -1,5 +1,4 @@
 export interface Coords {
-    Nombre?: string;
-    Latitud?: number;
-    Longitud?: number;
+    latitud: number;
+    longitud: number;
 }

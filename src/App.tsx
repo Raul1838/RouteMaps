@@ -1,14 +1,20 @@
 import './App.css';
-import {AppRouter} from "./router/AppRouter.tsx";
-import {AuthProvider} from './context/AuthContext.tsx';
+import { Buscador } from './components/Buscador';
+import { RoutesMap } from './components/Map';
+
 
 export const App = () => {
 
-  return (
+    return (
     <>
-      <AuthProvider>
-        <AppRouter/>
-      </AuthProvider>
+      <div className="row d-flex">
+        <div className="col-4 d-flex flex-column justify-content-center"  style={{ height: '100vh'}}>
+          <Buscador />
+        </div>
+        <div className="col-8">
+          <RoutesMap />
+        </div>
+      </div>
     </>
   )
 }
