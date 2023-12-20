@@ -56,4 +56,8 @@ export class FirebaseService {
             throw new AuthException(AuthExceptionMessages.InvalidDelete);
         }
     }
+
+    async storeValue(path: string, value : any) {
+        
+    }
 }
