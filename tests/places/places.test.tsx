@@ -34,7 +34,7 @@ describe('Tests sobre los lugares', () => {
 
         });
 
-        test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async() => {
+        test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async () => {
             // Given
             expect.assertions(1);
             placesController.setPlaces([{
@@ -49,7 +49,10 @@ describe('Tests sobre los lugares', () => {
                     Longitud: -0.0576800,
                     Latitud: 39.9929000
                 }
-            ).then(() => expect(placesController.getPlaces()).toHaveLength(2));
+            ).then(() => {
+                console.log(placesController.getPlaces());
+                expect(placesController.getPlaces()).toHaveLength(2);
+            });
             // Then
 
         });

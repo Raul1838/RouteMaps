@@ -33,7 +33,7 @@ describe('Tests sobre los lugares', () => {
 
         });
 
-        test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', () => {
+        test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async() => {
             // Given
             placesController.setPlaces([{
                 Nombre: "Valencia",
@@ -42,7 +42,7 @@ describe('Tests sobre los lugares', () => {
                 Favorito: false
             }]);
             // When
-            placesController.addPlaceByCoords(
+            await placesController.addPlaceByCoords(
                 {
                     Longitud: -0.0576800,
                     Latitud: 39.9929000

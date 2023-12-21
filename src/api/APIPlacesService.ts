@@ -44,16 +44,10 @@ export default class APIPlacesService implements APIPlacesInterface {
             Favorito: false
         };
         try {
-            console.log(`/geocode/reverse?api_key=${process.env.VITE_ROUTES_API_KEY}&point.lon=${coordinates.Longitud!}&point.lat=${coordinates.Latitud!}`)
             var res: GetPlaceByCoord | undefined = await openRouteApi.get(`${process.env.VITE_API_URL}/geocode/reverse?api_key=${process.env.VITE_ROUTES_API_KEY}&point.lon=${coordinates.Longitud!}&point.lat=${coordinates.Latitud!}`);
         } catch {
             throw new APINotAvailableExeption();
         }
-
-        console.log(res?.data);
-        console.log(res?.data?.features);
-        console.log(res?.data?.features[0]);
-        console.log(res?.data?.features[0].properties);
 
         if (res?.data?.features[0].properties.name !== undefined) {
             result = { ...result, Nombre: res?.data?.features[0].properties.name }
