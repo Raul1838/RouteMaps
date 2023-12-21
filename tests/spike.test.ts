@@ -6,6 +6,4 @@ describe('Pruebas de la Spike 0', () => {
         expect( 2 + 2).toBe( 4 );
         
     });
-    
 });
-
