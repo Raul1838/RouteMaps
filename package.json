@@ -48,6 +48,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
-    "whatwg-fetch": "^3.6.19"
+    "whatwg-fetch": "^3.6.20"
   }
 }
