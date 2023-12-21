@@ -1,5 +1,5 @@
 export const getEnvVariables = () => {
     return {
-        ...process.env,
+        ...require('dotenv').config()
     };
 };

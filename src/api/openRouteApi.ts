@@ -4,5 +4,5 @@ import { getEnvVariables } from '../helpers/getEnvVariables';
 
 const { VITE_API_URL } = getEnvVariables();
 export const openRouteApi = axios.create({
-    baseURL: VITE_API_URL
+    baseURL: process.env.VITE_API_URL
 });
