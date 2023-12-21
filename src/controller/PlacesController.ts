@@ -1,14 +1,11 @@
 import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
-import { Coords } from "../interfaces/Coords";
+import {Coords} from "../interfaces/Coords";
 import PlacesInterface from "../interfaces/LugaresInterface";
 import Place from "../interfaces/Place";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
-import APINotAvailableExeption from "../exceptions/APINotAvailableExeption";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
-import { FirebaseApp } from "../firebase/config";
-import { FirebaseService } from "../firebase/FirebaseService";
 
 
 export default class PlacesController implements PlacesInterface {
