@@ -7,6 +7,8 @@ import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import APINotAvailableExeption from "../exceptions/APINotAvailableExeption";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
+import { FirebaseApp } from "../firebase/config";
+import { FirebaseService } from "../firebase/FirebaseService";
 
 
 export default class PlacesController implements PlacesInterface {
@@ -19,19 +21,23 @@ export default class PlacesController implements PlacesInterface {
 
     async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
         var result: Place | undefined;
-        if (placeName !== undefined) {
-            this.checkForValidToponym(placeName);
-            result = await this.apiService.getPlaceByToponym(placeName!);
-        } else if (coordenadas !== undefined) {
-            result = await this.apiService.getPlaceByCoord(coordenadas!);
-        } else {
-            throw new Error("Input inválido: debe especificar un nombre o coordenadas");
-        }
-        if (result?.Nombre !== undefined) {
-            this.places.push(result);
-            return true;
-        } else {
-            return false;
+        try {
+            if (placeName !== undefined) {
+                this.checkForValidToponym(placeName);
+                result = await this.apiService.getPlaceByToponym(placeName!);
+            } else if (coordenadas !== undefined) {
+                result = await this.apiService.getPlaceByCoord(coordenadas!);
+            } else {
+                throw new Error("Input inválido: debe especificar un nombre o coordenadas");
+            }
+            if (result?.Nombre !== undefined) {
+                this.places.push(result);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            throw error;
         }
     }
 

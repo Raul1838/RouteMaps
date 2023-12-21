@@ -6,17 +6,24 @@ import GetPlaceByCoord from "../interfaces/OpenRoutingInterface";
 import Place from "../interfaces/Place";
 import { openRouteApi } from "./openRouteApi";
 
-const { VITE_ROUTES_API_KEY } = getEnvVariables();
 
 export default class APIPlacesService implements APIPlacesInterface {
+    constructor(){getEnvVariables;}
+
     async getPlaceByToponym(toponym: string): Promise<Place> {
+
         var result: Place = {
             Latitud: -1,
             Longitud: -1,
             Nombre: toponym,
             Favorito: false
         };
-        var res: GetPlaceByCoord | undefined = await openRouteApi.get(`/geocode/search?api_key=${VITE_ROUTES_API_KEY}&text=${toponym}`);
+
+        try {
+            var res: GetPlaceByCoord | undefined = await openRouteApi.get(`/geocode/search?api_key=${process.env.VITE_ROUTES_API_KEY}&text=${toponym}`);
+        } catch {
+            throw new APINotAvailableExeption();
+        }
         if (res?.data.features[0].geometry.coordinates !== undefined) {
             result = {
                 ...result,
@@ -37,12 +44,19 @@ export default class APIPlacesService implements APIPlacesInterface {
             Favorito: false
         };
         try {
-            var res: GetPlaceByCoord | undefined = await openRouteApi.get(`/geocode/reverse?api_key=${VITE_ROUTES_API_KEY}&point.lon=${coordinates.Longitud!}&point.lat=${coordinates.Latitud!}`);
+            console.log(`/geocode/reverse?api_key=${process.env.VITE_ROUTES_API_KEY}&point.lon=${coordinates.Longitud!}&point.lat=${coordinates.Latitud!}`)
+            var res: GetPlaceByCoord | undefined = await openRouteApi.get(`${process.env.VITE_API_URL}/geocode/reverse?api_key=${process.env.VITE_ROUTES_API_KEY}&point.lon=${coordinates.Longitud!}&point.lat=${coordinates.Latitud!}`);
         } catch {
             throw new APINotAvailableExeption();
         }
+
+        console.log(res?.data);
+        console.log(res?.data?.features);
+        console.log(res?.data?.features[0]);
+        console.log(res?.data?.features[0].properties);
+
         if (res?.data?.features[0].properties.name !== undefined) {
-            result = { ...result, Nombre: res?.data?.features[0].properties.locality }
+            result = { ...result, Nombre: res?.data?.features[0].properties.name }
         }
         if (result.Nombre === undefined) {
             throw new Error("");
