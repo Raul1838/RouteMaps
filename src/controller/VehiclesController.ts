@@ -35,9 +35,6 @@ export default class VehiclesController implements VehiclesInterface {
 
 
     getVehicles(): Vehicle[] {
-        if (this.vehicles.length === 0) {
-            throw new EmptyVehiclesException();
-        }
         return this.vehicles;
     }
 
@@ -51,8 +48,9 @@ export default class VehiclesController implements VehiclesInterface {
             this.vehicles.splice(index, 1);
             console.log('Vehicle deleted:', paramId);
             return true;
+        } else {
+            throw new VehicleNotFoundException();
         }
-        return false;
     }
 
     modifyVehicle(paramVehicle: Vehicle): Boolean {

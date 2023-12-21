@@ -121,9 +121,34 @@ describe('Vehicles', () => {
         });
     });
     describe('HU11 - Eliminar un vehículo', () => {
-        test.todo('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.');
-        test.todo('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.');
-        test.todo('No hay vehículos dados de alta.');
+        test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', () => {
+            //Given
+            vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }])
+            //When
+            vehiclesController.deleteVehicle(1683);
+            //Then
+            expect(vehiclesController.getVehicles()).toHaveLength(0);
+        });
+        test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', () => {
+            //Given
+            vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+            //When
+            const error = () => {
+                vehiclesController.deleteVehicle(1000);
+            }
+            //Then
+            expect(error).toThrow(VehicleNotFoundException);
+        });
+        test('E03 - No hay vehículos dados de alta.', () => {
+            //Given
+            vehiclesController.setVehicles([]);
+            //When
+            const error = () => {
+                vehiclesController.deleteVehicle(1000);
+            }
+            //Then
+            expect(error).toThrow(EmptyVehiclesException);
+        });
 
     });
     describe('HU12 - Modificar datos de un vehículo', () => {
