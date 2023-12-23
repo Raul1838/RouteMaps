@@ -1,5 +1,5 @@
 import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
-import {FirebaseAuth} from "./config";
+import {FirebaseAuth} from "../firebase/config.ts";
 import {UserModel} from "../interfaces/UserModel.ts";
 import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
 
