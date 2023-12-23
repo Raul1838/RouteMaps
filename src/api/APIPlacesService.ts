@@ -38,13 +38,13 @@ export default class APIPlacesService implements APIPlacesInterface {
     }
     async getPlaceByCoord(coordinates: Coords): Promise<Place> {
         var result: Place = {
-            Latitud: coordinates.Latitud!,
-            Longitud: coordinates.Longitud!,
+            Latitud: coordinates.lat!,
+            Longitud: coordinates.lon!,
             Nombre: "",
             Favorito: false
         };
         try {
-            var res: GetPlaceByCoord | undefined = await openRouteApi.get(`${process.env.VITE_API_URL}/geocode/reverse?api_key=${process.env.VITE_ROUTES_API_KEY}&point.lon=${coordinates.Longitud!}&point.lat=${coordinates.Latitud!}`);
+            var res: GetPlaceByCoord | undefined = await openRouteApi.get(`${process.env.VITE_API_URL}/geocode/reverse?api_key=${process.env.VITE_ROUTES_API_KEY}&point.lon=${coordinates.lon!}&point.lat=${coordinates.lat!}`);
         } catch {
             throw new APINotAvailableExeption();
         }
