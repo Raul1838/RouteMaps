@@ -1,7 +1,8 @@
 import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
-import {FirebaseAuth} from "../firebase/config.ts";
+import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
 import {UserModel} from "../interfaces/UserModel.ts";
 import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
+import {doc, getDoc, setDoc} from "firebase/firestore/lite";
 
 export class FirebaseService {
 
@@ -60,4 +61,18 @@ export class FirebaseService {
     async storeValue(path: string, value : any) {
         
     }
+
+    async setDefaultVehicle(vehicleId: number, userId: string): Promise<void> {
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
+        await setDoc(docRef, { id: vehicleId });
+    }
+
+    async getDefaultVehicle(userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists())
+            throw new Error('No such document!');
+        return docSnap.data();
+    }
+
 }

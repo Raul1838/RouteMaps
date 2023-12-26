@@ -57,13 +57,17 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU23 - E1 - Existe el vehículo a establecer por defecto', async () => {
         const vehicleId: number = 123;
-        vehiclesController.setDefaultVehicle(vehicleId);
+        const permanentUserId: string = 'B8WGDNWfKATSxoA46cMEvNVFTLJ2';
+        await vehiclesController.setDefaultVehicle(vehicleId, permanentUserId);
+        const defauilVehicle = await vehiclesController.getDefaultVehicle(permanentUserId);
+        console.log(defauilVehicle);
     });
 
     test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {
         const vehicleId: number = 321;
+        const permanentUserId: string = 'B8WGDNWfKATSxoA46cMEvNVFTLJ2';
         try {
-            vehiclesController.setDefaultVehicle(vehicleId);
+            await vehiclesController.setDefaultVehicle(vehicleId, permanentUserId);
             throw new Error();
         } catch (error) {
             if( error instanceof VehicleNotFoundException ) {

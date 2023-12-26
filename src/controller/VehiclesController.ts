@@ -6,6 +6,7 @@ import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
 import {FirebaseService} from "../services/FirebaseService.ts";
+import {DocumentData} from "firebase/firestore/lite";
 
 
 export default class VehiclesController implements VehiclesInterface {
@@ -73,12 +74,17 @@ export default class VehiclesController implements VehiclesInterface {
         this.vehicles = new Map(vehicles.map(vehicle => [vehicle.id, vehicle]));
     }
 
-    setDefaultVehicle( vehicleId: number ): void {
-        if (this.vehicles.has(vehicleId)) {
-            // this.firebaseService.setDefaultVehicle(vehicleId);
-        } else {
-            throw new VehicleNotFoundException('El vehículo no existe');
-        }
+    async setDefaultVehicle(vehicleId: number, userId: string): Promise<void> {
+        // if (this.vehicles.has(vehicleId)) {
+        //     this.firebaseService.setDefaultVehicle(vehicleId, userId);
+        // } else {
+        //     throw new VehicleNotFoundException('El vehículo no existe');
+        // }
+        await this.firebaseService.setDefaultVehicle(vehicleId, userId);
+    }
+
+    async getDefaultVehicle(userId: string): Promise<DocumentData> {
+        return await this.firebaseService.getDefaultVehicle(userId);
     }
 }
 
