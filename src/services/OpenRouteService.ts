@@ -33,8 +33,13 @@ export class OpenRouteService {
         }).catch( e => {
             if( e.response.status === 400 ) throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
             throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
-        } );
-        const pathway: Pathway = { steps: [] };
+        });
+        const pathway: Pathway = {
+            type: 'driving-car',
+            start: from,
+            end: to,
+            steps: []
+        };
         pathway.steps = data.features[0].geometry.coordinates.map((cord: number[]) => {
             return {
                 lat: cord[1],
