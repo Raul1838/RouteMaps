@@ -24,8 +24,7 @@ export default class VehiclesController implements VehiclesInterface {
             || typeof paramVehicle.Nombre !== 'string'
             || !Object.values(Combustible).includes(paramVehicle.propulsion)
             || typeof paramVehicle.consumo !== 'number'
-            || typeof paramVehicle.Favorito !== 'boolean'
-            || typeof paramVehicle.Defecto !== 'boolean') {
+            || typeof paramVehicle.Favorito !== 'boolean') {
             throw new InvalidVehicleException();
         }
 
@@ -75,12 +74,11 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     async setDefaultVehicle(vehicleId: number, userId: string): Promise<void> {
-        // if (this.vehicles.has(vehicleId)) {
-        //     this.firebaseService.setDefaultVehicle(vehicleId, userId);
-        // } else {
-        //     throw new VehicleNotFoundException('El vehículo no existe');
-        // }
-        await this.firebaseService.setDefaultVehicle(vehicleId, userId);
+        if (this.vehicles.has(vehicleId)) {
+            await this.firebaseService.setDefaultVehicle(vehicleId, userId);
+        } else {
+            throw new VehicleNotFoundException('El vehículo no existe');
+        }
     }
 
     async getDefaultVehicle(userId: string): Promise<DocumentData> {

@@ -4,15 +4,21 @@ import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/P
 import {Pathway} from "../../src/interfaces/Pathway";
 import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
+import {AuthController, getAuthController} from "../../src/controller/AuthController";
+import {UserModel} from "../../src/interfaces/UserModel";
+import Vehicle from "../../src/interfaces/Vehicle";
+import Combustible from "../../src/enums/Combustible";
 
 describe('Tests sobre gestión de rutas', () => {
 
     let pathwayController: PathwayController;
     let vehiclesController: VehiclesController;
+    let authController: AuthController;
 
     beforeAll(() => {
         pathwayController = getPathwayController();
         vehiclesController = getVehiclesController();
+        authController = getAuthController();
     });
 
     test('HU13 - E1 - Ruta posible' , async () => {
@@ -56,16 +62,32 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU23 - E1 - Existe el vehículo a establecer por defecto', async () => {
-        const vehicleId: number = 123;
-        const permanentUserId: string = 'B8WGDNWfKATSxoA46cMEvNVFTLJ2';
-        await vehiclesController.setDefaultVehicle(vehicleId, permanentUserId);
+        const testUser = {
+            email: 'usuario.permanente@test.com',
+            password: '123456789',
+        }
+        const vehicle: Vehicle = {
+            id: 123,
+            Nombre: 'Test vehicle',
+            consumo: 0,
+            propulsion: Combustible.Diesel,
+            Favorito: false,
+        }
+        vehiclesController.addVehicle(vehicle);
+        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+        await vehiclesController.setDefaultVehicle(vehicle.id, loggedUser.uid);
+        await authController.logout();
     });
 
     test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {
+        const testUser = {
+            email: 'usuario.permanente@test.com',
+            password: '123456789',
+        }
         const vehicleId: number = 321;
-        const permanentUserId: string = 'B8WGDNWfKATSxoA46cMEvNVFTLJ2';
+        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         try {
-            await vehiclesController.setDefaultVehicle(vehicleId, permanentUserId);
+            await vehiclesController.setDefaultVehicle(vehicleId, loggedUser.uid);
             throw new Error();
         } catch (error) {
             if( error instanceof VehicleNotFoundException ) {
@@ -74,6 +96,6 @@ describe('Tests sobre gestión de rutas', () => {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
+        await authController.logout();
     });
-
 });

@@ -6,5 +6,4 @@ export default interface Vehicle {
     propulsion: Combustible;
     consumo: number;
     Favorito?: boolean;
-    Defecto?: boolean;
 }
