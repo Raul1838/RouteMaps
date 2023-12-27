@@ -5,7 +5,7 @@ import {Pathway} from "../../src/interfaces/Pathway";
 import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import {UserModel} from "../../src/interfaces/UserModel";
-import {PathwayTypes} from "../../src/interfaces/PathwayTypes";
+import {PathwayTypes} from "../../src/enums/PathwayTypes";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
 import {AuthController, getAuthController} from "../../src/controller/AuthController";

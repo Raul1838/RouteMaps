@@ -30,7 +30,7 @@ export const AuthContext = createContext<AuthContextInterface>({
     setWantDetails: () => {},
     defaultVehiclePlate: '',
     setDefaultVehiclePlate: () => {},
-    defaultPathwayType: PathwayTypes.RECOMMENDED,
+    defaultPathwayType: PathwayTypes.UNDEFINED,
     setDefaultPathwayType: () => {},
     wantPreferences: false,
     setWantPreferences: () => {},
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: any) => {
 
     const [defaultVehiclePlate, setDefaultVehiclePlate] = useState<string>('');
 
-    const [defaultPathwayType, setDefaultPathwayType] = useState<PathwayTypes>(PathwayTypes.RECOMMENDED);
+    const [defaultPathwayType, setDefaultPathwayType] = useState<PathwayTypes>(PathwayTypes.UNDEFINED);
 
     const [wantPreferences, setWantPreferences] = useState<boolean>(false);
 

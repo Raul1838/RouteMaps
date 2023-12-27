@@ -1,7 +1,7 @@
 import {Coords} from "../interfaces/Coords.ts";
 import {OpenRouteService} from "../services/OpenRouteService.ts";
 import {Pathway} from "../interfaces/Pathway.ts";
-import {PathwayTypes} from "../interfaces/PathwayTypes.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import {FirebaseService} from "../services/FirebaseService.ts";
 
 export class PathwayController {
@@ -23,6 +23,14 @@ export class PathwayController {
 
     async setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
         await this.firebaseService.setDefaultPathwayType( pathwayType, userId );
+    }
+
+    async getDefaultPathwayType ( userId: string ): Promise<PathwayTypes> {
+        let data: PathwayTypes = PathwayTypes.UNDEFINED;
+        await this.firebaseService.getDefaultPathwayType( userId ).then( (value) => {
+            data = value.pathwayType;
+        });
+        return data;
     }
 
 }

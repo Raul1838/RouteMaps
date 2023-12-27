@@ -3,7 +3,9 @@ import {useContext, useEffect, useState} from "react";
 import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
 import {getPathwayController, PathwayController} from "../../controller/PathwayController.ts";
 import Vehicle from "../../interfaces/Vehicle.ts";
-import {ObjectDetails} from "../components/ObjectDetails.tsx";
+import {DefaultVehicleDetails} from "../components/DefaultVehicleDetails.tsx";
+import {PathwayTypes} from "../../enums/PathwayTypes.ts";
+import {DefaultPathwayTypeSwitcher} from "../components/DefaultPathwayTypeSwitcher.tsx";
 
 const vehiclesController: VehiclesController = getVehiclesController();
 const pathwayController: PathwayController = getPathwayController();
@@ -12,10 +14,11 @@ export const PreferencesPage = () => {
     const authContext: AuthContextInterface = useContext(AuthContext);
     const { user, defaultVehiclePlate, defaultPathwayType } = authContext;
     const [defaultVehicle, setDefaultVehicle] = useState<Vehicle>({} as Vehicle);
-    const [vehicleErrorMessage, setVehicleErrorMessage] = useState<string>('');
+    const [vehicleErrorMessage, setVehicleErrorMessage] = useState<string>('')
 
     useEffect(() => {
         getVehicleFromDb();
+        getPathwayTypeFromDb();
     }, []);
 
     const getVehicleFromDb = async () => {
@@ -34,7 +37,15 @@ export const PreferencesPage = () => {
         setDefaultVehicle(vehiclesController.getVehicle(dbVehicleId));
     }
 
+    const getPathwayTypeFromDb = async () => {
+        if( defaultPathwayType === PathwayTypes.UNDEFINED ) {
+            const pathwayTypeDb = await pathwayController.getDefaultPathwayType(user.uid);
+            authContext.setDefaultPathwayType(pathwayTypeDb);
+        }
+    }
+
     const closePreferences = () => {
+        pathwayController.setDefaultPathwayType(defaultPathwayType, user.uid);
         authContext.setWantPreferences(false);
     }
 
@@ -47,15 +58,14 @@ export const PreferencesPage = () => {
                 {
                     vehicleErrorMessage.length > 0
                         ? <p>{vehicleErrorMessage}</p>
-                        : <ObjectDetails items={[
-                            { label: 'Matrícula', value: defaultVehicle.plate },
-                            { label: 'Nombre', value: defaultVehicle.name}
-                        ]} />
+                        : <DefaultVehicleDetails defaultVehicle={defaultVehicle} />
                 }
                 <h4>Tipo de ruta por defecto</h4>
-                <ObjectDetails items={[
-                    { label: 'Tipo de ruta', value: defaultPathwayType }
-                ]} />
+                {
+                    defaultPathwayType === PathwayTypes.UNDEFINED
+                        ? <p>Is loading</p>
+                        : <DefaultPathwayTypeSwitcher pathwayType={defaultPathwayType} />
+                }
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                     <button className="btn btn-outline-primary mt-3" onClick={closePreferences}>Cerrar</button>
                 </div>

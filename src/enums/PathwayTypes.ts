@@ -3,5 +3,6 @@ export enum PathwayTypes {
     FASTEST = 'fastest',
     SHORTEST = 'shortest',
     CHEAPEST = 'cheapest',
-    RECOMMENDED = 'recommended'
+    RECOMMENDED = 'recommended',
+    UNDEFINED = 'undefined'
 }

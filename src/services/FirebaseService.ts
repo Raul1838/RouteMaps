@@ -3,7 +3,7 @@ import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
 import {UserModel} from "../interfaces/UserModel.ts";
 import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
 import {doc, getDoc, setDoc} from "firebase/firestore/lite";
-import {PathwayTypes} from "../interfaces/PathwayTypes.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 
 export class FirebaseService {
 
@@ -63,9 +63,9 @@ export class FirebaseService {
         
     }
 
-    async setDefaultVehicle(vehicleId: string, userId: string): Promise<void> {
+    async setDefaultVehicle(vehiclePlate: string, userId: string): Promise<void> {
         const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
-        await setDoc(docRef, { vehiclePlate: vehicleId });
+        await setDoc(docRef, { vehiclePlate });
     }
 
     async getDefaultVehicle(userId: string) {
@@ -79,5 +79,13 @@ export class FirebaseService {
     async setDefaultPathwayType(pathwayType: PathwayTypes, userId: string) {
         const docRef = doc(FirebaseDB, `${userId}`, 'defaultPathwayType');
         await setDoc(docRef, { pathwayType: pathwayType });
+    }
+
+    async getDefaultPathwayType(userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultPathwayType');
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists())
+            throw new Error('No such document!');
+        return docSnap.data();
     }
 }
