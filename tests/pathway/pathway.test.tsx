@@ -87,14 +87,14 @@ describe('Tests sobre gestión de rutas', () => {
             password: '123456789',
         }
         const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-        pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, loggedUser.uid);
+        await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, loggedUser.uid);
         expect( loggedUser ).toBeTruthy();
         await authController.logout();
     });
 
     test('HU24 - E2 - Usuario no identificado', async () => {
         try {
-            pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, '');
+            await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, '');
         } catch (e) { }
     });
 

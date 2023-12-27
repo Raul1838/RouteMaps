@@ -2,10 +2,14 @@ import {Coords} from "../interfaces/Coords.ts";
 import {OpenRouteService} from "../services/OpenRouteService.ts";
 import {Pathway} from "../interfaces/Pathway.ts";
 import {PathwayTypes} from "../interfaces/PathwayTypes.ts";
+import {FirebaseService} from "../services/FirebaseService.ts";
 
 export class PathwayController {
 
-    constructor( private openRouteService: OpenRouteService ) { }
+    constructor(
+        private openRouteService: OpenRouteService,
+        private firebaseService: FirebaseService
+    ) { }
 
     async calculatePathway( from: Coords, to: Coords ): Promise<Pathway> {
         if( (!from.lat || !from.lon) && from.name ) {
@@ -17,16 +21,18 @@ export class PathwayController {
         return await this.openRouteService.calculatePathway( from, to );
     }
 
-    setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
-        throw new Error("Method not implemented.");
+    async setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
+        await this.firebaseService.setDefaultPathwayType( pathwayType, userId );
     }
 
 }
 
 let _instance: PathwayController;
-export function getPathwayController(openRouteService?: OpenRouteService): PathwayController {
+export function getPathwayController(openRouteService?: OpenRouteService, firebaseService?: FirebaseService): PathwayController {
     if (!_instance) {
-        _instance = new PathwayController((!openRouteService ? new OpenRouteService() : openRouteService));
+        if( !openRouteService ) openRouteService = new OpenRouteService();
+        if( !firebaseService ) firebaseService = new FirebaseService();
+        _instance = new PathwayController( openRouteService, firebaseService );
     }
     return _instance;
 }

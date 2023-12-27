@@ -3,6 +3,7 @@ import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
 import {UserModel} from "../interfaces/UserModel.ts";
 import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
 import {doc, getDoc, setDoc} from "firebase/firestore/lite";
+import {PathwayTypes} from "../interfaces/PathwayTypes.ts";
 
 export class FirebaseService {
 
@@ -75,4 +76,8 @@ export class FirebaseService {
         return docSnap.data();
     }
 
+    async setDefaultPathwayType(pathwayType: PathwayTypes, userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultPathwayType');
+        await setDoc(docRef, { pathwayType: pathwayType });
+    }
 }
