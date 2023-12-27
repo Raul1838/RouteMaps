@@ -1,8 +1,7 @@
-import { Dropdown } from 'react-bootstrap';
+import {Dropdown} from 'react-bootstrap';
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {useContext} from "react";
 import {AuthController, getAuthController} from "../../controller/AuthController.ts";
-import {Link} from "react-router-dom";
 
 export const UserDropDown = () => {
 
@@ -23,6 +22,10 @@ export const UserDropDown = () => {
         authContext.setWantDetails(true);
     };
 
+    const showPreferences = () => {
+        authContext.setWantPreferences(true);
+    }
+
     return (
         <Dropdown>
             <Dropdown.Toggle variant="secondary" id="dropdown-basic">
@@ -31,7 +34,7 @@ export const UserDropDown = () => {
 
             <Dropdown.Menu>
                 <Dropdown.Item onClick={ showDetails }>Detalles</Dropdown.Item>
-                <Dropdown.Item as={Link} to="/account/preferences">Preferencias</Dropdown.Item>
+                <Dropdown.Item onClick={ showPreferences }>Preferencias</Dropdown.Item>
                 <Dropdown.Item onClick={ logout } >Cerrar Sesión</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
