@@ -6,6 +6,7 @@ import Place from "../interfaces/Place";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
+import APIPlacesService from "../api/APIPlacesService.ts";
 
 
 export default class PlacesController implements PlacesInterface {
@@ -98,4 +99,12 @@ export default class PlacesController implements PlacesInterface {
         const numberRegex = /\d/;
         return numberRegex.test(text);
     }
+}
+
+let _placesController: PlacesController;
+export function getPlacesController(): PlacesController {
+    if (!_placesController) {
+        _placesController = new PlacesController( new APIPlacesService());
+    }
+    return _placesController;
 }

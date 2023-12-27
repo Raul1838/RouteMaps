@@ -59,8 +59,6 @@ describe('Tests sobre gestión de rutas', () => {
         const vehicleId: number = 123;
         const permanentUserId: string = 'B8WGDNWfKATSxoA46cMEvNVFTLJ2';
         await vehiclesController.setDefaultVehicle(vehicleId, permanentUserId);
-        const defauilVehicle = await vehiclesController.getDefaultVehicle(permanentUserId);
-        console.log(defauilVehicle);
     });
 
     test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {
