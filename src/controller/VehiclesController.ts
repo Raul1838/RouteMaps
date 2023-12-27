@@ -14,9 +14,17 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     toggleFavourite({ id }: { id: number; }): Boolean {
-        throw new Error("Method not implemented.");
+        const index = this.vehicles.findIndex(vehicle => vehicle.id === id);
+
+        if (index !== -1) {
+            this.vehicles[index].Favorito = !this.vehicles[index].Favorito;
+            console.log('Vehicle updated:', this.vehicles[index]);
+            return true;
+        } else {
+            return false;
+        }
     }
-    
+
     addVehicle(paramVehicle: Vehicle): Boolean {
         if (typeof paramVehicle.id !== 'number'
             || typeof paramVehicle.Nombre !== 'string'
