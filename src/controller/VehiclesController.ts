@@ -21,7 +21,7 @@ export default class VehiclesController implements VehiclesInterface {
             console.log('Vehicle updated:', this.vehicles[index]);
             return true;
         } else {
-            return false;
+            throw new VehicleNotFoundException();
         }
     }
 
