@@ -14,6 +14,10 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     toggleFavourite({ id }: { id: number; }): Boolean {
+        if (this.vehicles.length === 0){
+            throw new EmptyVehiclesException();
+        }
+        
         const index = this.vehicles.findIndex(vehicle => vehicle.id === id);
 
         if (index !== -1) {
