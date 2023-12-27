@@ -1,5 +1,5 @@
 import PathwayTypeEnum from "../enums/PathwayTypeEnum.ts";
-import {Coords} from "./Coords.ts";
+import { Coords } from "./Coords.ts";
 
 export interface Pathway {
     Id?: number,
@@ -8,7 +8,7 @@ export interface Pathway {
     end: Coords;
     steps: Coords[];
     duration: number,
-    distence: number,
+    distance: number,
     favourite?: boolean,
     vehicle?: number
 }

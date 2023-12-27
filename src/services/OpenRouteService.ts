@@ -46,6 +46,8 @@ export class OpenRouteService {
                 lon: cord[0]
             }
         });
+        pathway.distance = data.features[0].properties.summary.distance;
+        pathway.duration = data.features[0].properties.summary.duration;
         return pathway;
     }
 

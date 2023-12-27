@@ -1,8 +1,10 @@
-import {Coords} from "../interfaces/Coords.ts";
-import {OpenRouteService} from "../services/OpenRouteService.ts";
-import {Pathway} from "../interfaces/Pathway.ts";
+import { Coords } from "../interfaces/Coords.ts";
+import { OpenRouteService } from "../services/OpenRouteService.ts";
+import { Pathway } from "../interfaces/Pathway.ts";
+import PathwayInterface from "../interfaces/PathwayInterface.ts";
+import Vehicle from "../interfaces/Vehicle.ts";
 
-export class PathwayController {
+export class PathwayController implements PathwayInterface {
 
     constructor( private openRouteService: OpenRouteService ) { }
 
@@ -13,7 +15,11 @@ export class PathwayController {
         if( (!to.lat || !to.lon) && to.name ) {
             to = await this.openRouteService.getCoordinatesFromPlaceName( to.name );
         }
-        return await this.openRouteService.calculatePathway( from, to );
+        return await this.openRouteService.calculatePathway(from, to);
+    }
+
+    async calculatePrice(pathway: Pathway, vehicle: Vehicle): Promise<number> {
+        throw new Error('Not implemented yet');
     }
 }
 
