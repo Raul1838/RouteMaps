@@ -4,15 +4,20 @@ import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/P
 import {Pathway} from "../../src/interfaces/Pathway";
 import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
+import {AuthController, getAuthController} from "../../src/controller/AuthController";
+import {UserModel} from "../../src/interfaces/UserModel";
+import {PathwayTypes} from "../../src/interfaces/PathwayTypes";
 
 describe('Tests sobre gestión de rutas', () => {
 
     let pathwayController: PathwayController;
     let vehiclesController: VehiclesController;
+    let authController: AuthController;
 
     beforeAll(() => {
         pathwayController = getPathwayController();
         vehiclesController = getVehiclesController();
+        authController = getAuthController();
     });
 
     test('HU13 - E1 - Ruta posible' , async () => {
@@ -74,6 +79,23 @@ describe('Tests sobre gestión de rutas', () => {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
+    });
+
+    test('HU24 - E1 - Usuario identificado', async () => {
+        const testUser = {
+            email: 'usuario.permanente@test.com',
+            password: '123456789',
+        }
+        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+        pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, loggedUser.uid);
+        expect( loggedUser ).toBeTruthy();
+        await authController.logout();
+    });
+
+    test('HU24 - E2 - Usuario no identificado', async () => {
+        try {
+            pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, '');
+        } catch (e) { }
     });
 
 });

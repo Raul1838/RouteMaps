@@ -1,6 +1,7 @@
 import {Coords} from "../interfaces/Coords.ts";
 import {OpenRouteService} from "../services/OpenRouteService.ts";
 import {Pathway} from "../interfaces/Pathway.ts";
+import {PathwayTypes} from "../interfaces/PathwayTypes.ts";
 
 export class PathwayController {
 
@@ -14,6 +15,10 @@ export class PathwayController {
             to = await this.openRouteService.getCoordinatesFromPlaceName( to.name );
         }
         return await this.openRouteService.calculatePathway( from, to );
+    }
+
+    setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
+        throw new Error("Method not implemented.");
     }
 
 }
