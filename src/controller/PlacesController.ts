@@ -17,7 +17,9 @@ export default class PlacesController implements PlacesInterface {
     }
 
     toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }): Boolean {
-        
+        if (this.places.length === 0) {
+            throw new EmptyPlacesException();
+        }
         const index = this.places.findIndex(place => (place.Longitud === Longitud
             && place.Latitud === Latitud));
 
