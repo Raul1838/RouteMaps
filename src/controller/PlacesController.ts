@@ -26,7 +26,7 @@ export default class PlacesController implements PlacesInterface {
             console.log('Place updated:', this.places[index]);
             return true;
         } else {
-            return false;
+            throw new PlaceNotFoundException();
         }
     }
 
