@@ -15,9 +15,19 @@ export default class PlacesController implements PlacesInterface {
         this.apiService = apiService;
         this.places = new Array();
     }
-    
+
     toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }): Boolean {
-        throw new Error("Method not implemented.");
+        
+        const index = this.places.findIndex(place => (place.Longitud === Longitud
+            && place.Latitud === Latitud));
+
+        if (index !== -1) {
+            this.places[index].Favorito = !this.places[index].Favorito;
+            console.log('Place updated:', this.places[index]);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
