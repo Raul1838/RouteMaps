@@ -5,13 +5,20 @@ import Combustible from "../enums/Combustible";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
+import {FirebaseService} from "../services/FirebaseService.ts";
+import {DocumentData} from "firebase/firestore/lite";
 
 
 export default class VehiclesController implements VehiclesInterface {
-    private vehicles: Array<Vehicle>;
-    constructor() {
-        this.vehicles = new Array();
+
+    private vehicles: Map<number, Vehicle> = new Map<number, Vehicle>();
+
+    constructor( private firebaseService: FirebaseService ) {
+        // firebaseService.getVehicles().then(vehicles => {
+        //     setVehicles(vehicles);
+        // });
     }
+
     addVehicle(paramVehicle: Vehicle): Boolean {
         if (typeof paramVehicle.id !== 'number'
             || typeof paramVehicle.Nombre !== 'string'
@@ -22,10 +29,8 @@ export default class VehiclesController implements VehiclesInterface {
             throw new InvalidVehicleException();
         }
 
-        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramVehicle.id);
-
-        if (index === -1) {
-            this.vehicles.push(paramVehicle);
+        if (!this.vehicles.has(paramVehicle.id)) {
+            this.vehicles.set(paramVehicle.id, paramVehicle);
             console.log('Vehicle inserted:', paramVehicle);
             return true;
         } else {
@@ -33,19 +38,17 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-
     getVehicles(): Vehicle[] {
-        return this.vehicles;
+        return Array.from(this.vehicles.values());
     }
 
     deleteVehicle(paramId: number): Boolean {
-        if (this.vehicles.length === 0) {
+        if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
-        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramId);
 
-        if (index !== -1) {
-            this.vehicles.splice(index, 1);
+        if (this.vehicles.has(paramId)) {
+            this.vehicles.delete(paramId);
             console.log('Vehicle deleted:', paramId);
             return true;
         } else {
@@ -54,14 +57,13 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     modifyVehicle(paramVehicle: Vehicle): Boolean {
-        if (this.vehicles.length === 0) {
+        if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
-        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramVehicle.id);
 
-        if (index !== -1) {
-            this.vehicles[index] = { ...this.vehicles[index], ...paramVehicle };
-            console.log('Vehicle updated:', this.vehicles[index]);
+        if (this.vehicles.has(paramVehicle.id)) {
+            this.vehicles.set(paramVehicle.id, { ...this.vehicles.get(paramVehicle.id), ...paramVehicle });
+            console.log('Vehicle updated:', this.vehicles.get(paramVehicle.id));
             return true;
         } else {
             throw new VehicleNotFoundException();
@@ -69,6 +71,27 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     setVehicles(vehicles: Vehicle[]): void {
-        this.vehicles = vehicles;
+        this.vehicles = new Map(vehicles.map(vehicle => [vehicle.id, vehicle]));
     }
+
+    async setDefaultVehicle(vehicleId: number, userId: string): Promise<void> {
+        // if (this.vehicles.has(vehicleId)) {
+        //     this.firebaseService.setDefaultVehicle(vehicleId, userId);
+        // } else {
+        //     throw new VehicleNotFoundException('El vehículo no existe');
+        // }
+        await this.firebaseService.setDefaultVehicle(vehicleId, userId);
+    }
+
+    async getDefaultVehicle(userId: string): Promise<DocumentData> {
+        return await this.firebaseService.getDefaultVehicle(userId);
+    }
+}
+
+let _instance: VehiclesController;
+export function getVehiclesController(firebaseService?: FirebaseService): VehiclesController {
+    if (!_instance) {
+        _instance = new VehiclesController((!firebaseService ? new FirebaseService() : firebaseService));
+    }
+    return _instance;
 }
