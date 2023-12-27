@@ -67,15 +67,15 @@ describe('Tests sobre gestión de rutas', () => {
             password: '123456789',
         }
         const vehicle: Vehicle = {
-            id: 123,
-            Nombre: 'Test vehicle',
-            consumo: 0,
+            plate: '123',
+            name: 'Test vehicle',
+            consumption: 0,
             propulsion: Combustible.Diesel,
-            Favorito: false,
+            favorite: false,
         }
         vehiclesController.addVehicle(vehicle);
         const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-        await vehiclesController.setDefaultVehicle(vehicle.id, loggedUser.uid);
+        await vehiclesController.setDefaultVehicle(vehicle.plate, loggedUser.uid);
         await authController.logout();
     });
 
@@ -84,7 +84,7 @@ describe('Tests sobre gestión de rutas', () => {
             email: 'usuario.permanente@test.com',
             password: '123456789',
         }
-        const vehicleId: number = 321;
+        const vehicleId: string = '321';
         const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         try {
             await vehiclesController.setDefaultVehicle(vehicleId, loggedUser.uid);

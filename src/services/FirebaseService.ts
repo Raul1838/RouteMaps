@@ -62,9 +62,9 @@ export class FirebaseService {
         
     }
 
-    async setDefaultVehicle(vehicleId: number, userId: string): Promise<void> {
+    async setDefaultVehicle(vehicleId: string, userId: string): Promise<void> {
         const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
-        await setDoc(docRef, { vehicleId: vehicleId });
+        await setDoc(docRef, { vehiclePlate: vehicleId });
     }
 
     async getDefaultVehicle(userId: string) {
