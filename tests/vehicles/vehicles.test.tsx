@@ -182,4 +182,37 @@ describe('Vehicles', () => {
         });
 
     });
+    describe('Vehicles', () => {
+        describe('HU21 - Marcar como favorito vehículos', () => {
+            test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere marcar como favorito.', () => {
+                //Given
+                vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }])
+                //When
+                vehiclesController.toggleFavourite({ id: 1683 });
+                //Then
+                expect(vehiclesController.getVehicles()).toStrictEqual([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: true, Defecto: false }])
+            });
+            test('E02 - Existe una lista con vehículos dados de alta y no existe el vehículo que se quiere marcar como favorito.', () => {
+                //Given
+                vehiclesController.setVehicles([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }])
+
+                //When
+                const error = () => vehiclesController.toggleFavourite({ id: 1000 });
+
+                //Then
+                expect(error).toThrow(VehicleNotFoundException);
+            });
+            test('E03 - No hay vehículos dados de alta.', () => {
+                //Given
+                vehiclesController.setVehicles([]);
+
+                //When
+                const error = () => vehiclesController.toggleFavourite({ id: 1000 });
+
+                //Then
+                expect(error).toThrow(EmptyVehiclesException);
+
+            });
+        })
+    });
 });

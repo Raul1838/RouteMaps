@@ -12,6 +12,11 @@ export default class VehiclesController implements VehiclesInterface {
     constructor() {
         this.vehicles = new Array();
     }
+
+    toggleFavourite({ id }: { id: number; }): Boolean {
+        throw new Error("Method not implemented.");
+    }
+    
     addVehicle(paramVehicle: Vehicle): Boolean {
         if (typeof paramVehicle.id !== 'number'
             || typeof paramVehicle.Nombre !== 'string'
@@ -26,7 +31,6 @@ export default class VehiclesController implements VehiclesInterface {
 
         if (index === -1) {
             this.vehicles.push(paramVehicle);
-            console.log('Vehicle inserted:', paramVehicle);
             return true;
         } else {
             throw new VehicleAlreadyExistException();
@@ -46,7 +50,6 @@ export default class VehiclesController implements VehiclesInterface {
 
         if (index !== -1) {
             this.vehicles.splice(index, 1);
-            console.log('Vehicle deleted:', paramId);
             return true;
         } else {
             throw new VehicleNotFoundException();
@@ -61,7 +64,6 @@ export default class VehiclesController implements VehiclesInterface {
 
         if (index !== -1) {
             this.vehicles[index] = { ...this.vehicles[index], ...paramVehicle };
-            console.log('Vehicle updated:', this.vehicles[index]);
             return true;
         } else {
             throw new VehicleNotFoundException();
