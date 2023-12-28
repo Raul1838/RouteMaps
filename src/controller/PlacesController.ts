@@ -104,7 +104,7 @@ export default class PlacesController implements PlacesInterface {
         const splitInputTerm: string[] = inputTerm.split(',');
         if( splitInputTerm.length > 1 ) {
             if (splitInputTerm.every((value: string) => this.containsNumber(value))) {
-                return { lat: parseFloat(splitInputTerm[0]), lon: parseFloat(splitInputTerm[1]) };
+                return { lat: parseFloat(splitInputTerm[1]), lon: parseFloat(splitInputTerm[0]) };
             }
         }
         const place: Place = await this.apiService.getPlaceByToponym(inputTerm);
