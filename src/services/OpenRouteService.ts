@@ -38,7 +38,9 @@ export class OpenRouteService {
             type: 'driving-car',
             start: from,
             end: to,
-            path: data
+            path: data,
+            distance: data.features[0].properties.segments[0].distance,
+            duration: data.features[0].properties.segments[0].duration
         };
     }
 

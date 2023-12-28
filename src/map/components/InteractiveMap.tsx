@@ -29,8 +29,10 @@ export const InteractiveMap = () => {
         if (map.current && from && to) {
             const pathwayController: PathwayController = getPathwayController();
             const pathway = await pathwayController.calculatePathway(from, to);
+            navigationContext.setDistance(pathway.distance);
+            navigationContext.setDuration(pathway.duration);
 
-            if (map.current.isStyleLoaded()) { // Verifica si el estilo del mapa se ha cargado
+            if (map.current.isStyleLoaded()) {
                 pathway.path.features.forEach((feature, index) => {
                     const routeId = `route${index}`;
 

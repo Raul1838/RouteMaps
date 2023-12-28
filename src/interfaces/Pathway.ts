@@ -6,4 +6,6 @@ export interface Pathway {
     start: Coords;
     end: Coords;
     path: OpenRoutingPathway;
+    distance: number;
+    duration: number;
 }

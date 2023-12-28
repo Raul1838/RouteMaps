@@ -9,6 +9,10 @@ export interface NavigationContextInterface {
     setTo(coords: Coords): void;
     pathwayType: PathwayTypes;
     setPathwayType(pathwayType: PathwayTypes): void;
+    distance: number;
+    setDistance(distance: number): void;
+    duration: number;
+    setDuration(duration: number): void;
 }
 
 export const NavigationContext = React.createContext<NavigationContextInterface>({
@@ -17,7 +21,11 @@ export const NavigationContext = React.createContext<NavigationContextInterface>
     to: {lat: 0, lon: 0},
     setTo: () => {},
     pathwayType: PathwayTypes.UNDEFINED,
-    setPathwayType: () => {}
+    setPathwayType: () => {},
+    distance: 0,
+    setDistance: () => {},
+    duration: 0,
+    setDuration: () => {}
 });
 
 export const NavigationProvider = ({children}: { children: React.ReactNode }) => {
@@ -25,6 +33,8 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
     const [from, setFrom] = useState<Coords>({ lat: 0, lon: 0 });
     const [to, setTo] = useState<Coords>({ lat: 0, lon: 0 });
     const [pathwayType, setPathwayType] = useState<PathwayTypes>(PathwayTypes.UNDEFINED);
+    const [distance, setDistance] = useState<number>(0);
+    const [duration, setDuration] = useState<number>(0);
 
     const value: NavigationContextInterface = {
         from,
@@ -32,7 +42,11 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
         to,
         setTo,
         pathwayType,
-        setPathwayType
+        setPathwayType,
+        distance,
+        setDistance,
+        duration,
+        setDuration
     };
 
     return (
