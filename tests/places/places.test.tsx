@@ -49,7 +49,6 @@ describe('Tests sobre los lugares', () => {
                     lat: 39.9929000
                 }
             ).then(() => {
-                console.log(placesController.getPlaces());
                 expect(placesController.getPlaces()).toHaveLength(2);
             });
             // Then

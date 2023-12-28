@@ -31,7 +31,6 @@ export default class VehiclesController implements VehiclesInterface {
 
         if (!this.vehicles.has(paramVehicle.id)) {
             this.vehicles.set(paramVehicle.id, paramVehicle);
-            console.log('Vehicle inserted:', paramVehicle);
             return true;
         } else {
             throw new VehicleAlreadyExistException();
@@ -49,7 +48,6 @@ export default class VehiclesController implements VehiclesInterface {
 
         if (this.vehicles.has(paramId)) {
             this.vehicles.delete(paramId);
-            console.log('Vehicle deleted:', paramId);
             return true;
         } else {
             throw new VehicleNotFoundException();
@@ -63,7 +61,6 @@ export default class VehiclesController implements VehiclesInterface {
 
         if (this.vehicles.has(paramVehicle.id)) {
             this.vehicles.set(paramVehicle.id, { ...this.vehicles.get(paramVehicle.id), ...paramVehicle });
-            console.log('Vehicle updated:', this.vehicles.get(paramVehicle.id));
             return true;
         } else {
             throw new VehicleNotFoundException();
