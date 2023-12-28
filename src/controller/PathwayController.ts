@@ -4,6 +4,7 @@ import { Pathway } from "../interfaces/Pathway.ts";
 import PathwayInterface from "../interfaces/PathwayInterface.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import { PriceService } from "../services/PriceService.ts";
+import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts";
 
 export class PathwayController implements PathwayInterface {
 
@@ -21,6 +22,9 @@ export class PathwayController implements PathwayInterface {
     }
 
     async calculatePrice(pathway: Pathway, vehicle: Vehicle): Promise<number> {
+        if (vehicle.consumo === undefined) {
+            throw new VehicleNotFoundException('El vehículo no existe');
+        }
         const price = await this.priceService.getPrice(vehicle.propulsion);
         let priceConsumido = ((price * vehicle.consumo * pathway.distance) / 10000);
         let priceConsumidoDecimales = parseFloat(priceConsumido.toFixed(2));
