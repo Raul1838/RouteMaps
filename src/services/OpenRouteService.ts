@@ -1,9 +1,9 @@
 import {openRouteApi} from "../api/openRouteApi.ts";
 import {getEnvVariables} from "../helpers/getEnvVariables.ts";
 import {Coords} from "../interfaces/Coords.ts";
-import {OpenRoutingPathway} from "../interfaces/OpenRoutingPathway.ts";
 import {Pathway} from "../interfaces/Pathway.ts";
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
+import {OpenRoutingPathway} from "../interfaces/OpenRoutingPathway.ts";
 
 const { VITE_ROUTES_API_KEY } = getEnvVariables();
 
@@ -34,19 +34,12 @@ export class OpenRouteService {
             if( e.response.status === 400 ) throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
             throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
         });
-        const pathway: Pathway = {
+        return {
             type: 'driving-car',
             start: from,
             end: to,
-            steps: []
+            path: data
         };
-        pathway.steps = data.features[0].geometry.coordinates.map((cord: number[]) => {
-            return {
-                lat: cord[1],
-                lon: cord[0]
-            }
-        });
-        return pathway;
     }
 
 }

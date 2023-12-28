@@ -21,7 +21,8 @@ describe('Tests sobre gestión de rutas', () => {
 
         await pathwayController.calculatePathway(from, to).then((pathway: Pathway) => {
             expect( pathway ).toBeTruthy();
-            expect( pathway.steps.length ).toBeGreaterThanOrEqual(1);
+            expect( pathway.path.features[0].geometry.coordinates.length ).toBeGreaterThanOrEqual(1);
+            console.log(pathway.path);
         });
 
     });

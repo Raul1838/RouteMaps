@@ -6,6 +6,7 @@ import Place from "../interfaces/Place";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
+import APIPlacesService from "../api/APIPlacesService.ts";
 
 
 export default class PlacesController implements PlacesInterface {
@@ -98,4 +99,27 @@ export default class PlacesController implements PlacesInterface {
         const numberRegex = /\d/;
         return numberRegex.test(text);
     }
+
+    async transformToValidCoords(inputTerm: string): Promise<Coords> {
+        const splitInputTerm: string[] = inputTerm.split(',');
+        if( splitInputTerm.length > 1 ) {
+            if (splitInputTerm.every((value: string) => this.containsNumber(value))) {
+                return { lat: parseFloat(splitInputTerm[0]), lon: parseFloat(splitInputTerm[1]) };
+            }
+        }
+        const place: Place = await this.apiService.getPlaceByToponym(inputTerm);
+        return {
+            name: place.Nombre,
+            lat: place.Latitud,
+            lon: place.Longitud
+        }
+    }
+}
+
+let _instance: PlacesController;
+export function getPlacesController(apiService?: APIPlacesInterface): PlacesController {
+    if (!_instance) {
+        _instance = new PlacesController((!apiService ? new APIPlacesService(): apiService));
+    }
+    return _instance;
 }

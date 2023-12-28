@@ -9,9 +9,11 @@ export class PathwayController {
     async calculatePathway( from: Coords, to: Coords ): Promise<Pathway> {
         if( (!from.lat || !from.lon) && from.name ) {
             from = await this.openRouteService.getCoordinatesFromPlaceName( from.name );
+            console.log(from);
         }
         if( (!to.lat || !to.lon) && to.name ) {
             to = await this.openRouteService.getCoordinatesFromPlaceName( to.name );
+            console.log(to);
         }
         return await this.openRouteService.calculatePathway( from, to );
     }

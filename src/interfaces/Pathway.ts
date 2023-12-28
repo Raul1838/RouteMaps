@@ -1,8 +1,9 @@
 import {Coords} from "./Coords.ts";
+import {OpenRoutingPathway} from "./OpenRoutingPathway.ts";
 
 export interface Pathway {
     type: string;
     start: Coords;
     end: Coords;
-    steps: Coords[];
+    path: OpenRoutingPathway;
 }
