@@ -39,7 +39,36 @@ export class PriceService {
     }
 
     private async getLightPrice() {
-        const { data }: { data: LightPriceInterface; } = await lightPriceServiceApi.get('');
-        return data.price;
+        const { data }: { data: LightPriceInterface; } = await lightPriceServiceApi.get(`/precios-mercados-tiempo-real?start_date=${this.getCurrentDate()}T00:00&end_date=${this.getTomorrowDate()}T00:00&time_trunc=hour`);
+        return this.getAvgPrice(data);
+    }
+    
+
+    private getAvgPrice(data: LightPriceInterface): number {
+        const values = data.included[0].attributes.values.map(precioIndividual => precioIndividual.value);
+        return values.reduce((sum, entry) => sum + entry, 0) / values.length;
+    }
+
+    private getCurrentDate(): string {
+        const today = new Date();
+
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+        const day = today.getDate().toString().padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
+    }
+
+    private getTomorrowDate(): string {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const year = tomorrow.getFullYear();
+        const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
+        const day = tomorrow.getDate().toString().padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
     }
 }
