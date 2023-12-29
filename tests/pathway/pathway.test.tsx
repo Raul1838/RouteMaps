@@ -29,8 +29,8 @@ describe('Tests sobre gestión de rutas', () => {
         }
 
         await pathwayController.calculatePathway(from, to).then((pathway: Pathway) => {
-            expect(pathway).toBeTruthy();
-            expect(pathway.steps.length).toBeGreaterThanOrEqual(1);
+            expect( pathway ).toBeTruthy();
+            expect( pathway.path.features[0].geometry.coordinates.length ).toBeGreaterThanOrEqual(1);
         });
 
     });
@@ -50,7 +50,7 @@ describe('Tests sobre gestión de rutas', () => {
             await pathwayController.calculatePathway(from, to);
             throw new Error();
         } catch (error) {
-            if (error instanceof PathwayException) {
+            if( error instanceof PathwayException ) {
                 expect(error.message).toBe(PathWayExceptionMessages.InvalidPathway);
             } else {
                 throw new Error('Lanzada una excepción no controlada');

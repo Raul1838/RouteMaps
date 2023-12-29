@@ -9,5 +9,5 @@ export interface FormProps {
     additionalFormLink?: FormLink;
     onSubmit: (formState: FormState) => void;
     submitButtonLabel: string;
-    validations: FormValidations
+    validations?: FormValidations
 }

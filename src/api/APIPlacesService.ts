@@ -6,12 +6,12 @@ import GetPlaceByCoord from "../interfaces/OpenRoutingInterface";
 import Place from "../interfaces/Place";
 import { openRouteApi } from "./openRouteApi";
 
+const { VITE_ROUTES_API_KEY } = getEnvVariables();
 
 export default class APIPlacesService implements APIPlacesInterface {
-    constructor(){getEnvVariables;}
+    constructor(){ }
 
     async getPlaceByToponym(toponym: string): Promise<Place> {
-
         var result: Place = {
             Latitud: -1,
             Longitud: -1,
@@ -20,7 +20,12 @@ export default class APIPlacesService implements APIPlacesInterface {
         };
 
         try {
-            var res: GetPlaceByCoord | undefined = await openRouteApi.get(`/geocode/search?api_key=${process.env.VITE_ROUTES_API_KEY}&text=${toponym}`);
+            var res: GetPlaceByCoord | undefined = await openRouteApi.get('/geocode/search', {
+                params: {
+                    api_key: VITE_ROUTES_API_KEY,
+                    text: toponym,
+                }
+            });
         } catch {
             throw new APINotAvailableExeption();
         }

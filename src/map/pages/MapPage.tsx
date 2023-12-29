@@ -2,6 +2,8 @@ import {NavBar} from "../../components/NavBar.tsx";
 import {DetailsPage} from "../../auth/pages/DetailsPage.tsx";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {useContext} from "react";
+import {Buscador} from "../components/Buscador.tsx";
+import {InteractiveMap} from "../components/InteractiveMap.tsx";
 
 export const MapPage = () => {
 
@@ -10,14 +12,8 @@ export const MapPage = () => {
     return (
         <>
             <NavBar />
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh'
-            }}>
-                <h1>Map Page</h1>
-            </div>
+            <Buscador />
+            <InteractiveMap />
             {
                 wantDetails && <DetailsPage />
             }

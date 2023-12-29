@@ -1,13 +1,11 @@
-import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
-import { UserModel } from "../interfaces/UserModel.ts";
-import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
-import { doc, getDoc, setDoc } from "firebase/firestore/lite";
-import { Pathway } from "../interfaces/Pathway.ts";
-import { arrayUnion, updateDoc } from "firebase/firestore";
-import { FirebasePathways } from "../interfaces/FirebaseDB/FirebasePathways.ts";
+import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
+import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
+import {UserModel} from "../interfaces/UserModel.ts";
+import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
+import {doc, getDoc, setDoc} from "firebase/firestore/lite";
+import {Pathway} from "../interfaces/Pathway.ts";
+import {arrayUnion} from "firebase/firestore";
 import Combustible from "../enums/Combustible.ts";
-import { FirebaseFuelPrice } from "../interfaces/FirebaseDB/FirebaseFuelPrice.ts";
 
 export class FirebaseService {
 
@@ -15,7 +13,7 @@ export class FirebaseService {
         let resp;
         try {
             resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
-        } catch (error) {
+        } catch ( error ) {
             throw new AuthException(AuthExceptionMessages.InvalidRegister);
         }
         const { uid } = resp.user;
@@ -45,7 +43,7 @@ export class FirebaseService {
     }
 
     async startLogout(): Promise<void> {
-        if (FirebaseAuth.currentUser === null) {
+        if( FirebaseAuth.currentUser === null ) {
             throw new AuthException(AuthExceptionMessages.InvalidLogout);
         }
         await FirebaseAuth.signOut().catch(() => {
