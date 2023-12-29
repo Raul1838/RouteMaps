@@ -18,8 +18,10 @@ export class PathwayController implements PathwayInterface {
     calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): number {
         if (vehicle === PathwayVehicleEnum.Walkinkg) {
             return (pathway.distance * 12 / 250);
-        } else {
+        }  else if (vehicle === PathwayVehicleEnum.Bike){
             return (pathway.distance * 6 / 250);
+        } else {
+            throw new VehicleNotFoundException('No se ha seleccionado un vehículo de tipo Bicicleta o Andando');
         }
     }
 

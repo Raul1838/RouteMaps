@@ -212,7 +212,7 @@ describe('Tests sobre gestión de rutas', () => {
             };
 
             try {
-                const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.Walkinkg);
+                const calories = pathwayController.calculateCalories(pathway, 0);
                 fail('Debería haber saltado una excepción');
             } catch (error) {
                 if (error instanceof VehicleNotFoundException) {
