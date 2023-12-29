@@ -1,6 +1,6 @@
-import PlacesController from "../controller/PlacesController";
-import { Coords } from "../interfaces/Coords";
-import Place from "../interfaces/Place";
+import PlacesController from "../../controller/PlacesController";
+import { Coords } from "../../interfaces/Coords";
+import Place from "../../interfaces/Place";
 
 
 export default class PlacesViewModel {

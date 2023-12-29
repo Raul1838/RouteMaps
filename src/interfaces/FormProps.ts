@@ -7,7 +7,7 @@ export interface FormProps {
     formData: { [key: string]: any };
     formFields: FormField[];
     additionalFormLink?: FormLink;
-    onSubmit: (formState: FormState) => void;
+    onSubmit: (formState: FormState) => Promise<void> | void;
     submitButtonLabel: string;
     validations: FormValidations
 }
