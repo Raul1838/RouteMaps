@@ -6,5 +6,5 @@ import PathwayVehicleEnum from "../enums/PathwayVehicleEnum";
 export default interface PathwayInterface {
     calculatePathway(from: Coords, to: Coords): Promise<Pathway>;
     calculatePrice(pathway: Pathway, vehicle: Vehicle): Promise<number>;
-    calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): Promise<number>;
+    calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): number;
 }

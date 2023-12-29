@@ -191,10 +191,10 @@ describe('Tests sobre gestión de rutas', () => {
                 duration: 500,
             };
 
-            pathwayController.calculateCalories(pathway, PathwayVehicleEnum.Walkinkg).then((calories: number) => {
-                expect(calories).toBeTruthy();
-                expect(calories).toBeGreaterThan(0);
-            });
+            const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.Walkinkg);
+            expect(calories).toBeTruthy();
+            expect(calories).toBeGreaterThan(0);
+
         });
         test('E02 - La ruta es válida pero se selecciona un método de recorrerla distinto a bici o andando', () => {
             const pathway: Pathway = {

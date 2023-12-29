@@ -14,9 +14,13 @@ export class PathwayController implements PathwayInterface {
         private priceService: PriceService) { }
 
 
-        
-    calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): Promise<number> {
-        throw new Error("Method not implemented.");
+
+    calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): number {
+        if (vehicle === PathwayVehicleEnum.Walkinkg) {
+            return (pathway.distance * 12 / 250);
+        } else {
+            return (pathway.distance * 6 / 250);
+        }
     }
 
     async calculatePathway(from: Coords, to: Coords): Promise<Pathway> {
@@ -33,7 +37,7 @@ export class PathwayController implements PathwayInterface {
         if (vehicle.consumo === undefined) {
             throw new VehicleNotFoundException('El vehículo no existe');
         }
-        if (pathway.distance === undefined){
+        if (pathway.distance === undefined) {
             throw new PathwayException('La ruta no es válida');
         }
         const price = await this.priceService.getPrice(vehicle.propulsion);
