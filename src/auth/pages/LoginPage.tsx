@@ -22,7 +22,7 @@ export const LoginPage = () => {
     ];
 
     const formLink: FormLink = {
-        url: '/register',
+        url: '/auth/register',
         name: '¿No tienes cuenta?',
         clickable: 'Creala'
     }

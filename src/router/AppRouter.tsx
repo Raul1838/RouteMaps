@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { AuthContext, AuthContextInterface } from "../context/AuthContext.tsx";
 import { useContext } from "react";
 import { AuthRouter } from "../auth/router/AuthRouter.tsx";
@@ -12,11 +12,8 @@ export const AppRouter = () => {
 
     return (
         <Routes>
-            {
-                isLogged
-                    ? <Route path='/*' element={<MapRouter />} />
-                    : <Route path='/*' element={<AuthRouter />} />
-            }
+            <Route path="/auth/*" element={<AuthRouter />} />
+            <Route path="/*" element={isLogged ? <MapRouter /> : <Navigate to="/auth/login" />} />
         </Routes>
     )
 }

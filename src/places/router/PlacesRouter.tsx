@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import AddPlaceByCoordsComponent from "../pages/AddPlaceByCoordsView"
+import AddPlaceByToponymComponent from "../pages/AddPlaceByToponymView"
 import GetPlacesView from "../pages/GetPlacesView"
+import DeletePlacesView from "../pages/DeletePlaceView"
 import PlacesViewModel from "../../viewModel/PlacesViewModel"
 import PlacesController from "../../controller/PlacesController"
 import APIPlacesService from "../../api/APIPlacesService"
@@ -15,9 +17,11 @@ const placesViewModel = new PlacesViewModel(placesController);
 export const PlacesRouter = () => {
     return (
         <Routes>
-            <Route path='/getPlacesByToponym' element={<AddPlaceByCoordsComponent placesViewModel={placesViewModel}></AddPlaceByCoordsComponent>} />
+            <Route path='/addPlaceByToponym' element={<AddPlaceByToponymComponent placesViewModel={placesViewModel}></AddPlaceByToponymComponent>} />
+            <Route path='/addPlaceByCoords' element={<AddPlaceByCoordsComponent placesViewModel={placesViewModel}></AddPlaceByCoordsComponent>} />
+            <Route path='/deletePlace' element={<DeletePlacesView placesViewModel={placesViewModel}></DeletePlacesView>} />
             <Route path='/getPlaces' element={<GetPlacesView placesViewModel={placesViewModel}></GetPlacesView>} />
-            <Route path='/*' element={<Navigate to={'/getPlacesByToponym'} />} />
+            <Route path='/*' element={<Navigate to={'/addPlaceByToponym'} />} />
         </Routes>
     )
 }
