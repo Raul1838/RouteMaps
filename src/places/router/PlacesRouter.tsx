@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import AddPlaceByCoordsComponent from "../pages/AddPlaceByCoordsView"
 import GetPlacesView from "../pages/GetPlacesView"
-import PlacesViewModel from "../../viewModel/PlacesViewModel"
+import PlacesViewModel from "../viewModel/PlacesViewModel"
 import PlacesController from "../../controller/PlacesController"
 import APIPlacesService from "../../api/APIPlacesService"
 
