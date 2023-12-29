@@ -1,5 +1,5 @@
 import {UserModel} from "../interfaces/UserModel.ts";
-import {FirebaseService} from "../firebase/FirebaseService.ts";
+import {FirebaseService} from "../services/FirebaseService.ts";
 import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
 
 export class AuthController {

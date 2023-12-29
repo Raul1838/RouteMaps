@@ -25,20 +25,20 @@ export default class MockAPIPlacesService implements APIPlacesInterface {
     }
 
     async getPlaceByCoord(coordinates: Coords): Promise<Place> {
-        if ((coordinates.Longitud === -0.0576800) && (coordinates.Latitud === 0)) {
+        if ((coordinates.lon === -0.0576800) && (coordinates.lat === 0)) {
             throw new APINotAvailableExeption();
         }
-        if ((coordinates!.Longitud! < 100) && (coordinates!.Latitud! < 100)) {
+        if ((coordinates!.lon! < 100) && (coordinates!.lat! < 100)) {
             return {
-                Latitud: coordinates.Latitud!,
-                Longitud: coordinates.Longitud!,
+                Latitud: coordinates.lat!,
+                Longitud: coordinates.lon!,
                 Nombre: "Madrid",
                 Favorito: false
             };
         }
         return {
-            Latitud: coordinates.Latitud!,
-            Longitud: coordinates.Longitud!,
+            Latitud: coordinates.lat!,
+            Longitud: coordinates.lon!,
             Nombre: "",
             Favorito: false
         };
