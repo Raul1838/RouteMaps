@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import { SmartForm } from '../../auth/components/SmartForm';
 import { FormState } from '../../hooks/useForm';
+import { Link } from "react-router-dom";
+
 
 interface DeleteVehicleViewProps {
     vehiclesViewModel: VehiclesViewModel;
@@ -11,11 +13,11 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
     const [resultado, setResultado] = useState('');
 
     const formFields = [
-        { id: 'id', label: 'ID del Vehículo', type: 'number', placeholder: 'ID del Vehículo' },
+        { id: 'id', label: 'ID del Vehículo', type: 'number', placeholder: 'ID del Vehículo' }
     ];
 
     const validations = {
-        id: (value: string) => isNaN(parseInt(value)) || parseInt(value) <= 0 ? 'ID inválido' : null,
+        id: (value: string) => isNaN(parseInt(value)) || parseInt(value) <= 0 ? 'ID inválido' : null
     };
 
     const initialFormData = {
@@ -44,6 +46,8 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
                 validations={validations}
             />
             <div className="alert alert-info">{resultado}</div>
+            <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
+
         </div>
     );
 };

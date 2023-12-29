@@ -3,6 +3,8 @@ import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import { SmartForm } from '../../auth/components/SmartForm';
 import Combustible from '../../enums/Combustible';
 import { FormState } from '../../hooks/useForm';
+import { Link } from "react-router-dom";
+
 
 interface ModifyVehicleViewProps {
     vehiclesViewModel: VehiclesViewModel;
@@ -17,13 +19,13 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
         { id: 'propulsion', label: 'Propulsión', type: 'select', options: Object.values(Combustible) },
         { id: 'consumo', label: 'Consumo', type: 'number', placeholder: 'Consumo' },
         { id: 'favorito', label: 'Favorito', type: 'checkbox' },
-        { id: 'defecto', label: 'Defecto', type: 'checkbox' },
+        { id: 'defecto', label: 'Defecto', type: 'checkbox' }
     ];
 
     const validations = {
         id: (value: string) => isNaN(parseInt(value)) ? 'ID inválido' : null,
         nombre: (value: string) => value.trim() === '' ? 'Nombre requerido' : null,
-        consumo: (value: string) => isNaN(parseFloat(value)) ? 'Consumo inválido' : null,
+        consumo: (value: string) => isNaN(parseFloat(value)) ? 'Consumo inválido' : null
     };
 
     const initialFormData = {
@@ -66,6 +68,7 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
                 validations={validations}
             />
             <div className="alert alert-info">{resultado}</div>
+            <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
         </div>
     );
 };
