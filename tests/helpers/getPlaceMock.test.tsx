@@ -16,7 +16,7 @@ describe('Prueba si se puede hacer un mock de getPlace, que es el método que se
 
     test('getPlace debe devolver { Nombre: "", Longitud: 0, Latitud: 0, Favorito: false}', () => { 
         
-        const place = getPlace({Longitud: 0, Latitud: 0});
+        const place = getPlace({lon: 0, lat: 0});
 
         expect( place ).toEqual({
             Nombre: "",

@@ -1,5 +1,4 @@
 import PlacesController from "../../src/controller/PlacesController";
-import VehiclesController from "../../src/controller/VehiclesController";
 import APINotAvailableExeption from "../../src/exceptions/APINotAvailableExeption";
 import EmptyPlacesException from "../../src/exceptions/EmptyPlacesException";
 import IllegalArgumentException from "../../src/exceptions/IllegalArgumentException";
@@ -25,8 +24,8 @@ describe('Tests sobre los lugares', () => {
             // When
             placesController.addPlaceByCoords(
                 {
-                    Longitud: -0.0576800,
-                    Latitud: 39.9929000
+                    lon: -0.0576800,
+                    lat: 39.9929000
                 }
             ).then(() => expect(placesController.getPlaces()).toHaveLength(2));
             // Then
@@ -44,8 +43,8 @@ describe('Tests sobre los lugares', () => {
             // When
             await placesController.addPlaceByCoords(
                 {
-                    Longitud: -0.0576800,
-                    Latitud: 39.9929000
+                    lon: -0.0576800,
+                    lat: 39.9929000
                 }
             ).then(() => expect(placesController.getPlaces()).toHaveLength(2));
             // Then
@@ -64,8 +63,8 @@ describe('Tests sobre los lugares', () => {
 
             // When
             await placesController.addPlaceByCoords({
-                Longitud: -0.0576800,
-                Latitud: "adfd"
+                lon: -0.0576800,
+                lat: "adfd"
             }).then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(IllegalArgumentException));
             // If no error is thrown, fail the test
 
@@ -84,8 +83,8 @@ describe('Tests sobre los lugares', () => {
             // When
 
             await placesController.addPlaceByCoords({
-                Longitud: -0.0576800,
-                Latitud: 0,
+                lon: -0.0576800,
+                lat: 0,
             }).then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(APINotAvailableExeption));
 
         });

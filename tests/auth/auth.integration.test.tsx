@@ -2,7 +2,7 @@ import {AuthController, getAuthController} from "../../src/controller/AuthContro
 import {UserModel} from "../../src/interfaces/UserModel";
 import {AuthException, AuthExceptionMessages} from "../../src/exceptions/AuthException";
 import {FirebaseAuth} from "../../src/firebase/config";
-import { FirebaseService } from "../../src/firebase/FirebaseService";
+import { FirebaseService } from "../../src/services/FirebaseService";
 
 
 describe('Tests sobre gestión de usuarios en Firebase', () => {

@@ -53,7 +53,7 @@ export default class PlacesController implements PlacesInterface {
         }
     }
     private checkValidCoordinates(coordenadas: Coords) {
-        if ((typeof coordenadas.Latitud !== 'number') || (typeof coordenadas.Longitud !== 'number')) {
+        if ((typeof coordenadas.lat !== 'number') || (typeof coordenadas.lon !== 'number')) {
             throw new IllegalArgumentException();
         }
     }
