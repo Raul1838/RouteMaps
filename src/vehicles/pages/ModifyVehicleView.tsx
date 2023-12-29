@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import VehiclesViewModel from '../../viewModel/VehiclesViewModel';
+import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Vehicle from '../../interfaces/Vehicle';
 import Combustible from '../../enums/Combustible';
 

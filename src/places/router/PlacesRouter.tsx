@@ -3,7 +3,7 @@ import AddPlaceByCoordsComponent from "../pages/AddPlaceByCoordsView"
 import AddPlaceByToponymComponent from "../pages/AddPlaceByToponymView"
 import GetPlacesView from "../pages/GetPlacesView"
 import DeletePlacesView from "../pages/DeletePlaceView"
-import PlacesViewModel from "../../viewModel/PlacesViewModel"
+import PlacesViewModel from "../viewModel/PlacesViewModel"
 import PlacesController from "../../controller/PlacesController"
 import APIPlacesService from "../../api/APIPlacesService"
 

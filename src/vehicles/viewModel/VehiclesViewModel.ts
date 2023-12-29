@@ -1,5 +1,5 @@
-import VehiclesController from "../controller/VehiclesController";
-import Vehicle from "../interfaces/Vehicle";
+import VehiclesController from "../../controller/VehiclesController";
+import Vehicle from "../../interfaces/Vehicle";
 
 export default class VehiclesViewModel {
     private vehiclesController: VehiclesController;

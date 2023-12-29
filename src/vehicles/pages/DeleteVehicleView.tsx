@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import VehiclesViewModel from '../../viewModel/VehiclesViewModel';
+import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 
 interface DeleteVehicleViewProps {
     vehiclesViewModel: VehiclesViewModel;
