@@ -72,12 +72,11 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     async setDefaultVehicle(vehicleId: number, userId: string): Promise<void> {
-        // if (this.vehicles.has(vehicleId)) {
-        //     this.firebaseService.setDefaultVehicle(vehicleId, userId);
-        // } else {
-        //     throw new VehicleNotFoundException('El vehículo no existe');
-        // }
-        await this.firebaseService.setDefaultVehicle(vehicleId, userId);
+        if (this.vehicles.has(vehicleId)) {
+            this.firebaseService.setDefaultVehicle(vehicleId, userId);
+        } else {
+            throw new VehicleNotFoundException('El vehículo no existe');
+        }
     }
 
     async getDefaultVehicle(userId: string): Promise<DocumentData> {
