@@ -10,7 +10,7 @@ export class AuthController {
     public async registerUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
         if (email.includes('@') && password.length > 5) {
             const user: UserModel = await this.firebaseService.createUserWithEmailAndPassword(email, password, displayName);
-            this.firebaseService.setDefaultPathwayType(PathwayTypes.RECOMMENDED, user.uid);
+            await this.firebaseService.setDefaultPathwayType(PathwayTypes.RECOMMENDED, user.uid);
             return user;
         } else {
             throw new AuthException(AuthExceptionMessages.InvalidRegister);

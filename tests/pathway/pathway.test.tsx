@@ -8,6 +8,8 @@ import PathwayVehicleEnum from "../../src/enums/PathwayVehicleEnum";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
 import {AuthController, getAuthController} from "../../src/controller/AuthController";
+import {UserModel} from "../../src/interfaces/UserModel";
+import {PathwayTypes} from "../../src/enums/PathwayTypes";
 
 describe('Tests sobre gestión de rutas', () => {
 
@@ -128,15 +130,15 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                steps: [],
+                path: [],
                 distance: 1000,
                 duration: 500,
             };
 
             const vehicle: Vehicle = {
-                id: 100,
-                consumo: 5,
-                Nombre: 'Empresa',
+                plate: '100',
+                consumption: 5,
+                name: 'Empresa',
                 propulsion: Combustible.Gasolina
             }
 
@@ -170,7 +172,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                steps: [],
+                path: [],
                 distance: 1000,
                 duration: 500,
             };
@@ -221,7 +223,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                steps: [],
+                path: [],
                 distance: 1000,
                 duration: 500,
             };
@@ -241,7 +243,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                steps: [],
+                path: [],
                 distance: 1000,
                 duration: 500,
             };

@@ -7,6 +7,7 @@ import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts"
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
 import PathwayVehicleEnum from "../enums/PathwayVehicleEnum.ts";
 import {FirebaseService} from "../services/FirebaseService.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 
 export class PathwayController {
 
@@ -52,16 +53,15 @@ export class PathwayController {
     }
 
     async calculatePrice(pathway: Pathway, vehicle: Vehicle): Promise<number> {
-        if (vehicle.consumo === undefined) {
+        if (vehicle.consumption === undefined) {
             throw new VehicleNotFoundException('El vehículo no existe');
         }
         if (pathway.distance === undefined) {
             throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
         }
         const price = await this.priceService.getPrice(vehicle.propulsion);
-        let priceConsumido = ((price * vehicle.consumo * pathway.distance) / 10000);
-        let priceConsumidoDecimales = parseFloat(priceConsumido.toFixed(2));
-        return priceConsumidoDecimales;
+        let priceConsumido = ((price * vehicle.consumption * pathway.distance) / 10000);
+        return parseFloat(priceConsumido.toFixed(2));
     }
 }
 

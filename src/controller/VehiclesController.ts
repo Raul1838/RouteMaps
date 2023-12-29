@@ -10,7 +10,7 @@ import {FirebaseService} from "../services/FirebaseService.ts";
 
 export default class VehiclesController implements VehiclesInterface {
 
-    private vehicles: Map<number, Vehicle> = new Map<number, Vehicle>();
+    private vehicles: Map<string, Vehicle> = new Map<string, Vehicle>();
 
     constructor( private firebaseService: FirebaseService ) {
         // firebaseService.getVehicles().then(vehicles => {

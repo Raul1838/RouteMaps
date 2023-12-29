@@ -14,7 +14,7 @@ export default class PlacesController implements PlacesInterface {
     private apiService: APIPlacesInterface;
     constructor(apiService: APIPlacesInterface) {
         this.apiService = apiService;
-        this.places = new Array();
+        this.places = [];
     }
 
     async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
