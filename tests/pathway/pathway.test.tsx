@@ -167,7 +167,7 @@ describe('Tests sobre gestión de rutas', () => {
                 fail('Debería saltar una excepción');
             }).catch((error) => {
                 if (error instanceof PathwayException) {
-                    expect(error.message).toBe('La ruta no es válida');
+                    expect(error.message).toBe('Bad pathway: From and to too far away');
                 } else {
                     fail('Lanzada una excepción no controlada');
                 }
@@ -242,7 +242,7 @@ describe('Tests sobre gestión de rutas', () => {
                 fail('Debería haber saltado una excepción');
             } catch (error) {
                 if (error instanceof PathwayException) {
-                    expect(error.message).toBe('La ruta no es válida');
+                    expect(error.message).toBe('Bad pathway: From and to too far away');
                 } else {
                     fail('Se ha lanzado una excepción no esperada');
                 }
