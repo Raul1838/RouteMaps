@@ -13,8 +13,6 @@ export class PathwayController implements PathwayInterface {
     constructor(private openRouteService: OpenRouteService,
         private priceService: PriceService) { }
 
-
-
     calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): number {
         if (!pathway || pathway.distance === 0) {
             throw new PathwayException(PathWayExceptionMessages.InvalidPathway);

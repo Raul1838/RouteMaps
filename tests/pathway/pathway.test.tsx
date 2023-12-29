@@ -4,7 +4,11 @@ import { PathwayException, PathWayExceptionMessages } from "../../src/exceptions
 import { Pathway } from "../../src/interfaces/Pathway";
 import VehiclesController, { getVehiclesController } from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
+<<<<<<< HEAD
 import PathwayVehicleEnum from "../../src/enums/PathwayVehicleEnum";
+=======
+import PathwayTypeEnum from "../../src/enums/PathwayTypeEnum";
+>>>>>>> HU14-Routes
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
 import { error } from "console";
@@ -167,7 +171,11 @@ describe('Tests sobre gestión de rutas', () => {
                 fail('Debería saltar una excepción');
             }).catch((error) => {
                 if (error instanceof PathwayException) {
+<<<<<<< HEAD
                     expect(error.message).toBe('Bad pathway: From and to too far away');
+=======
+                    expect(error.message).toBe('La ruta no es válida');
+>>>>>>> HU14-Routes
                 } else {
                     fail('Lanzada una excepción no controlada');
                 }
@@ -175,6 +183,7 @@ describe('Tests sobre gestión de rutas', () => {
         });
     });
 
+<<<<<<< HEAD
     describe('HU15 - Calcular el coste de una ruta a pie o en bicicleta', () => {
         test('E01 - La ruta es válida y se selecciona como método de recorrido bici o andando', () => {
             const pathway: Pathway = {
@@ -250,4 +259,6 @@ describe('Tests sobre gestión de rutas', () => {
         });
     })
 
+=======
+>>>>>>> HU14-Routes
 });
