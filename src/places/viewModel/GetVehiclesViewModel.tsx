@@ -35,10 +35,10 @@ const GetVehiclesComponent = ({ vehiclesViewModel }: GetVehiclesComponentProps) 
             {error && <div>Error: {error}</div>}
             <ul>
                 {vehicles.map(vehicle => (
-                    <li key={vehicle.id}>
-                        {vehicle.Nombre} - Propulsión: {vehicle.propulsion},
-                        Consumo: {vehicle.consumo},
-                        Favorito: {vehicle.Favorito ? 'Sí' : 'No'},
+                    <li key={vehicle.plate}>
+                        {vehicle.name} - Propulsión: {vehicle.propulsion},
+                        Consumo: {vehicle.consumption},
+                        Favorito: {vehicle.favorite ? 'Sí' : 'No'},
                         Defecto: {vehicle.Defecto ? 'Sí' : 'No'}
                     </li>
                 ))}

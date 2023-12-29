@@ -1,18 +1,19 @@
 import {Coords} from "../interfaces/Coords.ts";
 import {OpenRouteService} from "../services/OpenRouteService.ts";
 import {Pathway} from "../interfaces/Pathway.ts";
-import PathwayInterface from "../interfaces/PathwayInterface.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import {PriceService} from "../services/PriceService.ts";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts";
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
 import PathwayVehicleEnum from "../enums/PathwayVehicleEnum.ts";
+import {FirebaseService} from "../services/FirebaseService.ts";
 
-export class PathwayController implements PathwayInterface {
+export class PathwayController {
 
     constructor(
         private openRouteService: OpenRouteService,
-        private priceService: PriceService
+        private firebaseService: FirebaseService,
+        private priceService: PriceService,
     ) { }
 
     async calculatePathway(from: Coords, to: Coords): Promise<Pathway> {
@@ -23,6 +24,18 @@ export class PathwayController implements PathwayInterface {
             to = await this.openRouteService.getCoordinatesFromPlaceName(to.name);
         }
         return await this.openRouteService.calculatePathway(from, to);
+    }
+
+    async setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
+        await this.firebaseService.setDefaultPathwayType( pathwayType, userId );
+    }
+
+    async getDefaultPathwayType ( userId: string ): Promise<PathwayTypes> {
+        let data: PathwayTypes = PathwayTypes.UNDEFINED;
+        await this.firebaseService.getDefaultPathwayType( userId ).then( (value) => {
+            data = value.pathwayType;
+        });
+        return data;
     }
 
     calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): number {
@@ -53,11 +66,12 @@ export class PathwayController implements PathwayInterface {
 }
 
 let _instance: PathwayController;
-export function getPathwayController(openRouteService?: OpenRouteService, priceService?: PriceService): PathwayController {
+export function getPathwayController(openRouteService?: OpenRouteService, firebaseService?: FirebaseService, priceService?: PriceService): PathwayController {
     if (!_instance) {
-        const orService = openRouteService || new OpenRouteService();
-        const pService = priceService || new PriceService();
-        _instance = new PathwayController(orService, pService);
+        if( !openRouteService ) openRouteService = new OpenRouteService();
+        if( !firebaseService ) firebaseService = new FirebaseService();
+        if( !priceService ) priceService = new PriceService();
+        _instance = new PathwayController(openRouteService, firebaseService, priceService);
     }
     return _instance;
 }

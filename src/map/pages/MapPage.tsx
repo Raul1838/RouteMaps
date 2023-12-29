@@ -4,10 +4,11 @@ import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {useContext} from "react";
 import {Buscador} from "../components/Buscador.tsx";
 import {InteractiveMap} from "../components/InteractiveMap.tsx";
+import {PreferencesPage} from "../../auth/pages/PreferencesPage.tsx";
 
 export const MapPage = () => {
 
-    const { wantDetails }: AuthContextInterface = useContext(AuthContext);
+    const { wantDetails, wantPreferences }: AuthContextInterface = useContext(AuthContext);
 
     return (
         <>
@@ -16,6 +17,9 @@ export const MapPage = () => {
             <InteractiveMap />
             {
                 wantDetails && <DetailsPage />
+            }
+            {
+                wantPreferences && <PreferencesPage />
             }
         </>
     )

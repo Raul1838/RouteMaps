@@ -1,21 +1,24 @@
-import { Coords } from "../../src/interfaces/Coords";
-import { getPathwayController, PathwayController } from "../../src/controller/PathwayController";
-import { PathwayException, PathWayExceptionMessages } from "../../src/exceptions/PathwayException";
-import { Pathway } from "../../src/interfaces/Pathway";
-import VehiclesController, { getVehiclesController } from "../../src/controller/VehiclesController";
+import {Coords} from "../../src/interfaces/Coords";
+import {getPathwayController, PathwayController} from "../../src/controller/PathwayController";
+import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/PathwayException";
+import {Pathway} from "../../src/interfaces/Pathway";
+import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import PathwayVehicleEnum from "../../src/enums/PathwayVehicleEnum";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
+import {AuthController, getAuthController} from "../../src/controller/AuthController";
 
 describe('Tests sobre gestión de rutas', () => {
 
     let pathwayController: PathwayController;
     let vehiclesController: VehiclesController;
+    let authController: AuthController;
 
     beforeAll(() => {
         pathwayController = getPathwayController();
         vehiclesController = getVehiclesController();
+        authController = getAuthController();
     });
 
     test('HU13 - E1 - Ruta posible', async () => {
@@ -59,25 +62,58 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU23 - E1 - Existe el vehículo a establecer por defecto', async () => {
-        const vehicleId: number = 123;
-        const permanentUserId: string = 'B8WGDNWfKATSxoA46cMEvNVFTLJ2';
-        await vehiclesController.setDefaultVehicle(vehicleId, permanentUserId);
-        const defauilVehicle = await vehiclesController.getDefaultVehicle(permanentUserId);
+        const testUser = {
+            email: 'usuario.permanente@test.com',
+            password: '123456789',
+        }
+        const vehicle: Vehicle = {
+            plate: '123',
+            name: 'Test vehicle',
+            consumption: 0,
+            propulsion: Combustible.Diesel,
+            favorite: false,
+        }
+        vehiclesController.addVehicle(vehicle);
+        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+        await vehiclesController.setDefaultVehicle(vehicle.plate, loggedUser.uid);
+        await authController.logout();
     });
 
     test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {
-        const vehicleId: number = 321;
-        const permanentUserId: string = 'B8WGDNWfKATSxoA46cMEvNVFTLJ2';
+        const testUser = {
+            email: 'usuario.permanente@test.com',
+            password: '123456789',
+        }
+        const vehicleId: string = '321';
+        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         try {
-            await vehiclesController.setDefaultVehicle(vehicleId, permanentUserId);
+            await vehiclesController.setDefaultVehicle(vehicleId, loggedUser.uid);
             throw new Error();
         } catch (error) {
-            if (error instanceof VehicleNotFoundException) {
+            if( error instanceof VehicleNotFoundException ) {
                 expect(error.message).toBe('El vehículo no existe');
             } else {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
+        await authController.logout();
+    });
+
+    test('HU24 - E1 - Usuario identificado', async () => {
+        const testUser = {
+            email: 'usuario.permanente@test.com',
+            password: '123456789',
+        }
+        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+        await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, loggedUser.uid);
+        expect( loggedUser ).toBeTruthy();
+        await authController.logout();
+    });
+
+    test('HU24 - E2 - Usuario no identificado', async () => {
+        try {
+            await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, '');
+        } catch (e) { }
     });
 
     describe('HU14 - Calcular coste de una ruta en coche', () => {

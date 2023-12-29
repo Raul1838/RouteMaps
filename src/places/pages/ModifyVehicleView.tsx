@@ -19,11 +19,11 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
     const handleModifyVehicle = async () => {
         try {
             const vehicleToUpdate: Vehicle = {
-                id: parseInt(id),
-                Nombre: nombre,
+                plate: parseInt(id),
+                name: nombre,
                 propulsion: propulsion as Combustible,
-                consumo: parseFloat(consumo),
-                Favorito: favorito,
+                consumption: parseFloat(consumo),
+                favorite: favorito,
                 Defecto: defecto
             };
             const result = await vehiclesViewModel.modifyVehicle(vehicleToUpdate);
