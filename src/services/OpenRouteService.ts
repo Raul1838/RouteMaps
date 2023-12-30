@@ -25,12 +25,16 @@ export class OpenRouteService {
         }
     }
 
-    async calculatePathway( from: Coords, to: Coords, pathwayTransportMean: PathwayTransportMeans, pathwayType: PathwayTypes = PathwayTypes.RECOMMENDED ): Promise<Pathway> {
+    async calculatePathway( from: Coords, to: Coords, pathwayTransportMean: PathwayTransportMeans = PathwayTransportMeans.VEHICLE, pathwayType: PathwayTypes = PathwayTypes.RECOMMENDED ): Promise<Pathway> {
         const { data } = await openRouteApi.post<OpenRoutingPathway>(`/v2/directions/${ pathwayTransportMean }`, {
-            api_key: VITE_ROUTES_API_KEY,
             start: `${from.lon},${from.lat}`,
             end: `${to.lon},${to.lat}`,
             profile: pathwayType,
+        }, {
+            headers: {
+                'api_key': VITE_ROUTES_API_KEY,
+                'Content-Type': 'application/json',
+            }
         }).catch( e => {
             if( e.response.status === 400 ) throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
             throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
