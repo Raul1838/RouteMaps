@@ -15,59 +15,53 @@ describe('Vehicles', () => {
         test('E01 - Se añade un vehículo no registrado anteriormente con datos correctos.', () => {
             //Given
             vehiclesController.setVehicles([{
-                plate: 1683,
+                plate: '1683',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
                 consumption: 6,
-                favorite: false,
-                Defecto: false
+                favorite: false
             }]);
             //When
             vehiclesController.addVehicle({
-                plate: 1684,
+                plate: '1684',
                 name: "Coche personal",
                 propulsion: Combustible.Gasolina,
                 consumption: 5.5,
-                favorite: true,
-                Defecto: false
+                favorite: true
             })
             //Then
             expect(vehiclesController.getVehicles()).toStrictEqual([{
-                id: 1683,
-                Nombre: "Coche empresa",
+                plate: '1683',
+                name: "Coche empresa",
                 propulsion: Combustible.Diesel,
-                consumo: 6,
-                Favorito: false,
-                Defecto: false
+                consumption: 6,
+                favorite: false
             },
             {
-                id: 1684,
-                Nombre: "Coche personal",
+                plate: '1684',
+                name: "Coche personal",
                 propulsion: Combustible.Gasolina,
-                consumo: 5.5,
-                Favorito: true,
-                Defecto: false
+                consumption: 5.5,
+                favorite: true
             }])
         });
         test('E02 - El vehículo ya se encuentra dado de alta.', () => {
             //Given
             vehiclesController.setVehicles([{
-                plate: 1683,
+                plate: '1683',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
                 consumption: 6,
-                favorite: false,
-                Defecto: false
+                favorite: false
             }]);
             //When
             const error = () => {
                 vehiclesController.addVehicle({
-                    plate: 1683,
+                    plate: '1683',
                     name: "Coche empresa",
                     propulsion: Combustible.Diesel,
                     consumption: 6,
-                    favorite: false,
-                    Defecto: false
+                    favorite: false
                 });
             }
             //Then
@@ -76,12 +70,11 @@ describe('Vehicles', () => {
         test('E03 - Los datos del vehículo no son correctos.', () => {
             //Given
             vehiclesController.setVehicles([{
-                plate: 1683,
+                plate: '1683',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
                 consumption: 6,
-                favorite: false,
-                Defecto: false
+                favorite: false
             }])
             //When
             const error = () => {
@@ -90,8 +83,7 @@ describe('Vehicles', () => {
                     name: "Coche empresa",
                     propulsion: Combustible.Caballo,
                     consumption: null,
-                    favorite: null,
-                    Defecto: null
+                    favorite: null
                 })
             }
             //Then
@@ -101,11 +93,11 @@ describe('Vehicles', () => {
     describe('HU10 - Consultar lista de vehículos', () => {
         test('E01 - Existe una lista con vehículos dados de alta.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: 1683, name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false, Defecto: false }]);
+            vehiclesController.setVehicles([{ plate: '1683', name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
             //When
             var vehicles: Vehicle[] = vehiclesController.getVehicles();
             //Then
-            expect(vehicles).toStrictEqual([{ id: 1683, Nombre: "Coche empresa", propulsion: Combustible.Diesel, consumo: 6, Favorito: false, Defecto: false }]);
+            expect(vehicles).toStrictEqual([{ plate: '1683', name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
         });
         test('E02 - No contamos con una lista con vehículos dados de alta.', () => {
             //Given
@@ -121,18 +113,18 @@ describe('Vehicles', () => {
     describe('HU11 - Eliminar un vehículo', () => {
         test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: 1683, name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false, Defecto: false }])
+            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}])
             //When
-            vehiclesController.deleteVehicle(1683);
+            vehiclesController.deleteVehicle('1683');
             //Then
             expect(vehiclesController.getVehicles()).toHaveLength(0);
         });
         test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: 1683, name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false, Defecto: false }]);
+            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
             //When
             const error = () => {
-                vehiclesController.deleteVehicle(1000);
+                vehiclesController.deleteVehicle('1000');
             }
             //Then
             expect(error).toThrow(VehicleNotFoundException);
@@ -142,7 +134,7 @@ describe('Vehicles', () => {
             vehiclesController.setVehicles([]);
             //When
             const error = () => {
-                vehiclesController.deleteVehicle(1000);
+                vehiclesController.deleteVehicle('1000');
             }
             //Then
             expect(error).toThrow(EmptyVehiclesException);
@@ -152,18 +144,18 @@ describe('Vehicles', () => {
     describe('HU12 - Modificar datos de un vehículo', () => {
         test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: 1683, name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false, Defecto: false }]);
+            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
             //When
-            vehiclesController.modifyVehicle({ plate: 1683, name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 5 });
+            vehiclesController.modifyVehicle({ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 5});
             //Then
-            expect(vehiclesController.getVehicles()).toStrictEqual([{ id: 1683, Nombre: 'Coche empresa', propulsion: Combustible.Diesel, consumo: 5, Favorito: false, Defecto: false }]);
+            expect(vehiclesController.getVehicles()).toStrictEqual([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 5, favorite: false }]); 
         });
         test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: 1683, name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 }]);
+            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 }]);
             //When
             const error = () => {
-                vehiclesController.modifyVehicle({ plate: 1000, name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
+                vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
             }
             //Then
             expect(error).toThrow(VehicleNotFoundException);
@@ -173,7 +165,7 @@ describe('Vehicles', () => {
             vehiclesController.setVehicles([]);
             //When
             const error = () => {
-                vehiclesController.modifyVehicle({ plate: 1000, name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
+                vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
             }
             //Then
             expect(error).toThrow(EmptyVehiclesException);

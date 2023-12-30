@@ -35,7 +35,7 @@ describe('Tests sobre gestión de rutas', () => {
 
         await pathwayController.calculatePathway(from, to).then((pathway: Pathway) => {
             expect( pathway ).toBeTruthy();
-            expect( pathway.path.features[0].geometry.coordinates.length ).toBeGreaterThanOrEqual(1);
+            expect( pathway.distance ).toBeGreaterThanOrEqual(1);
         });
 
     });
@@ -195,10 +195,10 @@ describe('Tests sobre gestión de rutas', () => {
             const pathway: Pathway = 0;
 
             const vehicle: Vehicle = {
-                id: 100,
-                consumo: 5,
-                Nombre: 'Empresa',
-                propulsion: Combustible.Gasolina
+                plate: '100',
+                name: 'Empresa',
+                propulsion: Combustible.Gasolina,
+                consumption: 5
             }
             await pathwayController.calculatePrice(pathway, vehicle).then((price: number) => {
                 fail('Debería saltar una excepción');

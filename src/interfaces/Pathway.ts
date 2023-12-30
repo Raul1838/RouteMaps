@@ -1,7 +1,7 @@
-import {Coords} from "./Coords.ts";
-import {OpenRoutingPathway} from "./OpenRoutingPathway.ts";
-import {PathwayTypes} from "../enums/PathwayTypes.ts";
-import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
+import { Coords } from "./Coords.ts";
+import { PathwayTypes } from "../enums/PathwayTypes.ts";
+import { OpenRoutingPathway } from "./OpenRoutingPathway.ts";
+import { PathwayTransportMeans } from "../enums/PathwayTransportMeans.ts";
 
 export interface Pathway {
     id?: number,
