@@ -30,7 +30,8 @@ const PlacesComponent = ({ placesViewModel }: PlacesComponentProps) => {
                     <li key={index}>{place.Nombre}</li>
                 ))}
             </ul>
-            <Link to={'/places/getPlacesByToponym'}>Añadir lugar por topónimo</Link>
+            <Link to={'/places/addPlaceByToponym'}>Añadir lugar por topónimo</Link>
+            <Link to={'/places/addPlaceByCoords'}>Añadir lugar por coordenadas</Link>
         </div>
     );
 };

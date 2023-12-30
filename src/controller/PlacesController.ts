@@ -1,6 +1,6 @@
 import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
-import {Coords} from "../interfaces/Coords";
+import { Coords } from "../interfaces/Coords";
 import PlacesInterface from "../interfaces/LugaresInterface";
 import Place from "../interfaces/Place";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
@@ -15,6 +15,22 @@ export default class PlacesController implements PlacesInterface {
     constructor(apiService: APIPlacesInterface) {
         this.apiService = apiService;
         this.places = [];
+    }
+
+    toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }): Boolean {
+        if (this.places.length === 0) {
+            throw new EmptyPlacesException();
+        }
+        const index = this.places.findIndex(place => (place.Longitud === Longitud
+            && place.Latitud === Latitud));
+
+        if (index !== -1) {
+            this.places[index].Favorito = !this.places[index].Favorito;
+            console.log('Place updated:', this.places[index]);
+            return true;
+        } else {
+            throw new PlaceNotFoundException();
+        }
     }
 
     async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
