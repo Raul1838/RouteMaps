@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import PlacesViewModel from "../../viewModel/PlacesViewModel";
+import PlacesViewModel from "../viewModel/PlacesViewModel";
 import { Coords } from "../../interfaces/Coords";
 import { Link } from "react-router-dom";
 

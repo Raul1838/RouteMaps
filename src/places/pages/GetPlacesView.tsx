@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import PlacesViewModel from "../../viewModel/PlacesViewModel";
+import PlacesViewModel from "../viewModel/PlacesViewModel";
 import Place from "../../interfaces/Place";
 import { Link } from "react-router-dom";
 

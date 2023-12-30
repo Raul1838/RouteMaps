@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PlacesViewModel from '../../viewModel/PlacesViewModel';
+import PlacesViewModel from '../viewModel/PlacesViewModel';
 
 interface AddPlaceByToponymComponentProps {
     placesViewModel: PlacesViewModel;

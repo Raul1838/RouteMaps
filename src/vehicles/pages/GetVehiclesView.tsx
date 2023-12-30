@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import VehiclesViewModel from '../../viewModel/VehiclesViewModel';
+import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Vehicle from '../../interfaces/Vehicle';
 import EmptyVehiclesException from '../../exceptions/EmptyVehiclesException';
+import { Link } from "react-router-dom";
+
 
 interface GetVehiclesComponentProps {
     vehiclesViewModel: VehiclesViewModel;
@@ -43,6 +45,7 @@ const GetVehiclesComponent = ({ vehiclesViewModel }: GetVehiclesComponentProps) 
                     </li>
                 ))}
             </ul>
+            <Link to={'/vehicles/addVehicles'}>Añadir vehículo</Link>
         </div>
     );
 };

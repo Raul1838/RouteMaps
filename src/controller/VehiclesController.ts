@@ -18,6 +18,22 @@ export default class VehiclesController implements VehiclesInterface {
         // });
     }
 
+    toggleFavourite({ id }: { id: number; }): Boolean {
+        if (this.vehicles.length === 0){
+            throw new EmptyVehiclesException();
+        }
+        
+        const index = this.vehicles.findIndex(vehicle => vehicle.id === id);
+
+        if (index !== -1) {
+            this.vehicles[index].Favorito = !this.vehicles[index].Favorito;
+            console.log('Vehicle updated:', this.vehicles[index]);
+            return true;
+        } else {
+            throw new VehicleNotFoundException();
+        }
+    }
+
     addVehicle(paramVehicle: Vehicle): Boolean {
         if (typeof paramVehicle.plate !== 'string'
             || typeof paramVehicle.name !== 'string'
