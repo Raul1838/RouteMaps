@@ -130,7 +130,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: [],
                 distance: 1000,
                 duration: 500,
             };
@@ -172,7 +172,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: [],
                 distance: 1000,
                 duration: 500,
             };
@@ -223,7 +223,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: [],
                 distance: 1000,
                 duration: 500,
             };
@@ -243,7 +243,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: [],
                 distance: 1000,
                 duration: 500,
             };

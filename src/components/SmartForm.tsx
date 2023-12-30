@@ -1,7 +1,7 @@
-import {useForm} from '../../hooks/useForm.ts'
+import {useForm} from '../hooks/useForm.ts'
 import React, {SyntheticEvent, useEffect, useState} from "react";
 import {Link} from "react-router-dom";
-import {FormProps} from "../../interfaces/FormProps.ts";
+import {FormProps} from "../interfaces/FormProps.ts";
 
 interface Errors {
     [key: string]: string | null;

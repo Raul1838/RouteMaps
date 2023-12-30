@@ -32,7 +32,7 @@ export class PathwayController {
     }
 
     async getDefaultPathwayType ( userId: string ): Promise<PathwayTypes> {
-        let data: PathwayTypes = PathwayTypes.UNDEFINED;
+        let data: PathwayTypes = PathwayTypes.RECOMMENDED;
         await this.firebaseService.getDefaultPathwayType( userId ).then( (value) => {
             data = value.pathwayType;
         });

@@ -1,11 +1,11 @@
 import {openRouteApi} from "../api/openRouteApi.ts";
 import {getEnvVariables} from "../helpers/getEnvVariables.ts";
 import {Coords} from "../interfaces/Coords.ts";
-import {OpenRoutingPathway} from "../interfaces/OpenRoutingPathway.ts";
 import {Pathway} from "../interfaces/Pathway.ts";
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
 import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
+import {OpenRoutePostResponse} from "../interfaces/OpenRoutePostResponse.ts";
 
 const { VITE_ROUTES_API_KEY } = getEnvVariables();
 
@@ -26,26 +26,29 @@ export class OpenRouteService {
     }
 
     async calculatePathway( from: Coords, to: Coords, pathwayTransportMean: PathwayTransportMeans = PathwayTransportMeans.VEHICLE, pathwayType: PathwayTypes = PathwayTypes.RECOMMENDED ): Promise<Pathway> {
-        const { data } = await openRouteApi.post<OpenRoutingPathway>(`/v2/directions/${ pathwayTransportMean }`, {
-            start: `${from.lon},${from.lat}`,
-            end: `${to.lon},${to.lat}`,
-            profile: pathwayType,
+        const { data } = await openRouteApi.post<OpenRoutePostResponse>(`/v2/directions/${ pathwayTransportMean }`, {
+            coordinates: [
+                [from.lon, from.lat],
+                [to.lon, to.lat],
+            ],
+            preference: pathwayType,
         }, {
             headers: {
-                'api_key': VITE_ROUTES_API_KEY,
+                'Authorization': VITE_ROUTES_API_KEY,
                 'Content-Type': 'application/json',
             }
         }).catch( e => {
             if( e.response.status === 400 ) throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
             throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
         });
+        const { routes } = data;
         return {
             type: PathwayTypes.RECOMMENDED,
             start: from,
             end: to,
-            path: data,
-            distance: data.features[0].properties.segments[0].distance,
-            duration: data.features[0].properties.segments[0].duration,
+            codifiedPath: routes[0].geometry,
+            distance: routes[0].summary.distance,
+            duration: routes[0].summary.duration,
             favourite: false,
             transportMean: pathwayTransportMean,
         };
