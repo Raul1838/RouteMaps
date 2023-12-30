@@ -5,7 +5,7 @@ import Vehicle from "../interfaces/Vehicle.ts";
 import {PriceService} from "../services/PriceService.ts";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts";
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
-import PathwayVehicleEnum from "../enums/PathwayVehicleEnum.ts";
+import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 import {FirebaseService} from "../services/FirebaseService.ts";
 import {PathwayTypes} from "../enums/PathwayTypes.ts";
 
@@ -17,14 +17,14 @@ export class PathwayController {
         private priceService: PriceService,
     ) { }
 
-    async calculatePathway(from: Coords, to: Coords): Promise<Pathway> {
+    async calculatePathway(from: Coords, to: Coords, pathwayTransportMean: PathwayTransportMeans, pathwayType: PathwayTypes): Promise<Pathway> {
         if ((!from.lat || !from.lon) && from.name) {
             from = await this.openRouteService.getCoordinatesFromPlaceName(from.name);
         }
         if ((!to.lat || !to.lon) && to.name) {
             to = await this.openRouteService.getCoordinatesFromPlaceName(to.name);
         }
-        return await this.openRouteService.calculatePathway(from, to);
+        return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
     async setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
@@ -39,13 +39,13 @@ export class PathwayController {
         return data;
     }
 
-    calculateCalories(pathway: Pathway, vehicle: PathwayVehicleEnum): number {
+    calculateCalories(pathway: Pathway, vehicle: PathwayTransportMeans): number {
         if (!pathway || pathway.distance === 0) {
             throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
         }
-        if (vehicle === PathwayVehicleEnum.Walkinkg) {
+        if (vehicle === PathwayTransportMeans.WALKING) {
             return (pathway.distance * 12 / 250);
-        } else if (vehicle === PathwayVehicleEnum.Bike) {
+        } else if (vehicle === PathwayTransportMeans.BIKE) {
             return (pathway.distance * 6 / 250);
         } else {
             throw new VehicleNotFoundException('No se ha seleccionado un vehículo de tipo Bicicleta o Andando');

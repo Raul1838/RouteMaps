@@ -1,15 +1,17 @@
-import PathwayTypeEnum from "../enums/PathwayTypeEnum.ts";
-import { Coords } from "./Coords.ts";
+import {Coords} from "./Coords.ts";
 import {OpenRoutingPathway} from "./OpenRoutingPathway.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
+import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 
 export interface Pathway {
     id?: number,
-    type: PathwayTypeEnum;
+    type: PathwayTypes;
     start: Coords;
     end: Coords;
     path: OpenRoutingPathway;
     duration: number,
     distance: number,
     favourite: boolean,
+    transportMean: PathwayTransportMeans,
     vehicle?: string
 }

@@ -7,7 +7,7 @@ import {Coords} from "../../interfaces/Coords.ts";
 
 export const InteractiveMap = () => {
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
-    const { from, to } = navigationContext;
+    const { from, to, pathwayTransportMean, pathwayType } = navigationContext;
 
     const mapDiv = useRef<HTMLDivElement>(null);
     const map = useRef<Map>({} as Map);
@@ -28,7 +28,7 @@ export const InteractiveMap = () => {
     const drawPathwayBetween = async ( from: Coords, to: Coords ) => {
         if (map.current && from && to) {
             const pathwayController: PathwayController = getPathwayController();
-            const pathway = await pathwayController.calculatePathway(from, to);
+            const pathway = await pathwayController.calculatePathway(from, to, pathwayTransportMean, pathwayType);
             navigationContext.setDistance(pathway.distance);
             navigationContext.setDuration(pathway.duration);
 

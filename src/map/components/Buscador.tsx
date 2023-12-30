@@ -5,11 +5,13 @@ import {NavigationContext, NavigationContextInterface} from "../../context/Navig
 import {SmartForm} from "../../auth/components/SmartForm.tsx";
 import PlacesController, {getPlacesController} from "../../controller/PlacesController.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
+import {Button, ButtonGroup} from "react-bootstrap";
+import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
 
 export const Buscador = () => {
 
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
-    const { distance, duration } = navigationContext;
+    const { distance, duration, pathwayTransportMean } = navigationContext;
 
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
@@ -51,6 +53,10 @@ export const Buscador = () => {
         navigationContext.setTo({...toCoords});
     }
 
+    const handleTransportChange = (transportMean: PathwayTransportMeans) => {
+        navigationContext.setPathwayTransportMean(transportMean);
+    }
+
     return (
         <div className="card" style={{
             position: 'fixed',
@@ -65,18 +71,33 @@ export const Buscador = () => {
                 <hr />
                 <SmartForm formData={ formData } formFields={ formFields } onSubmit={ handleSearch }
                            submitButtonLabel={ 'Navegar' } validations={ validations } />
+
+                <ButtonGroup aria-label="Transport means">
+                    {Object.values(PathwayTransportMeans).map((transportMean) => (
+                        <Button
+                            key={transportMean}
+                            variant={pathwayTransportMean === transportMean ? "primary" : "white"}
+                            onClick={() => handleTransportChange(transportMean)}
+                        >
+                            {transportMean}
+                        </Button>
+                    ))}
+                </ButtonGroup>
+
                 {
                     (distance > 0 && duration > 0)
                         ?   <>
-                                <hr />
-                                <ul className="list-group">
-                                    <li className="list-group-item">Distancia: {distance}</li>
-                                    <li className="list-group-item">Duración: {duration}</li>
-                                </ul>
-                            </>
+                            <hr />
+                            <ul className="list-group">
+                                <li className="list-group-item">Distancia: { distance / 1000 } km</li>
+                                <li className="list-group-item">Duración: { Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>
+                            </ul>
+                        </>
                         : <></>
                 }
+
             </div>
         </div>
     )
+
 }

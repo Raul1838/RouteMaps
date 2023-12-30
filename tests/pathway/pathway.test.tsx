@@ -4,7 +4,7 @@ import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/P
 import {Pathway} from "../../src/interfaces/Pathway";
 import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
-import PathwayVehicleEnum from "../../src/enums/PathwayVehicleEnum";
+import PathwayVehicleEnum from "../../src/enums/PathwayTransportMeans";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
 import {AuthController, getAuthController} from "../../src/controller/AuthController";
@@ -228,7 +228,7 @@ describe('Tests sobre gestión de rutas', () => {
                 duration: 500,
             };
 
-            const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.Walkinkg);
+            const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.WALKING);
             expect(calories).toBeTruthy();
             expect(calories).toBeGreaterThan(0);
 
@@ -275,7 +275,7 @@ describe('Tests sobre gestión de rutas', () => {
             };
 
             try {
-                const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.Walkinkg);
+                const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.WALKING);
                 fail('Debería haber saltado una excepción');
             } catch (error) {
                 if (error instanceof PathwayException) {
