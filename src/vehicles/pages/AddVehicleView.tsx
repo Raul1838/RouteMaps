@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import VehiclesViewModel from '../viewModel/VehiclesViewModel';
-import { SmartForm } from '../../auth/components/SmartForm';
 import Combustible from '../../enums/Combustible';
 import { FormState } from '../../hooks/useForm';
 import { Link } from "react-router-dom";
+import {SmartForm} from "../../components/SmartForm.tsx";
 
 
 interface AddVehicleComponentProps {

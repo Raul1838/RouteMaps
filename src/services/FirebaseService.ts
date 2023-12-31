@@ -1,12 +1,11 @@
-import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
-import { UserModel } from "../interfaces/UserModel.ts";
-import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
-import { doc, getDoc, setDoc } from "firebase/firestore/lite";
-import { Pathway } from "../interfaces/Pathway.ts";
-import { arrayUnion } from "firebase/firestore";
+import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
+import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
+import {UserModel} from "../interfaces/UserModel.ts";
+import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
+import {doc, getDoc, setDoc} from "firebase/firestore/lite";
+import {Pathway} from "../interfaces/Pathway.ts";
 import Combustible from "../enums/Combustible.ts";
-import { PathwayTypes } from "../enums/PathwayTypes.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
 

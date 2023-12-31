@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import PlacesViewModel from "../viewModel/PlacesViewModel";
-import { SmartForm } from "../../auth/components/SmartForm";
 import { FormState } from '../../hooks/useForm';
 import { Link } from "react-router-dom";
+import {SmartForm} from "../../components/SmartForm.tsx";
 
 interface AddPlaceByCoordsComponentProps {
     placesViewModel: PlacesViewModel;
