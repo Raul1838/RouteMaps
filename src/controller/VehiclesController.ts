@@ -18,16 +18,20 @@ export default class VehiclesController implements VehiclesInterface {
         // });
     }
 
-    toggleFavourite({ id }: { id: number; }): Boolean {
-        if (this.vehicles.length === 0){
+    toggleFavourite({ plate }: { plate: string }): boolean {
+        if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
-        
-        const index = this.vehicles.findIndex(vehicle => vehicle.id === id);
-
-        if (index !== -1) {
-            this.vehicles[index].Favorito = !this.vehicles[index].Favorito;
-            return true;
+    
+        if (this.vehicles.has(plate)) {
+            const vehicle = this.vehicles.get(plate);
+            if (vehicle) {
+                vehicle.favorite = !vehicle.favorite;
+                return true;
+            } else {
+                // Handle the case where the vehicle is not found (this should not happen)
+                throw new VehicleNotFoundException();
+            }
         } else {
             throw new VehicleNotFoundException();
         }
