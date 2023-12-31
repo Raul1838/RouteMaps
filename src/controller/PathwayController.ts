@@ -41,7 +41,7 @@ export default class PathwayController {
         this.pathways = pathways;
     }
     addPathway(pathway: Pathway) {
-        throw new Error('No está implementado');
+        this.pathways.push(pathway);
     }
 
     // deletePathway(pathway: Pathway) {
