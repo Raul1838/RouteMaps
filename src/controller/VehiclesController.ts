@@ -5,65 +5,89 @@ import Combustible from "../enums/Combustible";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
+import {FirebaseService} from "../services/FirebaseService.ts";
 
 
 export default class VehiclesController implements VehiclesInterface {
-    private vehicles: Array<Vehicle>;
-    constructor() {
-        this.vehicles = new Array();
+
+    private vehicles: Map<string, Vehicle> = new Map<string, Vehicle>();
+
+    constructor( private firebaseService: FirebaseService ) {
+        // firebaseService.getVehicles().then(vehicles => {
+        //     setVehicles(vehicles);
+        // });
     }
+
+    toggleFavourite({ plate }: { plate: string }): boolean {
+        if (this.vehicles.size === 0) {
+            throw new EmptyVehiclesException();
+        }
+    
+        if (this.vehicles.has(plate)) {
+            const vehicle = this.vehicles.get(plate);
+            if (vehicle) {
+                vehicle.favorite = !vehicle.favorite;
+                return true;
+            } else {
+                // Handle the case where the vehicle is not found (this should not happen)
+                throw new VehicleNotFoundException();
+            }
+        } else {
+            throw new VehicleNotFoundException();
+        }
+    }
+
     addVehicle(paramVehicle: Vehicle): Boolean {
-        if (typeof paramVehicle.id !== 'number'
-            || typeof paramVehicle.Nombre !== 'string'
+        if (typeof paramVehicle.plate !== 'string'
+            || typeof paramVehicle.name !== 'string'
             || !Object.values(Combustible).includes(paramVehicle.propulsion)
-            || typeof paramVehicle.consumo !== 'number'
-            || typeof paramVehicle.Favorito !== 'boolean'
-            || typeof paramVehicle.Defecto !== 'boolean') {
+            || typeof paramVehicle.consumption !== 'number'
+            || typeof paramVehicle.favorite !== 'boolean') {
             throw new InvalidVehicleException();
         }
 
-        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramVehicle.id);
-
-        if (index === -1) {
-            this.vehicles.push(paramVehicle);
-            console.log('Vehicle inserted:', paramVehicle);
+        if (!this.vehicles.has(paramVehicle.plate)) {
+            this.vehicles.set(paramVehicle.plate, paramVehicle);
             return true;
         } else {
             throw new VehicleAlreadyExistException();
         }
     }
 
-
-    getVehicles(): Vehicle[] {
-        if (this.vehicles.length === 0) {
-            throw new EmptyVehiclesException();
-        }
-        return this.vehicles;
+    getVehicle(plate: string): Vehicle{
+        return this.vehicles.get(plate) || {
+            plate: '',
+            name: '',
+            propulsion: Combustible.Gasolina,
+            consumption: 0,
+            favorite: false
+        };
     }
 
-    deleteVehicle(paramId: number): Boolean {
-        if (this.vehicles.length === 0) {
+    getVehicles(): Vehicle[] {
+        return Array.from(this.vehicles.values());
+    }
+
+    deleteVehicle(plate: string): Boolean {
+        if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
-        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramId);
 
-        if (index !== -1) {
-            this.vehicles.splice(index, 1);
-            console.log('Vehicle deleted:', paramId);
+        if (this.vehicles.has(plate)) {
+            this.vehicles.delete(plate);
             return true;
+        } else {
+            throw new VehicleNotFoundException();
         }
-        return false;
     }
 
     modifyVehicle(paramVehicle: Vehicle): Boolean {
-        if (this.vehicles.length === 0) {
+        if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
-        const index = this.vehicles.findIndex(vehicle => vehicle.id === paramVehicle.id);
 
-        if (index !== -1) {
-            this.vehicles[index] = { ...this.vehicles[index], ...paramVehicle };
-            console.log('Vehicle updated:', this.vehicles[index]);
+        if (this.vehicles.has(paramVehicle.plate)) {
+            this.vehicles.set(paramVehicle.plate, { ...this.vehicles.get(paramVehicle.plate), ...paramVehicle });
             return true;
         } else {
             throw new VehicleNotFoundException();
@@ -71,6 +95,32 @@ export default class VehiclesController implements VehiclesInterface {
     }
 
     setVehicles(vehicles: Vehicle[]): void {
-        this.vehicles = vehicles;
+        this.vehicles = new Map(vehicles.map(vehicle => [vehicle.plate, vehicle]));
     }
+
+    async setDefaultVehicle(plate: string, userId: string): Promise<void> {
+        if (this.vehicles.has(plate)) {
+            await this.firebaseService.setDefaultVehicle(plate, userId);
+        } else {
+            throw new VehicleNotFoundException('El vehículo no existe');
+        }
+    }
+
+    async getDefaultVehicle(userId: string): Promise<string> {
+        let data: string = '';
+        await this.firebaseService.getDefaultVehicle(userId).then((data) => {
+            data = data.vehiclePlate;
+        }).catch(() => {
+            throw new VehicleNotFoundException('El usuario no tiene vehículo por defecto');
+        });
+        return data;
+    }
+}
+
+let _instance: VehiclesController;
+export function getVehiclesController(firebaseService?: FirebaseService): VehiclesController {
+    if (!_instance) {
+        _instance = new VehiclesController((!firebaseService ? new FirebaseService() : firebaseService));
+    }
+    return _instance;
 }

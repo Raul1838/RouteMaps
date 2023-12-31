@@ -7,5 +7,6 @@ export default interface LugaresInterface {
     setPlaces(places: Place[]): void;
     getPlaces(): Place[];
     deletePlace(lugar: Place): Boolean;
+    toggleFavourite({Longitud, Latitud}: {Longitud: number, Latitud: number}): Boolean;
 
 }

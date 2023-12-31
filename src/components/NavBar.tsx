@@ -2,10 +2,9 @@ import { Link } from "react-router-dom";
 import {UserDropDown} from "../auth/components/UserDropDown.tsx";
 
 export const NavBar = () => {
-
     return(
         <>
-            <nav className="navbar navbar-expand-lg navbar-dark fixed-top" style={{backgroundColor: '#800080'}}>
+            <nav className="navbar navbar-expand-lg navbar-dark fixed-top" style={{backgroundColor: '#800080', zIndex: 2}}>
                 <div className="container-fluid justify-content-between">
                     <a className="navbar-brand d-flex align-items-center" href="">
                         <img

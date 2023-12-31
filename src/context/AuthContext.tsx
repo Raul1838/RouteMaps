@@ -1,5 +1,6 @@
 import {createContext, useState} from "react";
 import {UserModel} from "../interfaces/UserModel.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 
 export interface AuthContextInterface {
     user: UserModel,
@@ -8,6 +9,12 @@ export interface AuthContextInterface {
     setIsLogged(isLogged: boolean): void,
     wantDetails: boolean,
     setWantDetails(wantDetails: boolean): void
+    defaultVehiclePlate: string,
+    setDefaultVehiclePlate(defaultVehicleId: string): void,
+    defaultPathwayType: PathwayTypes
+    setDefaultPathwayType(defaultPathwayType: PathwayTypes): void,
+    wantPreferences: boolean,
+    setWantPreferences(wantPreferences: boolean): void
 }
 
 export const AuthContext = createContext<AuthContextInterface>({
@@ -20,7 +27,13 @@ export const AuthContext = createContext<AuthContextInterface>({
     isLogged: false,
     setIsLogged: () => {},
     wantDetails: false,
-    setWantDetails: () => {}
+    setWantDetails: () => {},
+    defaultVehiclePlate: '',
+    setDefaultVehiclePlate: () => {},
+    defaultPathwayType: PathwayTypes.UNDEFINED,
+    setDefaultPathwayType: () => {},
+    wantPreferences: false,
+    setWantPreferences: () => {},
 });
 
 export const AuthProvider = ({ children }: any) => {
@@ -33,7 +46,13 @@ export const AuthProvider = ({ children }: any) => {
 
     const [isLogged, setIsLogged] = useState<boolean>(false);
 
-    const [wantDetails, setWantDetails] = useState(false);
+    const [wantDetails, setWantDetails] = useState<boolean>(false);
+
+    const [defaultVehiclePlate, setDefaultVehiclePlate] = useState<string>('');
+
+    const [defaultPathwayType, setDefaultPathwayType] = useState<PathwayTypes>(PathwayTypes.UNDEFINED);
+
+    const [wantPreferences, setWantPreferences] = useState<boolean>(false);
 
     const value: AuthContextInterface = {
         user,
@@ -41,7 +60,13 @@ export const AuthProvider = ({ children }: any) => {
         isLogged,
         setIsLogged,
         wantDetails,
-        setWantDetails
+        setWantDetails,
+        defaultVehiclePlate,
+        setDefaultVehiclePlate,
+        defaultPathwayType,
+        setDefaultPathwayType,
+        wantPreferences,
+        setWantPreferences
     }
 
     return (

@@ -1,5 +1,6 @@
+
 export const getEnvVariables = () => {
     return {
-        ...require('dotenv').config()
+        ...import.meta.env
     };
 };

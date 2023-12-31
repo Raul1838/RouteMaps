@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import PlacesViewModel from "../../viewModel/PlacesViewModel";
-import { Coords } from "../../interfaces/Coords";
+import PlacesViewModel from "../viewModel/PlacesViewModel";
+import { SmartForm } from "../../auth/components/SmartForm";
+import { FormState } from '../../hooks/useForm';
 import { Link } from "react-router-dom";
 
 interface AddPlaceByCoordsComponentProps {
@@ -8,13 +9,26 @@ interface AddPlaceByCoordsComponentProps {
 }
 
 const AddPlaceByCoordsComponent = ({ placesViewModel }: AddPlaceByCoordsComponentProps) => {
-    const [latitud, setLatitud] = useState('');
-    const [longitud, setLongitud] = useState('');
     const [resultado, setResultado] = useState('');
 
-    const handleAddPlace = async () => {
+    const formFields = [
+        { id: 'latitud', label: 'Latitud', type: 'number', placeholder: 'Latitud' },
+        { id: 'longitud', label: 'Longitud', type: 'number', placeholder: 'Longitud' }
+    ];
+
+    const validations = {
+        latitud: (value: string) => isNaN(parseFloat(value)) ? 'Latitud inválida' : null,
+        longitud: (value: string) => isNaN(parseFloat(value)) ? 'Longitud inválida' : null
+    };
+
+    const initialFormData = {
+        latitud: '',
+        longitud: ''
+    };
+
+    const handleSubmit = async (formState: FormState) => {
         try {
-            const coordenadas = { Latitud: parseFloat(latitud), Longitud: parseFloat(longitud) };
+            const coordenadas = { Latitud: parseFloat(formState.latitud), Longitud: parseFloat(formState.longitud) };
             const result = await placesViewModel.addPlaceByCoords(coordenadas);
             setResultado(result ? 'Lugar añadido con éxito' : 'Error al añadir lugar');
         } catch (error) {
@@ -25,23 +39,15 @@ const AddPlaceByCoordsComponent = ({ placesViewModel }: AddPlaceByCoordsComponen
     return (
         <div>
             <h1>Añadir un nuevo lugar por coordenadas</h1>
-            <input
-                type="number"
-                value={latitud}
-                onChange={(e) => setLatitud(e.target.value)}
-                placeholder="Latitud"
+            <SmartForm 
+                formData={initialFormData}
+                formFields={formFields}
+                onSubmit={handleSubmit}
+                submitButtonLabel="Añadir Lugar"
+                validations={validations}
             />
-            <input
-                type="number"
-                value={longitud}
-                onChange={(e) => setLongitud(e.target.value)}
-                placeholder="Longitud"
-            />
-            <button onClick={handleAddPlace}>Añadir Lugar</button>
-            <div>{resultado}</div>
-
-
-            <Link to={'/places/getPlaces'}>Ver</Link>
+            <div className="alert alert-info">{resultado}</div>
+            <Link to={'/places/getPlaces'}>Ver lugares</Link>
         </div>
     );
 };

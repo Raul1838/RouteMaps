@@ -1,11 +1,12 @@
 import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
-import {Coords} from "../interfaces/Coords";
+import { Coords } from "../interfaces/Coords";
 import PlacesInterface from "../interfaces/LugaresInterface";
 import Place from "../interfaces/Place";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
+import APIPlacesService from "../api/APIPlacesService.ts";
 
 
 export default class PlacesController implements PlacesInterface {
@@ -13,7 +14,22 @@ export default class PlacesController implements PlacesInterface {
     private apiService: APIPlacesInterface;
     constructor(apiService: APIPlacesInterface) {
         this.apiService = apiService;
-        this.places = new Array();
+        this.places = [];
+    }
+
+    toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }): Boolean {
+        if (this.places.length === 0) {
+            throw new EmptyPlacesException();
+        }
+        const index = this.places.findIndex(place => (place.Longitud === Longitud
+            && place.Latitud === Latitud));
+
+        if (index !== -1) {
+            this.places[index].Favorito = !this.places[index].Favorito;
+            return true;
+        } else {
+            throw new PlaceNotFoundException();
+        }
     }
 
     async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
@@ -53,7 +69,7 @@ export default class PlacesController implements PlacesInterface {
         }
     }
     private checkValidCoordinates(coordenadas: Coords) {
-        if ((typeof coordenadas.Latitud !== 'number') || (typeof coordenadas.Longitud !== 'number')) {
+        if ((typeof coordenadas.lat !== 'number') || (typeof coordenadas.lon !== 'number')) {
             throw new IllegalArgumentException();
         }
     }
@@ -98,4 +114,27 @@ export default class PlacesController implements PlacesInterface {
         const numberRegex = /\d/;
         return numberRegex.test(text);
     }
+
+    async transformToValidCoords(inputTerm: string): Promise<Coords> {
+        const splitInputTerm: string[] = inputTerm.split(',');
+        if( splitInputTerm.length > 1 ) {
+            if (splitInputTerm.every((value: string) => this.containsNumber(value))) {
+                return { lat: parseFloat(splitInputTerm[1]), lon: parseFloat(splitInputTerm[0]) };
+            }
+        }
+        const place: Place = await this.apiService.getPlaceByToponym(inputTerm);
+        return {
+            name: place.Nombre,
+            lat: place.Latitud,
+            lon: place.Longitud
+        }
+    }
+}
+
+let _instance: PlacesController;
+export function getPlacesController(apiService?: APIPlacesInterface): PlacesController {
+    if (!_instance) {
+        _instance = new PlacesController((!apiService ? new APIPlacesService(): apiService));
+    }
+    return _instance;
 }

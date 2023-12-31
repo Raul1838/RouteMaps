@@ -1,5 +1,4 @@
 import PlacesController from "../../src/controller/PlacesController";
-import APINotAvailableExeption from "../../src/exceptions/APINotAvailableExeption";
 import EmptyPlacesException from "../../src/exceptions/EmptyPlacesException";
 import IllegalArgumentException from "../../src/exceptions/IllegalArgumentException";
 import InvalidToponymException from "../../src/exceptions/InvalidToponymException";
@@ -26,15 +25,15 @@ describe('Tests sobre los lugares', () => {
             // When
             await placesController.addPlaceByCoords(
                 {
-                    Longitud: -0.0576800,
-                    Latitud: 39.9929000
+                    lon: -0.0576800,
+                    lat: 39.9929000
                 }
             ).then(() => expect(placesController.getPlaces()).toHaveLength(2));
             // Then
 
         });
 
-        test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async() => {
+        test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async () => {
             // Given
             expect.assertions(1);
             placesController.setPlaces([{
@@ -46,10 +45,12 @@ describe('Tests sobre los lugares', () => {
             // When
             await placesController.addPlaceByCoords(
                 {
-                    Longitud: -0.0576800,
-                    Latitud: 39.9929000
+                    lon: -0.0576800,
+                    lat: 39.9929000
                 }
-            ).then(() => expect(placesController.getPlaces()).toHaveLength(2));
+            ).then(() => {
+                expect(placesController.getPlaces()).toHaveLength(2);
+            });
             // Then
 
         });
@@ -66,8 +67,8 @@ describe('Tests sobre los lugares', () => {
 
             // When
             await placesController.addPlaceByCoords({
-                Longitud: -0.0576800,
-                Latitud: "adfd"
+                lon: -0.0576800,
+                lat: "adfd"
             }).then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(IllegalArgumentException));
             // If no error is thrown, fail the test
 
@@ -215,4 +216,65 @@ describe('Tests sobre los lugares', () => {
             });
         });
     });
+    describe('HU20 - Como usuario quiero poder marcar como favoritos lugares de interés para que aparezcan los primeros cuando los listo.', () => {
+        test('E01 - Existe una lista con lugares dados de alta y existe el lugar que se quiere marcar como favorito.', () => {
+            //Given
+            placesController.setPlaces([
+                {
+                    Nombre: 'Valencia',
+                    Longitud: -0.3773900,
+                    Latitud: 39.4697500,
+                    Favorito: false
+                }, {
+                    Nombre: 'Castellón',
+                    Longitud: -0.0576800,
+                    Latitud: 39.9929000,
+                    Favorito: false
+                }]);
+
+            //When
+            placesController.toggleFavourite({ Longitud: -0.3773900, Latitud: 39.4697500 });
+
+            //Then
+            expect(placesController.getPlaces()).toStrictEqual([
+                {
+                    Nombre: 'Valencia',
+                    Longitud: -0.3773900,
+                    Latitud: 39.4697500,
+                    Favorito: true
+                }, {
+                    Nombre: 'Castellón',
+                    Longitud: -0.0576800,
+                    Latitud: 39.9929000,
+                    Favorito: false
+                }]);
+        });
+        test('E02 - Existe una lista con lugares dados de alta y no existe el lugar que se quiere marcar como favorito.', () => {
+            //Given
+            placesController.setPlaces([
+                {
+                    Nombre: 'Castellón',
+                    Longitud: -0.0576800,
+                    Latitud: 39.9929000,
+                    Favorito: false
+                }]);
+
+            //When
+            const error = () => placesController.toggleFavourite({ Longitud: -0.3773900, Latitud: 39.4697500 });
+
+            //Then
+            expect(error).toThrow(PlaceNotFoundException);
+        });
+        test('E03 - No hay lugares dados de alta.', () => {
+            //Given
+            placesController.setPlaces([]);
+
+            //When
+            const error = () => placesController.toggleFavourite({ Longitud: -0.3773900, Latitud: 39.4697500 });
+
+            //Then
+            expect(error).toThrow(EmptyPlacesException);
+
+        });
+    })
 });
