@@ -28,6 +28,7 @@ export class PathwayController {
     }
 
     async setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
+        localStorage.setItem('defaultPathwayType', pathwayType);
         await this.firebaseService.setDefaultPathwayType( pathwayType, userId );
     }
 
@@ -36,6 +37,7 @@ export class PathwayController {
         await this.firebaseService.getDefaultPathwayType( userId ).then( (value) => {
             data = value.pathwayType;
         });
+        localStorage.setItem('defaultPathwayType', data);
         return data;
     }
 

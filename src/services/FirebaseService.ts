@@ -189,4 +189,5 @@ export class FirebaseService {
             throw new Error('No such document!');
         return docSnap.data();
     }
+
 }

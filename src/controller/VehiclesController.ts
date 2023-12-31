@@ -101,6 +101,7 @@ export default class VehiclesController implements VehiclesInterface {
     async setDefaultVehicle(plate: string, userId: string): Promise<void> {
         if (this.vehicles.has(plate)) {
             await this.firebaseService.setDefaultVehicle(plate, userId);
+            localStorage.setItem('defaultVehicle', plate);
         } else {
             throw new VehicleNotFoundException('El vehículo no existe');
         }
@@ -113,6 +114,7 @@ export default class VehiclesController implements VehiclesInterface {
         }).catch(() => {
             throw new VehicleNotFoundException('El usuario no tiene vehículo por defecto');
         });
+        localStorage.setItem('defaultVehicle', data);
         return data;
     }
 }
