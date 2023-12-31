@@ -55,7 +55,7 @@ describe('Tests sobre gestión de rutas', () => {
             await pathwayController.calculatePathway(from, to);
             throw new Error();
         } catch (error) {
-            if (error instanceof PathwayException) {
+            if( error instanceof PathwayException ) {
                 expect(error.message).toBe(PathWayExceptionMessages.InvalidPathway);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
@@ -92,7 +92,7 @@ describe('Tests sobre gestión de rutas', () => {
             await vehiclesController.setDefaultVehicle(vehicleId, loggedUser.uid);
             throw new Error();
         } catch (error) {
-            if (error instanceof VehicleNotFoundException) {
+            if( error instanceof VehicleNotFoundException ) {
                 expect(error.message).toBe('El vehículo no existe');
             } else {
                 throw new Error('Lanzada una excepción no controlada');
@@ -107,8 +107,8 @@ describe('Tests sobre gestión de rutas', () => {
             password: '123456789',
         }
         const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-        await pathwayController.setDefaultPathwayType(PathwayTypes.RECOMMENDED, loggedUser.uid);
-        expect(loggedUser).toBeTruthy();
+        await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, loggedUser.uid);
+        expect( loggedUser ).toBeTruthy();
         await authController.logout();
     });
 
@@ -130,7 +130,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: '',
                 distance: 1000,
                 duration: 500,
             };
@@ -172,7 +172,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: '',
                 distance: 1000,
                 duration: 500,
             };
@@ -223,7 +223,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: {},
+                codifiedPath: '',
                 distance: 1000,
                 duration: 500,
             };
@@ -243,7 +243,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: '',
                 distance: 1000,
                 duration: 500,
             };
@@ -269,7 +269,7 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                codifiedPath: '',
                 distance: 0,
                 duration: 0,
             };

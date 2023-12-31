@@ -25,7 +25,7 @@ export const NavigationContext = React.createContext<NavigationContextInterface>
     setTo: () => {},
     pathwayTransportMean: PathwayTransportMeans.VEHICLE,
     setPathwayTransportMean: () => {},
-    pathwayType: PathwayTypes.UNDEFINED,
+    pathwayType: PathwayTypes.RECOMMENDED,
     setPathwayType: () => {},
     distance: 0,
     setDistance: () => {},
@@ -38,7 +38,7 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
     const [from, setFrom] = useState<Coords>({ lat: 0, lon: 0 });
     const [to, setTo] = useState<Coords>({ lat: 0, lon: 0 });
     const [pathwayTransportMean, setPathwayTransportMean] = useState<PathwayTransportMeans>(PathwayTransportMeans.VEHICLE);
-    const [pathwayType, setPathwayType] = useState<PathwayTypes>(PathwayTypes.UNDEFINED);
+    const [pathwayType, setPathwayType] = useState<PathwayTypes>(PathwayTypes.RECOMMENDED);
     const [distance, setDistance] = useState<number>(0);
     const [duration, setDuration] = useState<number>(0);
 

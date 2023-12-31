@@ -1,4 +1,4 @@
-import {SmartForm} from "../components/SmartForm.tsx";
+import {SmartForm} from "../../components/SmartForm.tsx";
 import {FormField} from "../../interfaces/FormField.ts";
 import {FormLink} from "../../interfaces/FormLink.ts";
 import {useContext} from "react";

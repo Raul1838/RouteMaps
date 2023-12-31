@@ -2,7 +2,7 @@ import {useContext, useState} from "react";
 import {FormField} from "../../interfaces/FormField.ts";
 import {FormState} from "../../hooks/useForm.ts";
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
-import {SmartForm} from "../../auth/components/SmartForm.tsx";
+import {SmartForm} from "../../components/SmartForm.tsx";
 import PlacesController, {getPlacesController} from "../../controller/PlacesController.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
 import {Button, ButtonGroup} from "react-bootstrap";
