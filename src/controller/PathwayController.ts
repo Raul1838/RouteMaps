@@ -41,7 +41,13 @@ export default class PathwayController {
         this.pathways = pathways;
     }
     addPathway(pathway: Pathway) {
-        this.pathways.push(pathway);
+        const _ = require('lodash');
+        const isDuplicate = this.pathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
+        if (!isDuplicate) {
+            this.pathways.push(pathway);
+        } else {
+            throw new PathwayException(PathWayExceptionMessages.AlreadyExists);
+        }
     }
 
     // deletePathway(pathway: Pathway) {
