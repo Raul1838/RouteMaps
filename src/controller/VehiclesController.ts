@@ -27,7 +27,6 @@ export default class VehiclesController implements VehiclesInterface {
 
         if (index !== -1) {
             this.vehicles[index].Favorito = !this.vehicles[index].Favorito;
-            console.log('Vehicle updated:', this.vehicles[index]);
             return true;
         } else {
             throw new VehicleNotFoundException();

@@ -26,7 +26,6 @@ export default class PlacesController implements PlacesInterface {
 
         if (index !== -1) {
             this.places[index].Favorito = !this.places[index].Favorito;
-            console.log('Place updated:', this.places[index]);
             return true;
         } else {
             throw new PlaceNotFoundException();

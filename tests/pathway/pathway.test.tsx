@@ -1,15 +1,15 @@
-import {Coords} from "../../src/interfaces/Coords";
-import {getPathwayController, PathwayController} from "../../src/controller/PathwayController";
-import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/PathwayException";
-import {Pathway} from "../../src/interfaces/Pathway";
-import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
+import { Coords } from "../../src/interfaces/Coords";
+import PathwayController, { getPathwayController, } from "../../src/controller/PathwayController";
+import { PathwayException, PathWayExceptionMessages } from "../../src/exceptions/PathwayException";
+import { Pathway } from "../../src/interfaces/Pathway";
+import VehiclesController, { getVehiclesController } from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
-import PathwayVehicleEnum from "../../src/enums/PathwayTransportMeans";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
-import {AuthController, getAuthController} from "../../src/controller/AuthController";
-import {UserModel} from "../../src/interfaces/UserModel";
-import {PathwayTypes} from "../../src/enums/PathwayTypes";
+import { AuthController, getAuthController } from "../../src/controller/AuthController";
+import { UserModel } from "../../src/interfaces/UserModel";
+import { PathwayTypes } from "../../src/enums/PathwayTypes";
+import { PathwayTransportMeans } from "../../src/enums/PathwayTransportMeans";
 
 describe('Tests sobre gestión de rutas', () => {
 
@@ -33,9 +33,9 @@ describe('Tests sobre gestión de rutas', () => {
             name: 'Castellón de la Plana',
         }
 
-        await pathwayController.calculatePathway(from, to).then((pathway: Pathway) => {
-            expect( pathway ).toBeTruthy();
-            expect( pathway.distance ).toBeGreaterThanOrEqual(1);
+        await pathwayController.calculatePathway(from, to, PathwayTransportMeans.VEHICLE, PathwayTypes.RECOMMENDED).then((pathway: Pathway) => {
+            expect(pathway).toBeTruthy();
+            expect(pathway.distance).toBeGreaterThanOrEqual(1);
         });
 
     });
@@ -55,7 +55,7 @@ describe('Tests sobre gestión de rutas', () => {
             await pathwayController.calculatePathway(from, to);
             throw new Error();
         } catch (error) {
-            if( error instanceof PathwayException ) {
+            if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.InvalidPathway);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
@@ -92,7 +92,7 @@ describe('Tests sobre gestión de rutas', () => {
             await vehiclesController.setDefaultVehicle(vehicleId, loggedUser.uid);
             throw new Error();
         } catch (error) {
-            if( error instanceof VehicleNotFoundException ) {
+            if (error instanceof VehicleNotFoundException) {
                 expect(error.message).toBe('El vehículo no existe');
             } else {
                 throw new Error('Lanzada una excepción no controlada');
@@ -107,14 +107,14 @@ describe('Tests sobre gestión de rutas', () => {
             password: '123456789',
         }
         const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-        await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, loggedUser.uid);
-        expect( loggedUser ).toBeTruthy();
+        await pathwayController.setDefaultPathwayType(PathwayTypes.RECOMMENDED, loggedUser.uid);
+        expect(loggedUser).toBeTruthy();
         await authController.logout();
     });
 
     test('HU24 - E2 - Usuario no identificado', async () => {
         try {
-            await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, '');
+            await pathwayController.setDefaultPathwayType(PathwayTypes.RECOMMENDED, '');
         } catch (e) { }
     });
 
@@ -223,12 +223,12 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                path: [],
+                path: {},
                 distance: 1000,
                 duration: 500,
             };
 
-            const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.WALKING);
+            const calories = pathwayController.calculateCalories(pathway, PathwayTransportMeans.WALKING);
             expect(calories).toBeTruthy();
             expect(calories).toBeGreaterThan(0);
 
@@ -269,13 +269,13 @@ describe('Tests sobre gestión de rutas', () => {
                     lat: -34.6131500,
                     lon: -58.3772300
                 },
-                steps: [],
+                path: [],
                 distance: 0,
                 duration: 0,
             };
 
             try {
-                const calories = pathwayController.calculateCalories(pathway, PathwayVehicleEnum.WALKING);
+                const calories = pathwayController.calculateCalories(pathway, PathwayTransportMeans.WALKING);
                 fail('Debería haber saltado una excepción');
             } catch (error) {
                 if (error instanceof PathwayException) {
