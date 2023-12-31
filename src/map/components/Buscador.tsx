@@ -5,16 +5,24 @@ import {NavigationContext, NavigationContextInterface} from "../../context/Navig
 import {SmartForm} from "../../components/SmartForm.tsx";
 import PlacesController, {getPlacesController} from "../../controller/PlacesController.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
-import {Button, ButtonGroup} from "react-bootstrap";
+import {Button, ButtonGroup, Dropdown} from "react-bootstrap";
 import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
+import {PathwayTypes} from "../../enums/PathwayTypes.ts";
+import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+
+const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => value !== PathwayTypes.UNDEFINED);
 
 export const Buscador = () => {
 
+    const authContext: AuthContextInterface = useContext(AuthContext);
+    const { defaultPathwayType } = authContext;
+
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
-    const { distance, duration, pathwayTransportMean } = navigationContext;
+    const { distance, duration, pathwayTransportMean} = navigationContext;
 
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
+    const [selection, setSelection] = useState<PathwayTypes>(defaultPathwayType);
 
     const formData = {
         from,
@@ -57,6 +65,13 @@ export const Buscador = () => {
         navigationContext.setPathwayTransportMean(transportMean);
     }
 
+    const handleSelect = ( eventKey: string | null ) => {
+        if( eventKey ) {
+            setSelection(eventKey as PathwayTypes);
+            navigationContext.setPathwayType(eventKey as PathwayTypes);
+        }
+    }
+
     return (
         <div className="card" style={{
             position: 'fixed',
@@ -79,14 +94,27 @@ export const Buscador = () => {
                             variant={pathwayTransportMean === transportMean ? "primary" : "white"}
                             onClick={() => handleTransportChange(transportMean)}
                         >
-                            {transportMean}
+                            { transportMean }
                         </Button>
                     ))}
                 </ButtonGroup>
 
+                <Dropdown onSelect={ handleSelect }>
+                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        { selection }
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        {options.map((option, index) =>
+                            <Dropdown.Item eventKey={option} key={index}>{option}</Dropdown.Item>
+                        )}
+                    </Dropdown.Menu>
+                </Dropdown>
+
                 {
                     (distance > 0 && duration > 0)
                         ?   <>
+                            <h3>Costes de la ruta</h3>
                             <hr />
                             <ul className="list-group">
                                 <li className="list-group-item">Distancia: { distance / 1000 } km</li>

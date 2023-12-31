@@ -7,6 +7,9 @@ import {UserModel} from "../../interfaces/UserModel.ts";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {FormState} from "../../hooks/useForm.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
+import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
+import {PathwayTypes} from "../../enums/PathwayTypes.ts";
+import {getPathwayController, PathwayController} from "../../controller/PathwayController.ts";
 
 export const LoginPage = () => {
     const authContext : AuthContextInterface = useContext(AuthContext);
@@ -44,8 +47,21 @@ export const LoginPage = () => {
 
     const handleLogin = async ( formState: FormState ) => {
         const authController: AuthController = getAuthController();
+        const pathwayController: PathwayController = getPathwayController();
+        const vehiclesController: VehiclesController = getVehiclesController();
+
         const user: UserModel = await authController.loginWithEmailAndPassword(formState.email, formState.password);
+        const defaultPathwayType: PathwayTypes = await pathwayController.getDefaultPathwayType(user.uid);
+        let defaultVehiclePlate: string;
+        try {
+            defaultVehiclePlate = await vehiclesController.getDefaultVehicle(user.uid);
+        } catch (error) {
+            defaultVehiclePlate = '';
+        }
+
         authContext.setUser(user);
+        authContext.setDefaultPathwayType(defaultPathwayType);
+        authContext.setDefaultVehiclePlate(defaultVehiclePlate);
         authContext.setIsLogged(true);
     };
 

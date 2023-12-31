@@ -28,7 +28,7 @@ export const InteractiveMap = () => {
 
     useEffect(() => {
         drawPathwayBetween(from, to);
-    }, [from, to, pathwayTransportMean]);
+    }, [from, to, pathwayTransportMean, pathwayType]);
 
     const drawPathwayBetween = async (from: Coords, to: Coords) => {
         if ( map.current && from && to && from.lon !== to.lon && from.lat !== to.lat ) {
