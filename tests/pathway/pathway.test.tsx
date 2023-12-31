@@ -1,15 +1,15 @@
-import { Coords } from "../../src/interfaces/Coords";
-import PathwayController, { getPathwayController, } from "../../src/controller/PathwayController";
-import { PathwayException, PathWayExceptionMessages } from "../../src/exceptions/PathwayException";
-import { Pathway } from "../../src/interfaces/Pathway";
-import VehiclesController, { getVehiclesController } from "../../src/controller/VehiclesController";
+import {Coords} from "../../src/interfaces/Coords";
+import {getPathwayController, PathwayController,} from "../../src/controller/PathwayController";
+import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/PathwayException";
+import {Pathway} from "../../src/interfaces/Pathway";
+import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
-import { AuthController, getAuthController } from "../../src/controller/AuthController";
-import { UserModel } from "../../src/interfaces/UserModel";
-import { PathwayTypes } from "../../src/enums/PathwayTypes";
-import { PathwayTransportMeans } from "../../src/enums/PathwayTransportMeans";
+import {AuthController, getAuthController} from "../../src/controller/AuthController";
+import {UserModel} from "../../src/interfaces/UserModel";
+import {PathwayTypes} from "../../src/enums/PathwayTypes";
+import {PathwayTransportMeans} from "../../src/enums/PathwayTransportMeans";
 
 describe('Tests sobre gestión de rutas', () => {
 
@@ -52,7 +52,7 @@ describe('Tests sobre gestión de rutas', () => {
         }
 
         try {
-            await pathwayController.calculatePathway(from, to);
+            await pathwayController.calculatePathway(from, to, PathwayTransportMeans.VEHICLE, PathwayTypes.RECOMMENDED);
             throw new Error();
         } catch (error) {
             if( error instanceof PathwayException ) {
@@ -107,7 +107,7 @@ describe('Tests sobre gestión de rutas', () => {
             password: '123456789',
         }
         const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-        await pathwayController.setDefaultPathwayType(PathwayTypes.FASTEST, loggedUser.uid);
+        await pathwayController.setDefaultPathwayType(PathwayTypes.RECOMMENDED, loggedUser.uid);
         expect( loggedUser ).toBeTruthy();
         await authController.logout();
     });
@@ -122,6 +122,7 @@ describe('Tests sobre gestión de rutas', () => {
         test('E01 - Existe una ruta, un vehículo asignado y se conoce el precio actual del combustible.', async () => {
 
             const pathway: Pathway = {
+                type: PathwayTypes.RECOMMENDED,
                 start: {
                     lat: 39.9929000,
                     lon: -0.0576800
@@ -133,6 +134,8 @@ describe('Tests sobre gestión de rutas', () => {
                 codifiedPath: '',
                 distance: 1000,
                 duration: 500,
+                favourite: false,
+                transportMean: PathwayTransportMeans.VEHICLE
             };
 
             const vehicle: Vehicle = {
@@ -164,6 +167,7 @@ describe('Tests sobre gestión de rutas', () => {
         // });
         test('E03 - Existe una ruta pero se desconoce el vehículo a usar.', async () => {
             const pathway: Pathway = {
+                type: PathwayTypes.RECOMMENDED,
                 start: {
                     lat: 39.9929000,
                     lon: -0.0576800
@@ -175,6 +179,8 @@ describe('Tests sobre gestión de rutas', () => {
                 codifiedPath: '',
                 distance: 1000,
                 duration: 500,
+                favourite: false,
+                transportMean: PathwayTransportMeans.VEHICLE
             };
 
             const vehicle: Vehicle = 0;
@@ -215,6 +221,7 @@ describe('Tests sobre gestión de rutas', () => {
     describe('HU15 - Calcular el coste de una ruta a pie o en bicicleta', () => {
         test('E01 - La ruta es válida y se selecciona como método de recorrido bici o andando', () => {
             const pathway: Pathway = {
+                type: PathwayTypes.RECOMMENDED,
                 start: {
                     lat: 39.9929000,
                     lon: -0.0576800
@@ -226,6 +233,8 @@ describe('Tests sobre gestión de rutas', () => {
                 codifiedPath: '',
                 distance: 1000,
                 duration: 500,
+                favourite: false,
+                transportMean: PathwayTransportMeans.WALKING
             };
 
             const calories = pathwayController.calculateCalories(pathway, PathwayTransportMeans.WALKING);
@@ -235,6 +244,7 @@ describe('Tests sobre gestión de rutas', () => {
         });
         test('E02 - La ruta es válida pero se selecciona un método de recorrerla distinto a bici o andando', () => {
             const pathway: Pathway = {
+                type: PathwayTypes.RECOMMENDED,
                 start: {
                     lat: 39.9929000,
                     lon: -0.0576800
@@ -246,6 +256,8 @@ describe('Tests sobre gestión de rutas', () => {
                 codifiedPath: '',
                 distance: 1000,
                 duration: 500,
+                favourite: false,
+                transportMean: PathwayTransportMeans.BIKE
             };
 
             try {
