@@ -41,6 +41,9 @@ export default class PathwayController {
         this.pathways = pathways;
     }
     addPathway(pathway: Pathway) {
+        if (!pathway || pathway.distance === 0) {
+            throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
+        }
         const _ = require('lodash');
         const isDuplicate = this.pathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
         if (!isDuplicate) {
