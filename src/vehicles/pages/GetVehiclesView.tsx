@@ -45,7 +45,7 @@ const GetVehiclesComponent = ({ vehiclesViewModel }: GetVehiclesComponentProps) 
                     </li>
                 ))}
             </ul>
-            <Link to={'/vehicles/addVehicles'}>Añadir vehículo</Link>
+            <Link to={'/vehicles/addVehicle'}>Añadir vehículo</Link>
         </div>
     );
 };
