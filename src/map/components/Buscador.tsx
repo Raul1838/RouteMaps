@@ -49,7 +49,7 @@ export const Buscador = () => {
         }
     }
 
-    const handleSearch = async ( formState: FormState ) => {
+    const handleNavigate = async ( formState: FormState ) => {
         setFrom(formState.from);
         setTo(formState.to);
         const placesController: PlacesController = getPlacesController();
@@ -59,6 +59,7 @@ export const Buscador = () => {
         ]);
         navigationContext.setFrom({...fromCoords});
         navigationContext.setTo({...toCoords});
+        navigationContext.setPathwayType(selection as PathwayTypes);
     }
 
     const handleTransportChange = (transportMean: PathwayTransportMeans) => {
@@ -75,8 +76,8 @@ export const Buscador = () => {
     return (
         <div className="card" style={{
             position: 'fixed',
-            top: '70px',
-            left: '20px',
+            top: '55px',
+            left: '50px',
             height: 'calc(100% - 60px)',
             width: '300px',
             zIndex: 1,
@@ -84,7 +85,7 @@ export const Buscador = () => {
             <div className="card-body">
                 <h3 className="card-title">Ruta</h3>
                 <hr />
-                <SmartForm formData={ formData } formFields={ formFields } onSubmit={ handleSearch }
+                <SmartForm formData={ formData } formFields={ formFields } onSubmit={ handleNavigate }
                            submitButtonLabel={ 'Navegar' } validations={ validations } />
 
                 <ButtonGroup aria-label="Transport means">
@@ -99,7 +100,7 @@ export const Buscador = () => {
                     ))}
                 </ButtonGroup>
 
-                <Dropdown onSelect={ handleSelect }>
+                <Dropdown onSelect={ handleSelect } className="mt-3">
                     <Dropdown.Toggle variant="success" id="dropdown-basic">
                         { selection }
                     </Dropdown.Toggle>

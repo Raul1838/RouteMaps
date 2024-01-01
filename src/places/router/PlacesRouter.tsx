@@ -21,7 +21,7 @@ export const PlacesRouter = () => {
             <Route path='/addPlaceByCoords' element={<AddPlaceByCoordsComponent placesViewModel={placesViewModel}></AddPlaceByCoordsComponent>} />
             <Route path='/deletePlace' element={<DeletePlacesView placesViewModel={placesViewModel}></DeletePlacesView>} />
             <Route path='/getPlaces' element={<GetPlacesView placesViewModel={placesViewModel}></GetPlacesView>} />
-            <Route path='/*' element={<Navigate to={'/addPlaceByToponym'} />} />
+            <Route path='/*' element={<Navigate to={'/places/getPlaces'} />} />
         </Routes>
     )
 }

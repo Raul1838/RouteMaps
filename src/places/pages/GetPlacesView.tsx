@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import PlacesViewModel from "../viewModel/PlacesViewModel";
 import Place from "../../interfaces/Place";
 import { Link } from "react-router-dom";
+import {MainLayout} from "../../layouts/MainLayout.tsx";
 
 interface PlacesComponentProps {
     placesViewModel: PlacesViewModel;
@@ -22,17 +23,19 @@ const PlacesComponent = ({ placesViewModel }: PlacesComponentProps) => {
     }, [placesViewModel]);
 
     return (
-        <div>
-            <h1>Lugares disponibles</h1>
-            {error && <div>Error: {error}</div>}
-            <ul>
-                {places.map((place, index) => (
-                    <li key={index}>{place.Nombre}</li>
-                ))}
-            </ul>
-            <Link to={'/places/addPlaceByToponym'}>Añadir lugar por topónimo</Link>
-            <Link to={'/places/addPlaceByCoords'}>Añadir lugar por coordenadas</Link>
-        </div>
+        <MainLayout>
+            <div>
+                <h1>Lugares disponibles</h1>
+                {error && <div>Error: {error}</div>}
+                <ul>
+                    {places.map((place, index) => (
+                        <li key={index}>{place.Nombre}</li>
+                    ))}
+                </ul>
+                <Link to={'/places/addPlaceByToponym'}>Añadir lugar por topónimo</Link>
+                <Link to={'/places/addPlaceByCoords'}>Añadir lugar por coordenadas</Link>
+            </div>
+        </MainLayout>
     );
 };
 

@@ -3,6 +3,7 @@ import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Vehicle from '../../interfaces/Vehicle';
 import EmptyVehiclesException from '../../exceptions/EmptyVehiclesException';
 import { Link } from "react-router-dom";
+import {MainLayout} from "../../layouts/MainLayout.tsx";
 
 
 interface GetVehiclesComponentProps {
@@ -32,21 +33,23 @@ const GetVehiclesComponent = ({ vehiclesViewModel }: GetVehiclesComponentProps) 
     }, [vehiclesViewModel]);
 
     return (
-        <div>
-            <h1>Vehículos disponibles</h1>
-            {error && <div>Error: {error}</div>}
-            <ul>
-                {vehicles.map(vehicle => (
-                    <li key={vehicle.plate}>
-                        {vehicle.name} - Propulsión: {vehicle.propulsion},
-                        Consumo: {vehicle.consumption},
-                        Favorito: {vehicle.favorite ? 'Sí' : 'No'},
-                        Defecto: {vehicle.Defecto ? 'Sí' : 'No'}
-                    </li>
-                ))}
-            </ul>
-            <Link to={'/vehicles/addVehicle'}>Añadir vehículo</Link>
-        </div>
+        <MainLayout>
+            <div>
+                <h1>Vehículos disponibles</h1>
+                {error && <div>Error: {error}</div>}
+                <ul>
+                    {vehicles.map(vehicle => (
+                        <li key={vehicle.plate}>
+                            {vehicle.name} - Propulsión: {vehicle.propulsion},
+                            Consumo: {vehicle.consumption},
+                            Favorito: {vehicle.favorite ? 'Sí' : 'No'},
+                            Defecto: {vehicle.Defecto ? 'Sí' : 'No'}
+                        </li>
+                    ))}
+                </ul>
+                <Link to={'/vehicles/addVehicle'}>Añadir vehículo</Link>
+            </div>
+        </MainLayout>
     );
 };
 
