@@ -61,7 +61,9 @@ export class PlacesController {
         await this.firebaseService.setPlaces(places, userId);
     }
 
-
+    async setPlace(place: Place, userId: string): Promise<void> {
+        await this.firebaseService.storePlace(place, userId);
+    }
 
     //Otros métodos
 

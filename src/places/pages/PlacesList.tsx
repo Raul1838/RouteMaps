@@ -1,13 +1,15 @@
 import {useContext, useEffect, useState} from 'react';
-import { Button, Form, Table } from 'react-bootstrap';
+import {Button, Form, Table} from 'react-bootstrap';
 import {PlacesContext, PlacesContextInterface} from "../../context/PlacesContext.tsx";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {getPlacesController, PlacesController} from "../../controller/PlacesController.ts";
 import {MainLayout} from "../../layouts/MainLayout.tsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Place from "../../interfaces/Place.ts";
 
 export const PlacesList = () => {
+
+    const navigate = useNavigate()
 
     const { places, setPlaces }: PlacesContextInterface = useContext(PlacesContext);
     const { user }: AuthContextInterface = useContext(AuthContext);
@@ -34,6 +36,10 @@ export const PlacesList = () => {
         place.Favorito = !place.Favorito;
         setPlaces([...places]);
     };
+
+    const goToDetails = (placeName: string) => {
+        navigate(`/places/editPlace/${placeName}`);
+    }
 
     const deletePlace = (place: Place) => {
         placesController.deletePlace(place, user.uid).then(() => {
@@ -71,15 +77,15 @@ export const PlacesList = () => {
                                 places
                                     .filter(place => !filterFavorites || place.Favorito)
                                     .map((place, index) => (
-                                        <tr key={index}>
+                                        <tr key={index} onClick={() => goToDetails(place.Nombre)}>
                                             <td>{place.Nombre}</td>
                                             <td className="text-center">
-                                                <Button variant={place.Favorito ? "warning" : "outline-warning"} onClick={() => toggleFavorite(place)}>
+                                                <Button variant={place.Favorito ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(place);}}>
                                                     <i className={'fas fa-star'}></i>
                                                 </Button>
                                             </td>
                                             <td className="text-center">
-                                                <Button variant={'outline-danger'} onClick={() => deletePlace(place)}>
+                                                <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deletePlace(place);}}>
                                                     <i className={'fas fa-trash'}></i>
                                                 </Button>
                                             </td>
