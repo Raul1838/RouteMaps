@@ -1,14 +1,11 @@
-import PlacesController from "../../src/controller/PlacesController";
 import EmptyPlacesException from "../../src/exceptions/EmptyPlacesException";
 import IllegalArgumentException from "../../src/exceptions/IllegalArgumentException";
 import InvalidToponymException from "../../src/exceptions/InvalidToponymException";
 import PlaceNotFoundException from "../../src/exceptions/PlaceNotFoundException";
 import Place from "../../src/interfaces/Place";
-import APIPlacesService from "../../src/api/APIPlacesService";
+import {getPlacesController, PlacesController} from "../../src/controller/PlacesController";
 
-var realApiService: APIPlacesService = new APIPlacesService();
-var placesController: PlacesController = new PlacesController(realApiService);
-
+const placesController: PlacesController = getPlacesController();
 
 describe('Tests sobre los lugares', () => {
 
