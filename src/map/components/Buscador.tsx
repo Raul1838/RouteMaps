@@ -3,7 +3,7 @@ import {FormField} from "../../interfaces/FormField.ts";
 import {FormState} from "../../hooks/useForm.ts";
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 import {SmartForm} from "../../components/SmartForm.tsx";
-import PlacesController, {getPlacesController} from "../../controller/PlacesController.ts";
+import {PlacesController, getPlacesController} from "../../controller/PlacesController.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
 import {Button, ButtonGroup, Dropdown} from "react-bootstrap";
 import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";

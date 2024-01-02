@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword,
 import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
 import { UserModel } from "../interfaces/UserModel.ts";
 import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
-import { doc, getDoc, setDoc } from "firebase/firestore/lite";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore/lite";
 import { Pathway } from "../interfaces/Pathway.ts";
 import Combustible from "../enums/Combustible.ts";
 import { PathwayTypes } from "../enums/PathwayTypes.ts";
@@ -10,7 +10,6 @@ import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
 
 export class FirebaseService {
-
 
 
     async createUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
@@ -79,8 +78,7 @@ export class FirebaseService {
     }
 
 
-    async storePlace(place: Place, userId: string): Promise<void> {
-        const _ = require('lodash');
+    async storePlace(place: Place, userId: string): Promise<Place[]> {
         const docRef = doc(FirebaseDB, userId, 'places');
         const placeData = await this.getPlaces(userId);
         const currentPlaces: Place[] = placeData.places || [];
@@ -96,11 +94,11 @@ export class FirebaseService {
             currentPlaces.push(place);
         }
         await setDoc(docRef, { places: currentPlaces }, { merge: true });
+        return currentPlaces;
 
     }
 
     async deletePlace(place: Place, userId: string) {
-        const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
         const placeData = await this.getPlaces(userId);
         var currentPlaces: Pathway[] = placeData.pathways || [];
@@ -127,6 +125,28 @@ export class FirebaseService {
 
         return docSnap.data();
     }
+
+    async setPlaces(newPlaces: Place[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'places');
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const currentPlaces: Place[] = docSnap.data().places;
+
+            const modifiedPlaces: Place[] = currentPlaces.map(currentPlace => {
+                const modifiedPlace = newPlaces.find(place => place.Nombre === currentPlace.Nombre);
+                if (modifiedPlace) {
+                    return { ...currentPlace, Favorito: modifiedPlace.Favorito};
+                } else {
+                    return currentPlace;
+                }
+            });
+            await updateDoc(docRef, { places: modifiedPlaces });
+        } else {
+            await setDoc(docRef, { places: newPlaces }, { merge: true });
+        }
+    }
+
 
     async storeVehicle(vehicle: Vehicle, userId: string): Promise<void> {
         const _ = require('lodash');

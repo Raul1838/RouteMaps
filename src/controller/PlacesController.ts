@@ -10,27 +10,12 @@ import {OpenRouteService} from "../services/OpenRouteService.ts";
 import {FirebaseService} from "../services/FirebaseService.ts";
 
 
-export default class PlacesController {
+export class PlacesController {
     constructor(
         private apiService: APIPlacesInterface,
         private openRouteService: OpenRouteService,
         private firebaseService: FirebaseService,
     ) { }
-
-    toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }): Boolean {
-        if (this.places.length === 0) {
-            throw new EmptyPlacesException();
-        }
-        const index = this.places.findIndex(place => (place.Longitud === Longitud
-            && place.Latitud === Latitud));
-
-        if (index !== -1) {
-            this.places[index].Favorito = !this.places[index].Favorito;
-            return true;
-        } else {
-            throw new PlaceNotFoundException();
-        }
-    }
 
     async addPlaceByToponym(placeName: string, userId: string): Promise<Place[]> {
         const completePlace: Coords = await this.openRouteService.getCoordinatesFromPlaceName(placeName);
@@ -78,17 +63,15 @@ export default class PlacesController {
             throw new PlaceNotFoundException("No se encontró el lugar a eliminar.");
         }
     }
-
-    setPlaces(places: Place[]): void {
-        this.places = places;
+    async getPlaces(userId: string): Promise<Place[]> {
+        const data = await this.firebaseService.getPlaces( userId );
+        return data?.places || [];
     }
 
-    getPlaces(): Place[] {
-        if (this.places.length === 0) {
-            throw new EmptyPlacesException();
-        }
-        return this.places
+    async setPlaces(places: Place[], userId: string): Promise<void> {
+        await this.firebaseService.setPlaces(places, userId);
     }
+
 
 
     //Otros métodos

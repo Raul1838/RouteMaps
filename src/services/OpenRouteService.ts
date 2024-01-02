@@ -5,7 +5,7 @@ import {Pathway} from "../interfaces/Pathway.ts";
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
 import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
-import {OpenRoutePostResponse} from "../interfaces/OpenRoutePostResponse.ts";
+import {OpenRoutingPostCall} from "../interfaces/OpenRoutingPostCall.ts";
 
 const { VITE_ROUTES_API_KEY } = getEnvVariables();
 
@@ -50,18 +50,15 @@ export class OpenRouteService {
                 throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
             });
 
-
-        const pathway: Pathway = {
+        return {
             distance: data.routes[0].summary.distance,
             duration: data.routes[0].summary.duration,
             end: to,
             start: from,
-            end: to,
-            codifiedPath: routes[0].geometry,
-            distance: routes[0].summary.distance,
-            duration: routes[0].summary.duration,
+            codifiedPath: data.routes[0].geometry,
             favourite: false,
             transportMean: pathwayTransportMean,
+            type: pathwayType,
         };
     }
 
