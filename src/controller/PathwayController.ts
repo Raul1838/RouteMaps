@@ -33,9 +33,26 @@ export default class PathwayController {
         return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
-    deletePlace(id: number | undefined) {
-        throw new Error("Method not implemented.");
+    deletePlace(paramPathway: Pathway | number) {
+        var searchPar: number;
+
+        if (typeof paramPathway === 'number') {
+            searchPar = paramPathway;
+        } else {
+            searchPar = paramPathway.id!;
+        }
+
+        const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
+
+        if (index !== -1) {
+            this.pathways.splice(index, 1);
+            return true;
+        } else {
+            return false;
+        }
     }
+
+
 
     getPathhways() {
         if (this.pathways.length === 0) {

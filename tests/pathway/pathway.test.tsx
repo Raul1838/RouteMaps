@@ -19,7 +19,7 @@ describe('Tests sobre gestión de rutas', () => {
     let authController: AuthController;
 
 
-    const validPathway: Pathway = {
+    const validPathway1: Pathway = {
         id: 100,
         start: {
             lat: 39.988126910927626,
@@ -86,6 +86,73 @@ describe('Tests sobre gestión de rutas', () => {
         favourite: false
     };
 
+    const validPathway2: Pathway = {
+        id: 102,
+        start: {
+            lat: 39.988126910927626,
+            lon: -0.05202140449041774
+        },
+        end: {
+            lat: 39.986597808112535,
+            lon: -0.05682265874338428
+        },
+        path: [
+            {
+                "distance": 52.9,
+                "duration": 38.1,
+                "instruction": "Head southwest on Calle Pintor Oliet",
+                "name": "Calle Pintor Oliet",
+            },
+            {
+                "distance": 5.9,
+                "duration": 4.3,
+                "instruction": "Turn right",
+                "name": "-",
+            },
+            {
+                "distance": 151.3,
+                "duration": 109.0,
+                "instruction": "Turn left",
+                "name": "-",
+            },
+            {
+                "distance": 133.1,
+                "duration": 95.8,
+                "instruction": "Continue straight onto Camino Viejo Alcora",
+                "name": "Camino Viejo Alcora",
+            },
+            {
+                "distance": 109.5,
+                "duration": 78.8,
+                "instruction": "Continue straight onto Camino Viejo Alcora",
+                "name": "Camino Viejo Alcora",
+            },
+            {
+                "distance": 56.1,
+                "duration": 40.4,
+                "instruction": "Turn left onto Calle Budapest",
+                "name": "Calle Budapest",
+            },
+            {
+                "distance": 46.5,
+                "duration": 33.5,
+                "instruction": "Turn right onto Avenida Alcora, CV-1540",
+                "name": "Avenida Alcora, CV-1540",
+            },
+            {
+                "distance": 0.0,
+                "duration": 0.0,
+                "instruction": "Arrive at Avenida Alcora, CV-1540, on the right",
+                "name": "-",
+            }
+        ],
+        duration: 100.9,
+        distance: 500.4,
+        type: PathwayTypes.SHORTEST,
+        transportMean: PathwayTransportMeans.BIKE,
+        favourite: false
+    };
+
     beforeAll(() => {
         pathwayController = getPathwayController();
         vehiclesController = getVehiclesController();
@@ -136,9 +203,9 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU18 - E01 - Hay rutas dadas de alta.', async () => {
         expect.assertions(1);
-        pathwayController.setPathways([validPathway]);
+        pathwayController.setPathways([validPathway1]);
         const pathways: Pathway[] = pathwayController.getPathhways();
-        expect(pathways).toStrictEqual([validPathway]);
+        expect(pathways).toStrictEqual([validPathway1]);
     });
 
     test('HU18 - E02 - La lista de rutas está vacía.', async () => {
@@ -157,16 +224,16 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU19 - E01 - Hay rutas dadas de alta y existe la ruta que se quiere eliminar', async () => {
         expect.assertions(1);
-        pathwayController.setPathways([validPathway]);
-        pathwayController.deletePlace(validPathway.id);
-        expect(pathwayController.getPathhways()).toHaveLength(0);
+        pathwayController.setPathways([validPathway1, validPathway2]);
+        pathwayController.deletePlace(validPathway1.id!);
+        expect(pathwayController.getPathhways()).toHaveLength(1);
     });
 
     test('HU19 - E02 - Hay rutas dadas de alta pero no existe la ruta que se quiere eliminar', async () => {
         expect.assertions(1);
-        pathwayController.setPathways([validPathway]);
+        pathwayController.setPathways([validPathway1]);
         try {
-            pathwayController.deletePlace(validPathway.id);
+            pathwayController.deletePlace(validPathway1.id!);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
@@ -180,7 +247,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         pathwayController.setPathways([]);
         try {
-            pathwayController.deletePlace(validPathway.id);
+            pathwayController.deletePlace(validPathway1.id!);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
