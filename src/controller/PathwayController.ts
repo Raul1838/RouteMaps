@@ -48,7 +48,7 @@ export default class PathwayController {
             this.pathways.splice(index, 1);
             return true;
         } else {
-            return false;
+            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
         }
     }
 

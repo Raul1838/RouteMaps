@@ -233,7 +233,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         pathwayController.setPathways([validPathway1]);
         try {
-            pathwayController.deletePlace(validPathway1.id!);
+            pathwayController.deletePlace(validPathway2.id!);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
