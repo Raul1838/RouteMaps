@@ -34,6 +34,9 @@ export default class PathwayController {
 
 
     getPathhways() {
+        if (this.pathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        }
         return this.pathways;
     }
 
