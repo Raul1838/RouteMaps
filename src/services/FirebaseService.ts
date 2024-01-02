@@ -12,6 +12,7 @@ import Place from "../interfaces/Place.ts";
 
 export class FirebaseService {
 
+
     async createUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
         let resp;
         try {
@@ -106,7 +107,7 @@ export class FirebaseService {
 
     async storeVehicle(vehicle: Vehicle, userId: string): Promise<void> {
         const _ = require('lodash');
-        const docRef = doc(FirebaseDB, userId, 'vehicles'); 
+        const docRef = doc(FirebaseDB, userId, 'vehicles');
         const vehicleData = await this.getVehicles(userId);
         const currentVehicles: Vehicle[] = vehicleData.vehicles || [];
         const isDuplicate = currentVehicles.some(element =>
@@ -140,12 +141,42 @@ export class FirebaseService {
         const docRef = doc(FirebaseDB, userId, 'pathways');
         const pathwayData = await this.getPathways(userId);
         const currentPathways: Pathway[] = pathwayData.pathways || [];
-        const isDuplicate = currentPathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
+        const existingPathwayIndex = currentPathways.findIndex(element =>
+            _.isEqual(pathway.start, element.start) &&
+            _.isEqual(pathway.end, element.end) &&
+            pathway.type === element.type &&
+            pathway.vehicle === element.vehicle
+        );
 
-        if (!isDuplicate) {
+        if (existingPathwayIndex !== -1) {
+            // Update the existing pathway
+            currentPathways[existingPathwayIndex] = pathway;
+        } else {
+            // Add the new pathway if not a duplicate
             currentPathways.push(pathway);
-            await setDoc(docRef, { pathways: currentPathways }, { merge: true });
         }
+
+        // Save the updated pathways to Firestore
+        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
+
+    }
+
+    async deletePathway(paramPathway: Pathway, userId: string) {
+        const _ = require('lodash');
+        const docRef = doc(FirebaseDB, userId, 'pathways');
+        const pathwayData = await this.getPathways(userId);
+        var currentPathways: Pathway[] = pathwayData.pathways || [];
+        const existingPathwayIndex = currentPathways.findIndex(element =>
+            _.isEqual(paramPathway.start, element.start) &&
+            _.isEqual(paramPathway.end, element.end) &&
+            paramPathway.type === element.type &&
+            paramPathway.vehicle === element.vehicle
+        );
+        if (existingPathwayIndex !== -1) {
+            currentPathways = currentPathways.splice(existingPathwayIndex, 1);
+        }
+
+        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
     }
 
     async getPathways(userId: string) {

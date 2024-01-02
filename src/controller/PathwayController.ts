@@ -17,14 +17,23 @@ export default class PathwayController {
         private openRouteService: OpenRouteService,
         private firebaseService: FirebaseService,
         private priceService: PriceService,
+        // userId: string
     ) {
         this.pathways = [];
         // firebaseService.getPathways().then(pathways => {
-        //     this.setPathways(pathways);
+        //     this.setPathways(pathways as Pathway[]);
         // });
     }
 
-    toggleFavourite(paramPathway: Pathway | number) {
+    toggleFavourite(paramPathway: Pathway, userId?: string) {
+        try {
+            this.toggleFavouriteLocally(paramPathway);
+            this.firebaseService.storePathway(paramPathway, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+    private toggleFavouriteLocally(paramPathway: number | Pathway) {
         if (this.pathways.length === 0) {
             throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
         }
@@ -56,8 +65,18 @@ export default class PathwayController {
         return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
-    deletePlace(paramPathway: Pathway | number) {
+    deletePlace(paramPathway: Pathway, userId?: string) {
+        try {
+            this.deletePlaceLocally(paramPathway);
+            this.firebaseService.deletePathway(paramPathway, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
 
+
+
+    private deletePlaceLocally(paramPathway: number | Pathway) {
         if (this.pathways.length === 0) {
             throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
         }
@@ -73,15 +92,13 @@ export default class PathwayController {
 
         if (index !== -1) {
             this.pathways.splice(index, 1);
-            return true;
+
         } else {
             throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
         }
     }
 
-
-
-    getPathhways() {
+    getPathways() {
         if (this.pathways.length === 0) {
             throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
         }
@@ -91,7 +108,19 @@ export default class PathwayController {
     setPathways(pathways: Pathway[]) {
         this.pathways = pathways;
     }
-    addPathway(pathway: Pathway) {
+
+
+    addPathway(pathway: Pathway, userId?: string) {
+        try {
+            this.addPathwayLocally(pathway);
+            this.firebaseService.storePathway(pathway, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+    private addPathwayLocally(pathway: Pathway) {
         if (!pathway || pathway.distance === 0) {
             throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
         }
@@ -103,7 +132,6 @@ export default class PathwayController {
             throw new PathwayException(PathWayExceptionMessages.AlreadyExists);
         }
     }
-
 
     calculateCalories(pathway: Pathway, vehicle: PathwayTransportMeans): number {
         if (!pathway || pathway.distance === 0) {
