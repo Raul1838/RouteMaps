@@ -25,6 +25,9 @@ export default class PathwayController {
     }
 
     toggleFavourite(paramPathway: Pathway | number) {
+        if (this.pathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        }
         var searchPar: number;
 
         if (typeof paramPathway === 'number') {
