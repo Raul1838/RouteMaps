@@ -18,7 +18,18 @@ export default class VehiclesController implements VehiclesInterface {
         // });
     }
 
-    toggleFavourite({ plate }: { plate: string }): boolean {
+    toggleFavourite({ plate }: { plate: string }, userId?: string): void {
+        try {
+            this.toggleFavouriteLocally({ plate });
+            const vehiclePuppet: Vehicle = { plate: plate, consumption: 0, name: '', propulsion: Combustible.Diesel };
+
+            this.firebaseService.storeVehicle(vehiclePuppet, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    private toggleFavouriteLocally({ plate }: { plate: string }): boolean {
         if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
