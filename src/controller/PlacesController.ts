@@ -7,17 +7,33 @@ import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
 import APIPlacesService from "../api/APIPlacesService.ts";
+import { FirebaseService } from "../services/FirebaseService.ts";
 
 
 export default class PlacesController implements PlacesInterface {
     private places: Array<Place>;
     private apiService: APIPlacesInterface;
-    constructor(apiService: APIPlacesInterface) {
+    constructor(apiService: APIPlacesInterface, private firebaseService: FirebaseService) {
         this.apiService = apiService;
         this.places = [];
     }
 
-    toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }): Boolean {
+    async toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }, userId: string | undefined) {
+        try {
+            this.toggleFavouriteLocally({ Longitud, Latitud });
+            const place: Place = {
+                Latitud: Latitud,
+                Longitud: Longitud,
+                Favorito: false,
+                Nombre: ''
+            }
+            await this.firebaseService.storePlace(place, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    private toggleFavouriteLocally({ Longitud, Latitud }: { Longitud: number; Latitud: number; }) {
         if (this.places.length === 0) {
             throw new EmptyPlacesException();
         }
@@ -32,9 +48,19 @@ export default class PlacesController implements PlacesInterface {
         }
     }
 
-    async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
-        var result: Place | undefined;
+    async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined, userId?: string | undefined) {
         try {
+            const result: Place | undefined = await this.addPlaceByToponymLocally(placeName, coordenadas);
+            await this.firebaseService.storePlace(result!, userId!);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
+    private async addPlaceByToponymLocally(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Place | undefined> {
+        try {
+            var result: Place | undefined;
             if (placeName !== undefined) {
                 this.checkForValidToponym(placeName);
                 result = await this.apiService.getPlaceByToponym(placeName!);
@@ -43,26 +69,35 @@ export default class PlacesController implements PlacesInterface {
             } else {
                 throw new Error("Input inválido: debe especificar un nombre o coordenadas");
             }
-            if (result?.Nombre !== undefined) {
+            if (result!.Nombre !== undefined) {
                 this.places.push(result);
-                return true;
+                return result;
             } else {
-                return false;
+                return undefined;
             }
         } catch (error) {
             throw error;
         }
     }
 
-    async addPlaceByCoords(coordenadas: Coords): Promise<Boolean> {
+    async addPlaceByCoords(coordenadas: Coords, userId?: string | undefined): Promise<void> {
         try {
+            const result: Place | undefined = await this.addPlaceByCoordsLocally(coordenadas);
+            await this.firebaseService.storePlace(result!, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    private async addPlaceByCoordsLocally(coordenadas: Coords): Promise<Place | undefined> {
+        try {
+            var result: Place | undefined;
             this.checkValidCoordinates(coordenadas);
-            var result: Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
-            if (result.Nombre !== undefined) {
-                this.places.push(result);
-                return true;
+            if (result!.Nombre !== undefined) {
+                this.places.push(result!);
+                return result!;
             } else {
-                return false;
+                return undefined;
             }
         } catch (error) {
             throw error;
@@ -74,7 +109,16 @@ export default class PlacesController implements PlacesInterface {
         }
     }
 
-    deletePlace(paramPlace: Place): Boolean {
+    async deletePlace(paramPlace: Place, userId?: string | undefined): Promise<void> {
+        try {
+            await this.deletePlaceLocally(paramPlace);
+            await this.firebaseService.deletePlace(paramPlace, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    deletePlaceLocally(paramPlace: Place): Boolean {
         if (this.places.length === 0) {
             throw new EmptyPlacesException("No hay lugares para eliminar.");
         }
@@ -117,7 +161,7 @@ export default class PlacesController implements PlacesInterface {
 
     async transformToValidCoords(inputTerm: string): Promise<Coords> {
         const splitInputTerm: string[] = inputTerm.split(',');
-        if( splitInputTerm.length > 1 ) {
+        if (splitInputTerm.length > 1) {
             if (splitInputTerm.every((value: string) => this.containsNumber(value))) {
                 return { lat: parseFloat(splitInputTerm[1]), lon: parseFloat(splitInputTerm[0]) };
             }
@@ -132,9 +176,11 @@ export default class PlacesController implements PlacesInterface {
 }
 
 let _instance: PlacesController;
-export function getPlacesController(apiService?: APIPlacesInterface): PlacesController {
+export function getPlacesController(apiService?: APIPlacesInterface, firebaseService?: FirebaseService): PlacesController {
     if (!_instance) {
-        _instance = new PlacesController((!apiService ? new APIPlacesService(): apiService));
+        if (!apiService) apiService = new APIPlacesService();
+        if (!firebaseService) firebaseService = new FirebaseService();
+        _instance = new PlacesController(apiService, firebaseService);
     }
     return _instance;
 }

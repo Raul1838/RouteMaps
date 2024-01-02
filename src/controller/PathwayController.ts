@@ -65,10 +65,10 @@ export default class PathwayController {
         return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
-    deletePlace(paramPathway: Pathway, userId?: string) {
+    async deletePathway(paramPathway: Pathway, userId?: string) {
         try {
-            this.deletePlaceLocally(paramPathway);
-            this.firebaseService.deletePathway(paramPathway, userId!);
+            this.deletePathwayLocally(paramPathway);
+            await this.firebaseService.deletePathway(paramPathway, userId!);
         } catch (error) {
             throw error;
         }
@@ -76,7 +76,7 @@ export default class PathwayController {
 
 
 
-    private deletePlaceLocally(paramPathway: number | Pathway) {
+    private deletePathwayLocally(paramPathway: number | Pathway) {
         if (this.pathways.length === 0) {
             throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
         }
