@@ -25,25 +25,36 @@ export class OpenRouteService {
         }
     }
 
-    async calculatePathway( from: Coords, to: Coords, pathwayTransportMean: PathwayTransportMeans = PathwayTransportMeans.VEHICLE, pathwayType: PathwayTypes = PathwayTypes.RECOMMENDED ): Promise<Pathway> {
-        const { data } = await openRouteApi.post<OpenRoutePostResponse>(`/v2/directions/${ pathwayTransportMean }`, {
-            coordinates: [
-                [from.lon, from.lat],
-                [to.lon, to.lat],
-            ],
-            preference: pathwayType,
-        }, {
-            headers: {
-                'Authorization': VITE_ROUTES_API_KEY,
-                'Content-Type': 'application/json',
-            }
-        }).catch( e => {
-            if( e.response.status === 400 ) throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
-            throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
-        });
-        const { routes } = data;
-        return {
-            type: PathwayTypes.RECOMMENDED,
+    async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
+
+        if (pathwayType === undefined) {
+            pathwayType = PathwayTypes.RECOMMENDED;
+        }
+        if (pathwayTransportMean === undefined) {
+            pathwayTransportMean = PathwayTransportMeans.VEHICLE;
+        }
+
+
+        const { data }: { data: OpenRoutingPostCall } = await openRouteApi.post<OpenRoutingPostCall>(`/v2/directions/${pathwayTransportMean}`, {
+            "coordinates": [[from.lon, from.lat], [to.lon, to.lat]],
+            "preference": `${pathwayType}`
+        },
+            {
+                headers: {
+                    'Authorization': VITE_ROUTES_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                maxBodyLength: Infinity
+            }).catch(e => {
+                if (e.response?.status! === 400) throw new PathwayException(PathWayExceptionMessages.FarPathway);
+                throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
+            });
+
+
+        const pathway: Pathway = {
+            distance: data.routes[0].summary.distance,
+            duration: data.routes[0].summary.duration,
+            end: to,
             start: from,
             end: to,
             codifiedPath: routes[0].geometry,

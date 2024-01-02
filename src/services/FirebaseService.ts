@@ -1,15 +1,17 @@
-import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
-import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
-import {UserModel} from "../interfaces/UserModel.ts";
-import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
-import {doc, getDoc, setDoc} from "firebase/firestore/lite";
-import {Pathway} from "../interfaces/Pathway.ts";
+import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
+import { UserModel } from "../interfaces/UserModel.ts";
+import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
+import { doc, getDoc, setDoc } from "firebase/firestore/lite";
+import { Pathway } from "../interfaces/Pathway.ts";
 import Combustible from "../enums/Combustible.ts";
-import {PathwayTypes} from "../enums/PathwayTypes.ts";
+import { PathwayTypes } from "../enums/PathwayTypes.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
 
 export class FirebaseService {
+
+
 
     async createUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
         let resp;
@@ -77,19 +79,40 @@ export class FirebaseService {
     }
 
 
-    async storePlace(place: Place, userId: string): Promise<Place[]> {
+    async storePlace(place: Place, userId: string): Promise<void> {
+        const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'places');
-        const docSnap = await getDoc(docRef);
+        const placeData = await this.getPlaces(userId);
+        const currentPlaces: Place[] = placeData.places || [];
+        const existingPlaceIndex = currentPlaces.findIndex(element =>
+            (place.Nombre === element.Nombre) || (place.Latitud === element.Latitud && place.Longitud === element.Longitud)
+        );
 
-        if (docSnap.exists()) {
-            const userData = docSnap.data();
-            userData.places.push(place);
-            await setDoc(docRef, userData);
-            return userData.places;
+        if (existingPlaceIndex !== -1) {
+            // Update the existing pathway
+            currentPlaces[existingPlaceIndex] = place;
         } else {
-            await setDoc(docRef, { places: [place] });
-            return [place];
+            // Add the new pathway if not a duplicate
+            currentPlaces.push(place);
         }
+        await setDoc(docRef, { places: currentPlaces }, { merge: true });
+
+    }
+
+    async deletePlace(place: Place, userId: string) {
+        const _ = require('lodash');
+        const docRef = doc(FirebaseDB, userId, 'pathways');
+        const placeData = await this.getPlaces(userId);
+        var currentPlaces: Pathway[] = placeData.pathways || [];
+        const existingPlaceIndex = currentPlaces.findIndex(element =>
+        (place.Nombre === place.Nombre &&
+            place.Latitud === place.Latitud &&
+            place.Longitud === place.Longitud));
+        if (existingPlaceIndex !== -1) {
+            currentPlaces = currentPlaces.splice(existingPlaceIndex, 1);
+        }
+
+        await setDoc(docRef, { places: currentPlaces }, { merge: true });
     }
 
     async getPlaces(userId: string) {
@@ -107,20 +130,26 @@ export class FirebaseService {
 
     async storeVehicle(vehicle: Vehicle, userId: string): Promise<void> {
         const _ = require('lodash');
-        const docRef = doc(FirebaseDB, userId, 'vehicles'); 
+        const docRef = doc(FirebaseDB, userId, 'vehicles');
         const vehicleData = await this.getVehicles(userId);
         const currentVehicles: Vehicle[] = vehicleData.vehicles || [];
-        const isDuplicate = currentVehicles.some(element =>
+        const currentVehiclesIndex = currentVehicles.findIndex(element =>
             vehicle.plate === element.plate &&
             vehicle.name === element.name &&
             vehicle.propulsion === element.propulsion &&
             vehicle.consumption === element.consumption
         );
 
-        if (!isDuplicate) {
+        if (currentVehiclesIndex !== -1) {
+            // Update the existing pathway
+            currentVehicles[currentVehiclesIndex] = vehicle;
+        } else {
+            // Add the new pathway if not a duplicate
             currentVehicles.push(vehicle);
-            await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
         }
+
+        // Save the updated pathways to Firestore
+        await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
     }
 
     async getVehicles(userId: string) {
@@ -136,17 +165,65 @@ export class FirebaseService {
         return docSnap.data();
     }
 
+    async deleteVehicle(vehicle: Vehicle, userId: string) {
+
+        const _ = require('lodash');
+        const docRef = doc(FirebaseDB, userId, 'vehicles');
+        const vehicleData = await this.getVehicles(userId);
+        var currentVehicles: Vehicle[] = vehicleData.vehicles || [];
+        const existingVehicleIndex = currentVehicles.findIndex(element =>
+            element.plate === vehicle.plate
+        );
+
+        if (existingVehicleIndex !== -1) {
+            currentVehicles = currentVehicles.splice(existingVehicleIndex, 1);
+        }
+
+        await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
+
+    }
+
     async storePathway(pathway: Pathway, userId: string): Promise<void> {
         const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
         const pathwayData = await this.getPathways(userId);
         const currentPathways: Pathway[] = pathwayData.pathways || [];
-        const isDuplicate = currentPathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
+        const existingPathwayIndex = currentPathways.findIndex(element =>
+            _.isEqual(pathway.start, element.start) &&
+            _.isEqual(pathway.end, element.end) &&
+            pathway.type === element.type &&
+            pathway.vehicle === element.vehicle
+        );
 
-        if (!isDuplicate) {
+        if (existingPathwayIndex !== -1) {
+            // Update the existing pathway
+            currentPathways[existingPathwayIndex] = pathway;
+        } else {
+            // Add the new pathway if not a duplicate
             currentPathways.push(pathway);
-            await setDoc(docRef, { pathways: currentPathways }, { merge: true });
         }
+
+        // Save the updated pathways to Firestore
+        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
+
+    }
+
+    async deletePathway(paramPathway: Pathway, userId: string) {
+        const _ = require('lodash');
+        const docRef = doc(FirebaseDB, userId, 'pathways');
+        const pathwayData = await this.getPathways(userId);
+        var currentPathways: Pathway[] = pathwayData.pathways || [];
+        const existingPathwayIndex = currentPathways.findIndex(element =>
+            _.isEqual(paramPathway.start, element.start) &&
+            _.isEqual(paramPathway.end, element.end) &&
+            paramPathway.type === element.type &&
+            paramPathway.vehicle === element.vehicle
+        );
+        if (existingPathwayIndex !== -1) {
+            currentPathways = currentPathways.splice(existingPathwayIndex, 1);
+        }
+
+        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
     }
 
     async getPathways(userId: string) {

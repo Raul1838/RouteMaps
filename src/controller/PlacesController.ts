@@ -90,6 +90,7 @@ export default class PlacesController {
         return this.places
     }
 
+
     //Otros métodos
 
     checkForValidToponym(placeName: string | undefined) {
