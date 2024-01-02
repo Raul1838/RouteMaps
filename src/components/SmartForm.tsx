@@ -51,6 +51,7 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
                             onChange={ onInputChange }
                             placeholder={ field.placeholder || '' }
                             required={ true }
+                            disabled={field.disabled || false}
                         />
                         {
                             dirty && errors[field.id] ? <small className="text-danger">{ errors[field.id] }</small> : null

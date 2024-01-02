@@ -12,7 +12,6 @@ interface AddVehicleComponentProps {
 const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) => {
     const [resultado, setResultado] = useState('');
     const navigate = useNavigate();
-    const [submitAttempted, setSubmitAttempted] = useState(false);
     const [formState, setFormState] = useState({
         plate: '',
         name: '',
@@ -44,7 +43,6 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
     };
 
     const handleSubmit = async (currentFormState: FormState) => {
-        setSubmitAttempted(true);
 
         try {
             const vehicleData = {
@@ -59,7 +57,6 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
             if (result) {
                 setResultado('Vehículo añadido con éxito');
                 resetFormState();
-                setSubmitAttempted(false);
                 setTimeout(() => {
                     navigate('/vehicles/getVehicles');
                 }, 2000);
@@ -74,7 +71,7 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
     return (
         <div>
             <h1>Añadir Vehículo</h1>
-            {!submitAttempted && resultado && <div className="alert alert-info">{resultado}</div>}
+            {!resultado && <div className="alert alert-info">{resultado}</div>}
             <SmartForm 
                 formData={formState}
                 formFields={formFields}

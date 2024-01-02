@@ -54,7 +54,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    getVehicle(plate: string): Vehicle{
+    async getVehicle(plate: string): Promise<Vehicle>{
         return this.vehicles.get(plate) || {
             plate: '',
             name: '',
@@ -81,7 +81,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    modifyVehicle(paramVehicle: Vehicle): Boolean {
+    async modifyVehicle(paramVehicle: Vehicle): Promise<Boolean> {
         if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }

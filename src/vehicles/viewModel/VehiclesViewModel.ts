@@ -16,7 +16,7 @@ export default class VehiclesViewModel {
         return this.vehiclesController.deleteVehicle(plate);
     }
     
-    modifyVehicle(vehicle: Vehicle): Boolean {
+    async modifyVehicle(vehicle: Vehicle): Promise<Boolean> {
         return this.vehiclesController.modifyVehicle(vehicle);
     }
 
@@ -28,7 +28,7 @@ export default class VehiclesViewModel {
         return this.vehiclesController.getVehicles();
     }
 
-    getVehicle(plate: string): Vehicle {
+    async getVehicle(plate: string): Promise<Vehicle> {
         return this.vehiclesController.getVehicle(plate);
     }
 
