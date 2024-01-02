@@ -37,7 +37,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    addVehicle(paramVehicle: Vehicle): Boolean {
+    async addVehicle(paramVehicle: Vehicle): Promise<Boolean> {
         if (typeof paramVehicle.plate !== 'string'
             || typeof paramVehicle.name !== 'string'
             || !Object.values(Combustible).includes(paramVehicle.propulsion)

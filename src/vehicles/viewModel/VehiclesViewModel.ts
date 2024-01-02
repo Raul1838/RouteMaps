@@ -8,9 +8,9 @@ export default class VehiclesViewModel {
         this.vehiclesController = vehiclesController;
     }
 
-    addVehicle(vehicle: Vehicle): Boolean {
-        return this.vehiclesController.addVehicle(vehicle);
-    }
+    async addVehicle(vehicle: Vehicle): Promise<Boolean> {
+        return await this.vehiclesController.addVehicle(vehicle);
+    }    
     
     deleteVehicle(plate: string): Boolean {
         return this.vehiclesController.deleteVehicle(plate);

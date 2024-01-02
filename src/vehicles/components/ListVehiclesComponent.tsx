@@ -44,8 +44,8 @@ export const ListVehiclesComponent = ({ vehiclesViewModel }: ListVehiclesCompone
                             {vehicle.name} - Propulsión: {vehicle.propulsion},
                             Consumo: {vehicle.consumption},
                             <i className={vehicle.favorite ? 'fas fa-star' : 'far fa-star'}></i>
-                            <Link to={`/vehicles/modify/${vehicle.plate}`}>Edit</Link>
-                            <Link to={`/vehicles/delete/${vehicle.plate}`}>Delete</Link>
+                            <Link to={`/vehicles/modifyVehicle/${vehicle.plate}`}>Edit</Link>
+                            <Link to={`/vehicles/deleteVehicle/${vehicle.plate}`}>Delete</Link>
                         </li>
                     ))}
                 </ul>

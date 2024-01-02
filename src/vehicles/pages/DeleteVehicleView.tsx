@@ -49,7 +49,7 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
         
         setTimeout(() => {
             navigate('/vehicles/getVehicles');
-        }, 3000);
+        }, 2000);
     };
 
     return (
