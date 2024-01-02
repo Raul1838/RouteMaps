@@ -28,4 +28,8 @@ export default class VehiclesViewModel {
         return this.vehiclesController.getVehicles();
     }
 
+    getVehicle(plate: string): Vehicle {
+        return this.vehiclesController.getVehicle(plate);
+    }
+
 }

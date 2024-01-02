@@ -19,7 +19,6 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
         { id: 'name', label: 'Nombre del Vehículo', type: 'text', placeholder: 'Nombre del Vehículo' },
         { id: 'propulsion', label: 'Propulsión', type: 'select', options: Object.values(Combustible) },
         { id: 'consumption', label: 'Consumo', type: 'number', placeholder: 'Consumo' },
-        { id: 'favorite', label: 'Favorito', type: 'checkbox' }
     ];
     
 

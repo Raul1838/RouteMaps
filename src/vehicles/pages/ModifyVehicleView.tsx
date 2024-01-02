@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Combustible from '../../enums/Combustible';
 import { FormState } from '../../hooks/useForm';
 import { Link } from "react-router-dom";
 import {SmartForm} from "../../components/SmartForm.tsx";
+import { useParams, useNavigate } from 'react-router-dom';
 
 
 interface ModifyVehicleViewProps {
@@ -11,14 +12,41 @@ interface ModifyVehicleViewProps {
 }
 
 const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
+    const { plate } = useParams(); 
+    const navigate = useNavigate();
     const [resultado, setResultado] = useState('');
+    const [formState, setFormState] = useState({});
+
+
+    useEffect(() => {
+        if (!plate) {
+            navigate('/vehicles/getVehicles');
+            return;
+        }
+        const loadVehicleData = async () => {
+            try {
+                const vehicleData = await vehiclesViewModel.getVehicle(plate);
+                setFormState({
+                    plate: vehicleData.plate,
+                    name: vehicleData.name,
+                    propulsion: vehicleData.propulsion,
+                    consumption: vehicleData.consumption.toString(),
+                    favorite: vehicleData.favorite
+                });
+            } catch (error) {
+                setResultado('Error al obtener la matrícula del vehículo');
+            }
+        };
+
+        loadVehicleData();
+    }, [vehiclesViewModel, plate, navigate]);
+
 
     const formFields = [
         { id: 'plate', label: 'Matrícula del Vehículo', type: 'string', placeholder: 'Matrícula del Vehículo' },
         { id: 'name', label: 'Nombre del Vehículo', type: 'text', placeholder: 'Nombre del Vehículo' },
         { id: 'propulsion', label: 'Propulsión', type: 'select', options: Object.values(Combustible) },
         { id: 'consumption', label: 'Consumo', type: 'number', placeholder: 'Consumo' },
-        { id: 'favorite', label: 'Favorito', type: 'checkbox' }
     ];
 
     const validations = {
@@ -27,13 +55,6 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
         consumption: (value: string) => isNaN(parseFloat(value)) ? 'Consumo inválido' : null
     };
 
-    const initialFormData = {
-        plate: '',
-        name: '',
-        propulsion: '',
-        consumption: '',
-        favorite: false
-    };
 
     const handleSubmit = async (formState: FormState) => {
         const vehicleToUpdate = {
@@ -58,7 +79,7 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
         <div>
             <h1>Modificar Vehículo</h1>
             <SmartForm 
-                formData={initialFormData}
+                formData={formState}
                 formFields={formFields}
                 onSubmit={handleSubmit}
                 submitButtonLabel="Modificar Vehículo"

@@ -3,6 +3,8 @@ import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Vehicle from '../../interfaces/Vehicle';
 import EmptyVehiclesException from '../../exceptions/EmptyVehiclesException';
 import {MainLayout} from "../../layouts/MainLayout.tsx";
+import { Link } from "react-router-dom";
+
 
 
 interface ListVehiclesComponentProps {
@@ -42,6 +44,7 @@ export const ListVehiclesComponent = ({ vehiclesViewModel }: ListVehiclesCompone
                             {vehicle.name} - Propulsión: {vehicle.propulsion},
                             Consumo: {vehicle.consumption},
                             <i className={vehicle.favorite ? 'fas fa-star' : 'far fa-star'}></i>
+                            <Link to={`/vehicles/modify/${vehicle.plate}`}>Edit</Link>
                         </li>
                     ))}
                 </ul>
