@@ -5,14 +5,14 @@ import Combustible from "../enums/Combustible";
 import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
-import {FirebaseService} from "../services/FirebaseService.ts";
+import { FirebaseService } from "../services/FirebaseService.ts";
 
 
 export default class VehiclesController implements VehiclesInterface {
 
     private vehicles: Map<string, Vehicle> = new Map<string, Vehicle>();
 
-    constructor( private firebaseService: FirebaseService ) {
+    constructor(private firebaseService: FirebaseService) {
         // firebaseService.getVehicles().then(vehicles => {
         //     setVehicles(vehicles);
         // });
@@ -22,7 +22,7 @@ export default class VehiclesController implements VehiclesInterface {
         if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
-    
+
         if (this.vehicles.has(plate)) {
             const vehicle = this.vehicles.get(plate);
             if (vehicle) {
@@ -37,7 +37,16 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    addVehicle(paramVehicle: Vehicle): Boolean {
+    addVehicle(paramVehicle: Vehicle, userId?: string): void {
+        try {
+            this.addVehicleLocally(paramVehicle);
+            this.firebaseService.storeVehicle(paramVehicle, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    addVehicleLocally(paramVehicle: Vehicle): Boolean {
         if (typeof paramVehicle.plate !== 'string'
             || typeof paramVehicle.name !== 'string'
             || !Object.values(Combustible).includes(paramVehicle.propulsion)
@@ -54,7 +63,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    getVehicle(plate: string): Vehicle{
+    getVehicle(plate: string): Vehicle {
         return this.vehicles.get(plate) || {
             plate: '',
             name: '',
@@ -68,7 +77,17 @@ export default class VehiclesController implements VehiclesInterface {
         return Array.from(this.vehicles.values());
     }
 
-    deleteVehicle(plate: string): Boolean {
+    deleteVehicle(plate: string, userId?: string): void {
+        try {
+            this.deleteVehicleLocally(plate);
+            const vehiclePuppet: Vehicle = { plate: plate, consumption: 0, name: '', propulsion: Combustible.Diesel };
+            this.firebaseService.deleteVehicle(vehiclePuppet, userId!)
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    private deleteVehicleLocally(plate: string): Boolean {
         if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
@@ -81,7 +100,16 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    modifyVehicle(paramVehicle: Vehicle): Boolean {
+    modifyVehicle(paramVehicle: Vehicle, userId?: string): void {
+        try {
+            this.modifyVehicleLocally(paramVehicle);
+            this.firebaseService.storeVehicle(paramVehicle, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    private modifyVehicleLocally(paramVehicle: Vehicle): Boolean {
         if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
