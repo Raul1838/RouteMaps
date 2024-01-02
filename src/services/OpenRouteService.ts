@@ -48,7 +48,7 @@ export class OpenRouteService {
                 },
                 maxBodyLength: Infinity
             }).catch(e => {
-                if (e.response?.status! === 400) throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
+                if (e.response?.status! === 400) throw new PathwayException(PathWayExceptionMessages.FarPathway);
                 throw new PathwayException(PathWayExceptionMessages.OpenRouteApiNotResponding);
             });
 
