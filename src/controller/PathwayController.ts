@@ -39,7 +39,7 @@ export default class PathwayController {
             this.pathways[index].favourite = !this.pathways[index].favourite;
             return true;
         } else {
-            return false;
+            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
         }
     }
 

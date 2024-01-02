@@ -285,7 +285,7 @@ describe('Tests sobre gestión de rutas', () => {
             pathwayController.toggleFavourite(validPathway2.id!);
         } catch (error) {
             if (error instanceof PathwayException) {
-                expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
+                expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
             }
