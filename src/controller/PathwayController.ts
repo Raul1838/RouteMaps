@@ -1,23 +1,28 @@
-import {Coords} from "../interfaces/Coords.ts";
-import {OpenRouteService} from "../services/OpenRouteService.ts";
-import {Pathway} from "../interfaces/Pathway.ts";
+import { Coords } from "../interfaces/Coords.ts";
+import { OpenRouteService } from "../services/OpenRouteService.ts";
+import { Pathway } from "../interfaces/Pathway.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
-import {PriceService} from "../services/PriceService.ts";
+import { PriceService } from "../services/PriceService.ts";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts";
-import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
-import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
-import {FirebaseService} from "../services/FirebaseService.ts";
-import {PathwayTypes} from "../enums/PathwayTypes.ts";
+import { PathwayException, PathWayExceptionMessages } from "../exceptions/PathwayException.ts";
+import { FirebaseService } from "../services/FirebaseService.ts";
+import { PathwayTypes } from "../enums/PathwayTypes.ts";
+import { PathwayTransportMeans } from "../enums/PathwayTransportMeans.ts";
 
-export class PathwayController {
-
+export default class PathwayController {
+    private pathways: Pathway[];
     constructor(
         private openRouteService: OpenRouteService,
         private firebaseService: FirebaseService,
         private priceService: PriceService,
-    ) { }
+    ) {
+        this.pathways = [];
+        // firebaseService.getPathways().then(pathways => {
+        //     this.setPathways(pathways);
+        // });
+    }
 
-    async calculatePathway(from: Coords, to: Coords, pathwayTransportMean: PathwayTransportMeans, pathwayType: PathwayTypes): Promise<Pathway> {
+    async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
         if ((!from.lat || !from.lon) && from.name) {
             from = await this.openRouteService.getCoordinatesFromPlaceName(from.name);
         }
@@ -27,21 +32,37 @@ export class PathwayController {
         return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
-    async setDefaultPathwayType( pathwayType: PathwayTypes, userId: string ) {
-        await this.firebaseService.setDefaultPathwayType( pathwayType, userId );
+
+    getPathhways() {
+        throw new Error('No implementada aún');
     }
 
-    async getDefaultPathwayType ( userId: string ): Promise<PathwayTypes> {
-        let data: PathwayTypes = PathwayTypes.UNDEFINED;
-        await this.firebaseService.getDefaultPathwayType( userId ).then( (value) => {
-            data = value.pathwayType;
-        });
-        return data;
+    setPathways(pathways: Pathway[]) {
+        this.pathways = pathways;
     }
+    addPathway(pathway: Pathway) {
+        if (!pathway || pathway.distance === 0) {
+            throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
+        }
+        const _ = require('lodash');
+        const isDuplicate = this.pathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
+        if (!isDuplicate) {
+            this.pathways.push(pathway);
+        } else {
+            throw new PathwayException(PathWayExceptionMessages.AlreadyExists);
+        }
+    }
+
+    // deletePathway(pathway: Pathway) {
+    //     if (this.pathways.has(pathway)) {
+    //         this.pathways.delete(pathway);
+    //         return true;
+    //     }
+    // }
 
     calculateCalories(pathway: Pathway, vehicle: PathwayTransportMeans): number {
         if (!pathway || pathway.distance === 0) {
-            throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
+            throw new PathwayException(PathWayExceptionMessages.FarPathway);
         }
         if (vehicle === PathwayTransportMeans.WALKING) {
             return (pathway.distance * 12 / 250);
@@ -52,12 +73,25 @@ export class PathwayController {
         }
     }
 
+
+    async setDefaultPathwayType(pathwayType: PathwayTypes, userId: string) {
+        await this.firebaseService.setDefaultPathwayType(pathwayType, userId);
+    }
+
+    async getDefaultPathwayType(userId: string): Promise<PathwayTypes> {
+        let data: PathwayTypes = PathwayTypes.UNDEFINED;
+        await this.firebaseService.getDefaultPathwayType(userId).then((value) => {
+            data = value.pathwayType;
+        });
+        return data;
+    }
+
     async calculatePrice(pathway: Pathway, vehicle: Vehicle): Promise<number> {
         if (vehicle.consumption === undefined) {
             throw new VehicleNotFoundException('El vehículo no existe');
         }
         if (pathway.distance === undefined) {
-            throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
+            throw new PathwayException(PathWayExceptionMessages.FarPathway);
         }
         const price = await this.priceService.getPrice(vehicle.propulsion);
         let priceConsumido = ((price * vehicle.consumption * pathway.distance) / 10000);
@@ -68,9 +102,9 @@ export class PathwayController {
 let _instance: PathwayController;
 export function getPathwayController(openRouteService?: OpenRouteService, firebaseService?: FirebaseService, priceService?: PriceService): PathwayController {
     if (!_instance) {
-        if( !openRouteService ) openRouteService = new OpenRouteService();
-        if( !firebaseService ) firebaseService = new FirebaseService();
-        if( !priceService ) priceService = new PriceService();
+        if (!openRouteService) openRouteService = new OpenRouteService();
+        if (!firebaseService) firebaseService = new FirebaseService();
+        if (!priceService) priceService = new PriceService();
         _instance = new PathwayController(openRouteService, firebaseService, priceService);
     }
     return _instance;
