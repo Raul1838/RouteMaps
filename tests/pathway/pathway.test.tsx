@@ -260,15 +260,15 @@ describe('Tests sobre gestión de rutas', () => {
     test('HU22 - E01 - Existe una lista con rutas dadas de alta y existe la ruta que se quiere marcar como favorita.', async () => {
         expect.assertions(1);
         pathwayController.setPathways([validPathway1]);
-        pathwayController.toggleFavourite(validPathway1.id);
-        expect(pathwayController.getFavouritePath()).toBe(validPathway1);
+        pathwayController.toggleFavourite(validPathway1.id!);
+        expect(pathwayController.getPathhways()[0].favourite).toBe(true);
     });
 
     test('HU22 - E02 - Existe una lista con rutas dadas de alta y no existe la ruta que se quiere marcar como favorita.', async () => {
         expect.assertions(1);
         pathwayController.setPathways([validPathway1]);
         try {
-            pathwayController.toggleFavourite(validPathway2.id);
+            pathwayController.toggleFavourite(validPathway2.id!);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
@@ -282,7 +282,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         pathwayController.setPathways([]);
         try {
-            pathwayController.toggleFavourite(validPathway2.id);
+            pathwayController.toggleFavourite(validPathway2.id!);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);

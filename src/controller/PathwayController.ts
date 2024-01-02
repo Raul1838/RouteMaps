@@ -24,11 +24,23 @@ export default class PathwayController {
         // });
     }
 
-    getFavouritePath(): any {
-        throw new Error("Method not implemented.");
-    }
-    toggleFavourite(id: number | undefined) {
-        throw new Error("Method not implemented.");
+    toggleFavourite(paramPathway: Pathway | number) {
+        var searchPar: number;
+
+        if (typeof paramPathway === 'number') {
+            searchPar = paramPathway;
+        } else {
+            searchPar = paramPathway.id!;
+        }
+
+        const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
+
+        if (index !== -1) {
+            this.pathways[index].favourite = !this.pathways[index].favourite;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
