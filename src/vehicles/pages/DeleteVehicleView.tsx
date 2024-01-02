@@ -13,21 +13,22 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
     const [resultado, setResultado] = useState('');
 
     const formFields = [
-        { id: 'id', label: 'ID del Vehículo', type: 'number', placeholder: 'ID del Vehículo' }
+        { id: 'plate', label: 'Matrícula del Vehículo', type: 'string', placeholder: 'Matrícula del Vehículo' }
     ];
 
     const validations = {
-        id: (value: string) => isNaN(parseInt(value)) || parseInt(value) <= 0 ? 'ID inválido' : null
+        plate: (value: string) => !value ? 'La matrícula del vehículo es requerida' : null,
     };
+    
 
     const initialFormData = {
-        id: ''
+        plate: ''
     };
 
     const handleSubmit = (formState: FormState) => {
         (async () => {
             try {
-                const result = await vehiclesViewModel.deleteVehicle(parseInt(formState.id));
+                const result = await vehiclesViewModel.deleteVehicle(formState.plate);
                 setResultado(result ? 'Vehículo eliminado con éxito' : 'Error al eliminar vehículo');
             } catch (error) {
                 setResultado('Error al procesar la solicitud');

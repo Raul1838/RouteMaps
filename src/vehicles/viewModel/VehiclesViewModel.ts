@@ -12,8 +12,8 @@ export default class VehiclesViewModel {
         return this.vehiclesController.addVehicle(vehicle);
     }
     
-    deleteVehicle(id: number): Boolean {
-        return this.vehiclesController.deleteVehicle(id);
+    deleteVehicle(plate: string): Boolean {
+        return this.vehiclesController.deleteVehicle(plate);
     }
     
     modifyVehicle(vehicle: Vehicle): Boolean {

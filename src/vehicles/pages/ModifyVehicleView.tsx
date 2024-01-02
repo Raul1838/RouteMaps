@@ -14,37 +14,34 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
     const [resultado, setResultado] = useState('');
 
     const formFields = [
-        { id: 'id', label: 'ID del Vehículo', type: 'number', placeholder: 'ID del Vehículo' },
-        { id: 'nombre', label: 'Nombre del Vehículo', type: 'text', placeholder: 'Nombre del Vehículo' },
+        { id: 'plate', label: 'Matrícula del Vehículo', type: 'string', placeholder: 'Matrícula del Vehículo' },
+        { id: 'name', label: 'Nombre del Vehículo', type: 'text', placeholder: 'Nombre del Vehículo' },
         { id: 'propulsion', label: 'Propulsión', type: 'select', options: Object.values(Combustible) },
-        { id: 'consumo', label: 'Consumo', type: 'number', placeholder: 'Consumo' },
-        { id: 'favorito', label: 'Favorito', type: 'checkbox' },
-        { id: 'defecto', label: 'Defecto', type: 'checkbox' }
+        { id: 'consumption', label: 'Consumo', type: 'number', placeholder: 'Consumo' },
+        { id: 'favorite', label: 'Favorito', type: 'checkbox' }
     ];
 
     const validations = {
-        id: (value: string) => isNaN(parseInt(value)) ? 'ID inválido' : null,
-        nombre: (value: string) => value.trim() === '' ? 'Nombre requerido' : null,
-        consumo: (value: string) => isNaN(parseFloat(value)) ? 'Consumo inválido' : null
+        plate: (value: string) => !value ? 'La matrícula del vehículo es requerida' : null,
+        name: (value: string) => value.trim() === '' ? 'Nombre requerido' : null,
+        consumption: (value: string) => isNaN(parseFloat(value)) ? 'Consumo inválido' : null
     };
 
     const initialFormData = {
-        id: '',
-        nombre: '',
+        plate: '',
+        name: '',
         propulsion: '',
-        consumo: '',
-        favorito: false,
-        defecto: false
+        consumption: '',
+        favorite: false
     };
 
     const handleSubmit = async (formState: FormState) => {
         const vehicleToUpdate = {
-            id: parseInt(formState.id),
-            Nombre: formState.nombre,
-            propulsion: formState.propulsion as Combustible,
-            consumo: parseFloat(formState.consumo),
-            Favorito: formState.favorito,
-            Defecto: formState.defecto
+            plate: formState.plate,
+            name: formState.name,
+            propulsion: formState.propulsion,
+            consumption: parseFloat(formState.consumption),
+            favorite: formState.favorite
         };
 
         (async () => {

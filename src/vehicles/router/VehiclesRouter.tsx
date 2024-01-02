@@ -5,9 +5,10 @@ import AddVehicleView from '../pages/AddVehicleView'
 import GetVehiclesView from '../pages/GetVehiclesView'
 import ModifyVehicleView from "../pages/ModifyVehicleView"
 import DeleteVehicleView from "../pages/DeleteVehicleView"
+import { FirebaseService } from "../../services/FirebaseService"
 
 
-const vehiclesController = new VehiclesController();
+const vehiclesController = new VehiclesController(new FirebaseService);
 const vehiclesViewModel = new VehiclesViewModel(vehiclesController);
 
 export const VehiclesRouter = () => {
