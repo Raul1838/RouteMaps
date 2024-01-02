@@ -77,16 +77,18 @@ export class FirebaseService {
     }
 
 
-    async storePlace(place: Place, userId: string): Promise<void> {
-        const _ = require('lodash');
+    async storePlace(place: Place, userId: string): Promise<Place[]> {
         const docRef = doc(FirebaseDB, userId, 'places');
-        const placeData = await this.getPlaces(userId);
-        const currentPlaces: Place[] = placeData.places || [];
-        const isDuplicate = currentPlaces.some(element => (place.Nombre === element.Nombre) || (place.Latitud === element.Latitud && place.Longitud === element.Longitud));
+        const docSnap = await getDoc(docRef);
 
-        if (!isDuplicate) {
-            currentPlaces.push(place);
-            await setDoc(docRef, { places: currentPlaces }, { merge: true });
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            userData.places.push(place);
+            await setDoc(docRef, userData);
+            return userData.places;
+        } else {
+            await setDoc(docRef, { places: [place] });
+            return [place];
         }
     }
 
