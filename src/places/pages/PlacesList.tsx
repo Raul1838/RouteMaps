@@ -22,14 +22,24 @@ export const PlacesList = () => {
         }
 
         return () => {
-            placesController.setPlaces(places, user.uid).then();
+            savePlacesOnExit();
         }
     }, []);
+
+    const savePlacesOnExit = async() => {
+        await placesController.setPlaces(places, user.uid);
+    }
 
     const toggleFavorite = (place: Place) => {
         place.Favorito = !place.Favorito;
         setPlaces([...places]);
     };
+
+    const deletePlace = (place: Place) => {
+        placesController.deletePlace(place, user.uid).then(() => {
+            setPlaces(places.filter(p => p.Nombre !== place.Nombre));
+        });
+    }
 
     return (
         <MainLayout>
@@ -51,8 +61,9 @@ export const PlacesList = () => {
                         <Table striped bordered hover>
                             <thead>
                             <tr>
-                                <th className="col-10">Nombre</th>
-                                <th className="col-2">Favorito</th>
+                                <th className="col-10"></th>
+                                <th className="col-1"></th>
+                                <th className="col-1"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -62,9 +73,14 @@ export const PlacesList = () => {
                                     .map((place, index) => (
                                         <tr key={index}>
                                             <td>{place.Nombre}</td>
-                                            <td className="text-right">
-                                                <Button variant={place.Favorito ? "outline-warning" : "outline-secondary"} onClick={() => toggleFavorite(place)}>
+                                            <td className="text-center">
+                                                <Button variant={place.Favorito ? "warning" : "outline-warning"} onClick={() => toggleFavorite(place)}>
                                                     <i className={'fas fa-star'}></i>
+                                                </Button>
+                                            </td>
+                                            <td className="text-center">
+                                                <Button variant={'outline-danger'} onClick={() => deletePlace(place)}>
+                                                    <i className={'fas fa-trash'}></i>
                                                 </Button>
                                             </td>
                                         </tr>

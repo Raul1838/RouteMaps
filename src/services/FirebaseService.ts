@@ -98,19 +98,12 @@ export class FirebaseService {
 
     }
 
-    async deletePlace(place: Place, userId: string) {
-        const docRef = doc(FirebaseDB, userId, 'pathways');
+    async deletePlace(placeToDelete: Place, userId: string) {
+        const docRef = doc(FirebaseDB, userId, 'places');
         const placeData = await this.getPlaces(userId);
-        var currentPlaces: Pathway[] = placeData.pathways || [];
-        const existingPlaceIndex = currentPlaces.findIndex(element =>
-        (place.Nombre === place.Nombre &&
-            place.Latitud === place.Latitud &&
-            place.Longitud === place.Longitud));
-        if (existingPlaceIndex !== -1) {
-            currentPlaces = currentPlaces.splice(existingPlaceIndex, 1);
-        }
-
-        await setDoc(docRef, { places: currentPlaces }, { merge: true });
+        let currentPlaces: Place[] = placeData?.places || [];
+        const modifiedPlaces: Place[] = currentPlaces.filter(currentPlace => currentPlace.Nombre !== placeToDelete.Nombre);
+        await setDoc(docRef, { places: modifiedPlaces }, { merge: true });
     }
 
     async getPlaces(userId: string) {

@@ -3,8 +3,6 @@ import APIPlacesInterface from "../interfaces/APIPlacesInterface";
 import {Coords} from "../interfaces/Coords";
 import Place from "../interfaces/Place";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
-import EmptyPlacesException from "../exceptions/EmptyPlacesException";
-import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
 import APIPlacesService from "../api/APIPlacesService.ts";
 import {OpenRouteService} from "../services/OpenRouteService.ts";
 import {FirebaseService} from "../services/FirebaseService.ts";
@@ -20,7 +18,7 @@ export class PlacesController {
     async addPlaceByToponym(placeName: string, userId: string): Promise<Place[]> {
         const completePlace: Coords = await this.openRouteService.getCoordinatesFromPlaceName(placeName);
         this.checkForValidToponym(completePlace.name);
-        return await this.firebaseService.storePlace({
+        return await this.savePlaceIntoDatabase({
             Nombre: completePlace.name || '',
             Latitud: completePlace.lat || 0,
             Longitud: completePlace.lon || 0,
@@ -28,41 +26,32 @@ export class PlacesController {
         }, userId);
     }
 
-    async addPlaceByCoords(coordenadas: Coords): Promise<Boolean> {
+    async addPlaceByCoords(coordenadas: Coords, userId: string): Promise<Boolean> {
         try {
             this.checkValidCoordinates(coordenadas);
-            var result: Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
-            if (result.Nombre !== undefined) {
-                this.places.push(result);
-                return true;
-            } else {
-                return false;
-            }
+            const result: Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
+            if (!result) return false;
+            await this.savePlaceIntoDatabase(result, userId);
+            return true;
         } catch (error) {
             throw error;
         }
     }
+
     private checkValidCoordinates(coordenadas: Coords) {
         if ((typeof coordenadas.lat !== 'number') || (typeof coordenadas.lon !== 'number')) {
             throw new IllegalArgumentException();
         }
     }
 
-    deletePlace(paramPlace: Place): Boolean {
-        if (this.places.length === 0) {
-            throw new EmptyPlacesException("No hay lugares para eliminar.");
-        }
-        const index = this.places.findIndex(place => (place.Nombre === paramPlace.Nombre &&
-            place.Latitud === paramPlace.Latitud &&
-            place.Longitud === paramPlace.Longitud));
-
-        if (index !== -1) {
-            this.places.splice(index, 1);
-            return true;
-        } else {
-            throw new PlaceNotFoundException("No se encontró el lugar a eliminar.");
-        }
+    private async savePlaceIntoDatabase(place: Place, userId: string): Promise<Place[]> {
+        return await this.firebaseService.storePlace(place, userId);
     }
+
+    async deletePlace(place: Place, userId: string): Promise<void> {
+        await this.firebaseService.deletePlace(place, userId);
+    }
+
     async getPlaces(userId: string): Promise<Place[]> {
         const data = await this.firebaseService.getPlaces( userId );
         return data?.places || [];

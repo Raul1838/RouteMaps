@@ -1,4 +1,4 @@
-import PlacesController, {getPlacesController} from "../../controller/PlacesController.ts";
+import {PlacesController, getPlacesController} from "../../controller/PlacesController.ts";
 import React, {useContext, useState} from "react";
 import {MainLayout} from "../../layouts/MainLayout.tsx";
 import {Link} from "react-router-dom";
