@@ -6,16 +6,152 @@ import VehiclesController, {getVehiclesController} from "../../src/controller/Ve
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
-import {AuthController, getAuthController} from "../../src/controller/AuthController";
-import {UserModel} from "../../src/interfaces/UserModel";
-import {PathwayTypes} from "../../src/enums/PathwayTypes";
-import {PathwayTransportMeans} from "../../src/enums/PathwayTransportMeans";
+import { AuthController, getAuthController } from "../../src/controller/AuthController";
+import { UserModel } from "../../src/interfaces/UserModel";
+import { PathwayTypes } from "../../src/enums/PathwayTypes";
+import { PathwayTransportMeans } from "../../src/enums/PathwayTransportMeans";
+import { fail } from "assert";
 
 describe('Tests sobre gestión de rutas', () => {
 
     let pathwayController: PathwayController;
     let vehiclesController: VehiclesController;
     let authController: AuthController;
+
+
+    const validPathway1: Pathway = {
+        id: 100,
+        start: {
+            lat: 39.988126910927626,
+            lon: -0.05202140449041774
+        },
+        end: {
+            lat: 39.986597808112535,
+            lon: -0.05682265874338428
+        },
+        path: [
+            {
+                "distance": 52.9,
+                "duration": 38.1,
+                "instruction": "Head southwest on Calle Pintor Oliet",
+                "name": "Calle Pintor Oliet",
+            },
+            {
+                "distance": 5.9,
+                "duration": 4.3,
+                "instruction": "Turn right",
+                "name": "-",
+            },
+            {
+                "distance": 151.3,
+                "duration": 109.0,
+                "instruction": "Turn left",
+                "name": "-",
+            },
+            {
+                "distance": 133.1,
+                "duration": 95.8,
+                "instruction": "Continue straight onto Camino Viejo Alcora",
+                "name": "Camino Viejo Alcora",
+            },
+            {
+                "distance": 109.5,
+                "duration": 78.8,
+                "instruction": "Continue straight onto Camino Viejo Alcora",
+                "name": "Camino Viejo Alcora",
+            },
+            {
+                "distance": 56.1,
+                "duration": 40.4,
+                "instruction": "Turn left onto Calle Budapest",
+                "name": "Calle Budapest",
+            },
+            {
+                "distance": 46.5,
+                "duration": 33.5,
+                "instruction": "Turn right onto Avenida Alcora, CV-1540",
+                "name": "Avenida Alcora, CV-1540",
+            },
+            {
+                "distance": 0.0,
+                "duration": 0.0,
+                "instruction": "Arrive at Avenida Alcora, CV-1540, on the right",
+                "name": "-",
+            }
+        ],
+        duration: 399.9,
+        distance: 555.4,
+        type: PathwayTypes.RECOMMENDED,
+        transportMean: PathwayTransportMeans.VEHICLE,
+        favourite: false
+    };
+
+    const validPathway2: Pathway = {
+        id: 102,
+        start: {
+            lat: 39.988126910927626,
+            lon: -0.05202140449041774
+        },
+        end: {
+            lat: 39.986597808112535,
+            lon: -0.05682265874338428
+        },
+        path: [
+            {
+                "distance": 52.9,
+                "duration": 38.1,
+                "instruction": "Head southwest on Calle Pintor Oliet",
+                "name": "Calle Pintor Oliet",
+            },
+            {
+                "distance": 5.9,
+                "duration": 4.3,
+                "instruction": "Turn right",
+                "name": "-",
+            },
+            {
+                "distance": 151.3,
+                "duration": 109.0,
+                "instruction": "Turn left",
+                "name": "-",
+            },
+            {
+                "distance": 133.1,
+                "duration": 95.8,
+                "instruction": "Continue straight onto Camino Viejo Alcora",
+                "name": "Camino Viejo Alcora",
+            },
+            {
+                "distance": 109.5,
+                "duration": 78.8,
+                "instruction": "Continue straight onto Camino Viejo Alcora",
+                "name": "Camino Viejo Alcora",
+            },
+            {
+                "distance": 56.1,
+                "duration": 40.4,
+                "instruction": "Turn left onto Calle Budapest",
+                "name": "Calle Budapest",
+            },
+            {
+                "distance": 46.5,
+                "duration": 33.5,
+                "instruction": "Turn right onto Avenida Alcora, CV-1540",
+                "name": "Avenida Alcora, CV-1540",
+            },
+            {
+                "distance": 0.0,
+                "duration": 0.0,
+                "instruction": "Arrive at Avenida Alcora, CV-1540, on the right",
+                "name": "-",
+            }
+        ],
+        duration: 100.9,
+        distance: 500.4,
+        type: PathwayTypes.SHORTEST,
+        transportMean: PathwayTransportMeans.BIKE,
+        favourite: false
+    };
 
     beforeAll(() => {
         pathwayController = getPathwayController();
@@ -55,13 +191,182 @@ describe('Tests sobre gestión de rutas', () => {
             await pathwayController.calculatePathway(from, to, PathwayTransportMeans.VEHICLE, PathwayTypes.RECOMMENDED);
             throw new Error();
         } catch (error) {
-            if( error instanceof PathwayException ) {
-                expect(error.message).toBe(PathWayExceptionMessages.InvalidPathway);
+            if (error instanceof PathwayException) {
+                expect(error.message).toBe(PathWayExceptionMessages.FarPathway);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
     });
+
+    test('HU17 - E01 - La ruta es válida y no ha sido guardada anteriormente', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([]);
+
+        const pathway: Pathway = {
+
+            start: {
+                lat: 39.988126910927626,
+                lon: -0.05202140449041774
+            },
+            end: {
+                lat: 39.986597808112535,
+                lon: -0.05682265874338428
+            },
+            path: [
+                {
+                    "distance": 52.9,
+                    "duration": 38.1,
+                    "instruction": "Head southwest on Calle Pintor Oliet",
+                    "name": "Calle Pintor Oliet",
+                },
+                {
+                    "distance": 5.9,
+                    "duration": 4.3,
+                    "instruction": "Turn right",
+                    "name": "-",
+                },
+                {
+                    "distance": 151.3,
+                    "duration": 109.0,
+                    "instruction": "Turn left",
+                    "name": "-",
+                },
+                {
+                    "distance": 133.1,
+                    "duration": 95.8,
+                    "instruction": "Continue straight onto Camino Viejo Alcora",
+                    "name": "Camino Viejo Alcora",
+                },
+                {
+                    "distance": 109.5,
+                    "duration": 78.8,
+                    "instruction": "Continue straight onto Camino Viejo Alcora",
+                    "name": "Camino Viejo Alcora",
+                },
+                {
+                    "distance": 56.1,
+                    "duration": 40.4,
+                    "instruction": "Turn left onto Calle Budapest",
+                    "name": "Calle Budapest",
+                },
+                {
+                    "distance": 46.5,
+                    "duration": 33.5,
+                    "instruction": "Turn right onto Avenida Alcora, CV-1540",
+                    "name": "Avenida Alcora, CV-1540",
+                },
+                {
+                    "distance": 0.0,
+                    "duration": 0.0,
+                    "instruction": "Arrive at Avenida Alcora, CV-1540, on the right",
+                    "name": "-",
+                }
+            ],
+            duration: 399.9,
+            distance: 555.4,
+            type: PathwayTypes.RECOMMENDED,
+            transportMean: PathwayTransportMeans.VEHICLE,
+            favourite: false
+        };
+        pathwayController.addPathway(pathway);
+        expect(pathwayController.getPathways()).toHaveLength(1);
+
+    });
+
+
+
+    test('HU18 - E01 - Hay rutas dadas de alta.', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([validPathway1]);
+        const pathways: Pathway[] = pathwayController.getPathways();
+        expect(pathways).toStrictEqual([validPathway1]);
+    });
+
+    test('HU18 - E02 - La lista de rutas está vacía.', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([]);
+        try {
+            const pathways: Pathway[] = pathwayController.getPathways();
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+    });
+
+    test('HU19 - E01 - Hay rutas dadas de alta y existe la ruta que se quiere eliminar', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([validPathway1, validPathway2]);
+        pathwayController.deletePlace(validPathway1.id!);
+        expect(pathwayController.getPathways()).toHaveLength(1);
+    });
+
+    test('HU19 - E02 - Hay rutas dadas de alta pero no existe la ruta que se quiere eliminar', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([validPathway1]);
+        try {
+            pathwayController.deletePlace(validPathway2.id!);
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+    });
+
+    test('HU19 - E03 - No hay rutas dadas de alta', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([]);
+        try {
+            pathwayController.deletePlace(validPathway1.id!);
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+    });
+
+    test('HU22 - E01 - Existe una lista con rutas dadas de alta y existe la ruta que se quiere marcar como favorita.', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([validPathway1]);
+        pathwayController.toggleFavourite(validPathway1.id!);
+        expect(pathwayController.getPathways()[0].favourite).toBe(true);
+    });
+
+    test('HU22 - E02 - Existe una lista con rutas dadas de alta y no existe la ruta que se quiere marcar como favorita.', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([validPathway1]);
+        try {
+            pathwayController.toggleFavourite(validPathway2.id!);
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+    });
+
+    test('HU22 - E03 - No hay rutas dadas de alta', async () => {
+        expect.assertions(1);
+        pathwayController.setPathways([]);
+        try {
+            pathwayController.toggleFavourite(validPathway2.id!);
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
+            } else {
+                throw new Error('Lanzada una excepción no controlada');
+            }
+        }
+    });
+
 
     test('HU23 - E1 - Existe el vehículo a establecer por defecto', async () => {
         const testUser = {
