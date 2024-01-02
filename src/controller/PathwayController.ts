@@ -34,7 +34,7 @@ export default class PathwayController {
 
 
     getPathhways() {
-        throw new Error('No implementada aún');
+        return this.pathways;
     }
 
     setPathways(pathways: Pathway[]) {
