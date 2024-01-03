@@ -14,7 +14,7 @@ const GetVehiclesView = ({ vehiclesViewModel }: ListVehiclesComponentProps) => {
         <MainLayout>
             <div>
             <ListVehiclesComponent vehiclesViewModel={vehiclesViewModel} />
-                <Link to={'/vehicles/addVehicle'}>Añadir vehículo</Link>
+            <Link className="btn btn-outline-primary" to={'/vehicles/addVehicle'}>Añadir vehículo</Link>
             </div>
         </MainLayout>
     );
