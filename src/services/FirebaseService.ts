@@ -269,10 +269,10 @@ export class FirebaseService {
             return { pathways: [] };
         }
 
-        // if (docSnap.data().pathways.length === 0) {
-        //     throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-        // }
-
+        const pathway = docSnap.data();
+        if (pathway.pathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        }
         return docSnap.data();
     }
 

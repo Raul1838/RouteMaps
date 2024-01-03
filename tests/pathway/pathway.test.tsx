@@ -127,6 +127,7 @@ describe('Tests sobre gestión de rutas', () => {
             transportMean: PathwayTransportMeans.VEHICLE,
             favourite: false
         };
+        
         await pathwayController.addPathway(pathway, loggedUser.uid);
         const pathwaysGotten = await pathwayController.getPathways(loggedUser.uid);
         expect(pathwaysGotten.pathways).toHaveLength(1);
@@ -145,7 +146,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
-            const pathways: Pathway[] = await pathwayController.getPathways(loggedUser.uid);
+            const pathways = await pathwayController.getPathways(loggedUser.uid);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
