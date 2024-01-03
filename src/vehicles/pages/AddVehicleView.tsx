@@ -4,6 +4,7 @@ import Combustible from '../../enums/Combustible';
 import { FormState } from '../../hooks/useForm';
 import { Link, useNavigate } from "react-router-dom";
 import { SmartForm } from "../../components/SmartForm.tsx";
+import { MainLayout } from '../../layouts/MainLayout.tsx';
 
 interface AddVehicleComponentProps {
     vehiclesViewModel: VehiclesViewModel;
@@ -71,20 +72,21 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
     };
 
     return (
-        <div>
-            <h1>Añadir Vehículo</h1>
-            <SmartForm 
-                formData={formState}
-                formFields={formFields}
-                onSubmit={handleSubmit}
-                submitButtonLabel="Añadir Vehículo"
-                validations={validations}
-            />
-            {resultado && (<div className={`alert ${operationStatus ? 'alert-info' : 'alert-danger'}`}>{resultado}</div>
-)}
+        <MainLayout>
+            <div>
+                <h1>Añadir Vehículo</h1>
+                <SmartForm 
+                    formData={formState}
+                    formFields={formFields}
+                    onSubmit={handleSubmit}
+                    submitButtonLabel="Añadir Vehículo"
+                    validations={validations}
+                />
+                {resultado && (<div className={`alert ${operationStatus ? 'alert-info' : 'alert-danger'}`}>{resultado}</div>)}
 
-            <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
-        </div>
+                <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
+            </div>
+        </MainLayout>
     );
 };
 

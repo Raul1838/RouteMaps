@@ -36,28 +36,50 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
         onSubmit(formState);
     }
 
-    return(
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        onInputChange(event as unknown as React.ChangeEvent<HTMLInputElement>);
+    };
+
+    return (
         <>
-            <form onSubmit={ handleOnSubmit }>
+            <form onSubmit={handleOnSubmit}>
                 {formFields.map((field) => (
                     <div className="form-group" key={field.id} style={{ marginBottom: '20px' }}>
                         <label htmlFor={field.id}>{field.label}</label>
-                        <input
-                            className="form-control"
-                            id={ field.id }
-                            type={ field.type }
-                            name={ field.id }
-                            value={ formState[field.id] }
-                            onChange={ onInputChange }
-                            placeholder={ field.placeholder || '' }
-                            required={ true }
-                            disabled={field.disabled || false}
-                        />
-                        {
-                            dirty && errors[field.id] ? <small className="text-danger">{ errors[field.id] }</small> : null
-                        }
+                        
+                        {field.type === 'select' ? (
+                            <select
+                                className="form-control"
+                                id={field.id}
+                                name={field.id}
+                                value={formState[field.id]}
+                                onChange={handleSelectChange}
+                                disabled={field.disabled || false}
+                            >
+                                {field.options && field.options.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                        ) : (
+                            <input
+                                className="form-control"
+                                id={field.id}
+                                type={field.type}
+                                name={field.id}
+                                value={formState[field.id]}
+                                onChange={onInputChange}
+                                placeholder={field.placeholder || ''}
+                                required={true}
+                                disabled={field.disabled || false}
+                            />
+                        )}
+
+                        {dirty && errors[field.id] && (
+                            <small className="text-danger">{errors[field.id]}</small>
+                        )}
                     </div>
                 ))}
+                
                 <div className="row d-flex align-items-center" style={{ margin: "40px 2px" }}>
                     <button type="submit" className="btn btn-primary col-6">{ submitButtonLabel }</button>
                     {

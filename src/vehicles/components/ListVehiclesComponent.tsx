@@ -51,21 +51,41 @@ export const ListVehiclesComponent = ({ vehiclesViewModel }: ListVehiclesCompone
         <MainLayout>
             <div>
                 <h1>Vehículos disponibles</h1>
-                {error && <div>Error: {error}</div>}
-                <ul>
-                    {vehicles.map(vehicle => (
-                        <li key={vehicle.plate}>
-                            {vehicle.name} - Propulsión: {vehicle.propulsion},
-                            Consumo: {vehicle.consumption},
-                            <FavoriteStar
-                                isFavorite={vehicle.favorite || false}
-                                onToggle={() => toggleVehicleFavorite(vehicle.plate)}
-                            />
-                            <Link to={`/vehicles/modifyVehicle/${vehicle.plate}`}>Edit</Link>
-                            <Link to={`/vehicles/deleteVehicle/${vehicle.plate}`}>Delete</Link>
-                        </li>
-                    ))}
-                </ul>
+                {error && <div>{error}</div>}
+                <div className="table-responsive">
+                    <table className="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Nombre</th>
+                                <th>Propulsión</th>
+                                <th>Consumo</th>
+                                <th>Favorito</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {vehicles.map(vehicle => (
+                                <tr key={vehicle.plate}>
+                                    <td>{vehicle.plate}</td>
+                                    <td>{vehicle.name}</td>
+                                    <td>{vehicle.propulsion}</td>
+                                    <td>{vehicle.consumption}</td>
+                                    <td>
+                                        <FavoriteStar
+                                            isFavorite={vehicle.favorite || false}
+                                            onToggle={() => toggleVehicleFavorite(vehicle.plate)}
+                                        />
+                                    </td>
+                                    <td>
+                                        <Link to={`/vehicles/modifyVehicle/${vehicle.plate}`} className="btn btn-primary btn-sm mx-1">Edit</Link>
+                                        <Link to={`/vehicles/deleteVehicle/${vehicle.plate}`} className="btn btn-danger btn-sm mx-1">Delete</Link>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </MainLayout>
     );

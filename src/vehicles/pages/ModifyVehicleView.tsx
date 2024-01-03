@@ -5,6 +5,7 @@ import { FormState } from '../../hooks/useForm';
 import { Link } from "react-router-dom";
 import { SmartForm } from "../../components/SmartForm.tsx";
 import { useParams, useNavigate } from 'react-router-dom';
+import { MainLayout } from '../../layouts/MainLayout.tsx';
 
 interface ModifyVehicleViewProps {
     vehiclesViewModel: VehiclesViewModel;
@@ -78,18 +79,20 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
     };
 
     return (
-        <div>
-            <h1>Modificar Vehículo</h1>
-            <SmartForm 
-                formData={formState}
-                formFields={formFields}
-                onSubmit={handleSubmit}
-                submitButtonLabel="Modificar Vehículo"
-                validations={validations}
-            />
-            {resultado && <div className="alert alert-info">{resultado}</div>}
-            <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
-        </div>
+        <MainLayout>
+            <div>
+                <h1>Modificar Vehículo</h1>
+                <SmartForm 
+                    formData={formState}
+                    formFields={formFields}
+                    onSubmit={handleSubmit}
+                    submitButtonLabel="Modificar Vehículo"
+                    validations={validations}
+                />
+                {resultado && <div className="alert alert-info">{resultado}</div>}
+                <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
+            </div>
+        </MainLayout>
     );
 };
 

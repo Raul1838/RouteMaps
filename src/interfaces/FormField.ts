@@ -5,4 +5,5 @@ export interface FormField {
     type: string;
     placeholder?: string;
     disabled?: boolean;
+    options?: string[];
 }

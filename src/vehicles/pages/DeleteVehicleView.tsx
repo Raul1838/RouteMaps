@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useParams, useNavigate } from 'react-router-dom';
 import Vehicle from '../../interfaces/Vehicle';
 import { SmartForm } from '../../components/SmartForm.tsx';
+import { MainLayout } from '../../layouts/MainLayout.tsx';
 
 
 
@@ -68,18 +69,20 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
     };
 
     return (
-        <div>
-            <h1>Eliminar Vehículo</h1>
-            <SmartForm 
-                formData={initialFormData}
-                formFields={formFields}
-                onSubmit={handleSubmit}
-                submitButtonLabel="Eliminar Vehículo"
-                validations={{}}
-            />
-            {resultado && <div className="alert alert-info">{resultado}</div>}
-            <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
-        </div>
+        <MainLayout>
+            <div>
+                <h1>Eliminar Vehículo</h1>
+                <SmartForm 
+                    formData={initialFormData}
+                    formFields={formFields}
+                    onSubmit={handleSubmit}
+                    submitButtonLabel="Eliminar Vehículo"
+                    validations={{}}
+                />
+                {resultado && <div className="alert alert-info">{resultado}</div>}
+                <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
+            </div>
+        </MainLayout>
     );
 };
 
