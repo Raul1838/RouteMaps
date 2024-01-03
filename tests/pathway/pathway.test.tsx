@@ -127,10 +127,10 @@ describe('Tests sobre gestión de rutas', () => {
             transportMean: PathwayTransportMeans.VEHICLE,
             favourite: false
         };
-        
+
         await pathwayController.addPathway(pathway, loggedUser.uid);
-        const pathwaysGotten = await pathwayController.getPathways(loggedUser.uid);
-        expect(pathwaysGotten.pathways).toHaveLength(1);
+        const pathwayData = await pathwayController.getPathways(loggedUser.uid);
+        expect(pathwayData.pathways).toHaveLength(1);
     });
 
 
@@ -160,7 +160,8 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         await pathwayController.replacePathways([validPathway1, validPathway2], loggedUser.uid);
         await pathwayController.deletePathway(validPathway1, loggedUser.uid);
-        expect(await pathwayController.getPathways(loggedUser.uid)).toHaveLength(1);
+        const pathwayData = await pathwayController.getPathways(loggedUser.uid);
+        expect(pathwayData.pathways).toHaveLength(1);
     });
 
     test('HU19 - E02 - Hay rutas dadas de alta pero no existe la ruta que se quiere eliminar', async () => {
@@ -195,7 +196,8 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         await pathwayController.toggleFavourite(validPathway1, loggedUser.uid);
-        expect(await pathwayController.getPathways(loggedUser.uid)[0].favourite).toBe(true);
+        const pathwayData = await pathwayController.getPathways(loggedUser.uid);
+        expect(pathwayData.pathways[0].favourite).toBe(true);
     });
 
     test('HU22 - E02 - Existe una lista con rutas dadas de alta y no existe la ruta que se quiere marcar como favorita.', async () => {
@@ -239,10 +241,8 @@ describe('Tests sobre gestión de rutas', () => {
             propulsion: Combustible.Diesel,
             favorite: false,
         }
-        vehiclesController.addVehicle(vehicle);
-        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+        await vehiclesController.addVehicle(vehicle, loggedUser.uid);
         await vehiclesController.setDefaultVehicle(vehicle.plate, loggedUser.uid);
-        await authController.logout();
     });
 
     test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {

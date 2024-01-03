@@ -48,10 +48,10 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    addVehicle(paramVehicle: Vehicle, userId?: string): void {
+    async addVehicle(paramVehicle: Vehicle, userId: string): Promise<void> {
         try {
             this.addVehicleLocally(paramVehicle);
-            this.firebaseService.storeVehicle(paramVehicle, userId!);
+            await this.firebaseService.storeVehicle(paramVehicle, userId!);
         } catch (error) {
             throw error;
         }
