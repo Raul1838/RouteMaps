@@ -1,16 +1,15 @@
-import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
-import { UserModel } from "../interfaces/UserModel.ts";
-import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore/lite";
-import { Pathway } from "../interfaces/Pathway.ts";
+import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
+import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
+import {UserModel} from "../interfaces/UserModel.ts";
+import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
+import {doc, getDoc, setDoc, updateDoc} from "firebase/firestore/lite";
+import {Pathway} from "../interfaces/Pathway.ts";
 import Combustible from "../enums/Combustible.ts";
-import { PathwayTypes } from "../enums/PathwayTypes.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException.ts";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException.ts";
-import { PathWayExceptionMessages, PathwayException } from "../exceptions/PathwayException.ts";
 
 export class FirebaseService {
 
@@ -68,12 +67,12 @@ export class FirebaseService {
     }
 
     async setDefaultVehicle(vehiclePlate: string, userId: string): Promise<void> {
-        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
-        await setDoc(docRef, { id: vehiclePlate });
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehiclePlate');
+        await setDoc(docRef, { vehiclePlate: vehiclePlate });
     }
 
     async getDefaultVehicle(userId: string) {
-        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehiclePlate');
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists())
             throw new Error('No such document!');

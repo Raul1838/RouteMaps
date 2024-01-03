@@ -130,14 +130,16 @@ export default class PathwayController {
 
     async setDefaultPathwayType(pathwayType: PathwayTypes, userId: string) {
         await this.firebaseService.setDefaultPathwayType(pathwayType, userId);
+        localStorage.setItem('defaultPathwayType', pathwayType);
     }
 
     async getDefaultPathwayType(userId: string): Promise<PathwayTypes> {
-        let data: PathwayTypes = PathwayTypes.UNDEFINED;
+        let defaultPathwayType: PathwayTypes = PathwayTypes.UNDEFINED;
         await this.firebaseService.getDefaultPathwayType(userId).then((value) => {
-            data = value.pathwayType;
+            defaultPathwayType = value.pathwayType;
         });
-        return data;
+        localStorage.setItem('defaultPathwayType', defaultPathwayType);
+        return defaultPathwayType;
     }
 
     async calculatePrice(distance: number, vehicle: Vehicle): Promise<number> {

@@ -23,7 +23,7 @@ export const Buscador = () => {
     const { defaultPathwayType, defaultVehiclePlate } = authContext;
 
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
-    const { distance, duration, pathwayTransportMean} = navigationContext;
+    const { distance, duration, pathwayTransportMean, vehicle} = navigationContext;
 
     const pathwayController: PathwayController = getPathwayController();
     const vehiclesController: VehiclesController = getVehiclesController();
@@ -47,14 +47,24 @@ export const Buscador = () => {
     }, []);
 
     useEffect(() => {
+        if( vehicle.plate === '' || vehicle.plate === selectedVehicle.plate ) return;
+        setSelectedVehicle(vehicle);
+    }, [vehicle]);
+
+    useEffect(() => {
         calculatePathwayCost();
     }, [pathwayTransportMean, selectedVehicle, distance, duration]);
 
     const calculatePathwayCost = async () => {
-        if( pathwayTransportMean === PathwayTransportMeans.VEHICLE )
-            setPathwayCost( await pathwayController.calculatePrice(distance, selectedVehicle) );
-        else
-            setPathwayCost( pathwayController.calculateCalories(distance, pathwayTransportMean) );
+        try {
+            if( pathwayTransportMean === PathwayTransportMeans.VEHICLE )
+                setPathwayCost( await pathwayController.calculatePrice(distance, selectedVehicle) );
+            else
+                setPathwayCost( pathwayController.calculateCalories(distance, pathwayTransportMean) );
+        } catch (e) {
+            console.log('Fallo al calcular el coste de la ruta');
+            setPathwayCost(0);
+        }
     }
 
     const formData = {
@@ -105,7 +115,7 @@ export const Buscador = () => {
         navigationContext.setPathwayTransportMean(transportMean);
     }
 
-    const handleSelect = ( eventKey: string | null ) => {
+    const handleSelectPathwayType = ( eventKey: string | null ) => {
         if( eventKey ) {
             setSelection(eventKey as PathwayTypes);
             navigationContext.setPathwayType(eventKey as PathwayTypes);
@@ -116,6 +126,10 @@ export const Buscador = () => {
         [PathwayTransportMeans.BIKE]: 'fas fa-bicycle',
         [PathwayTransportMeans.VEHICLE]: 'fas fa-car',
         [PathwayTransportMeans.WALKING]: 'fas fa-walking',
+    }
+
+    const handleShowVehicles = () => {
+        navigationContext.setShowVehicles(!navigationContext.showVehicles);
     }
 
     return (
@@ -145,7 +159,7 @@ export const Buscador = () => {
                     ))}
                 </ButtonGroup>
 
-                <Dropdown onSelect={ handleSelect } className="mt-3">
+                <Dropdown onSelect={ handleSelectPathwayType } className="mt-3">
                     <Dropdown.Toggle variant="success" id="dropdown-basic">
                         { selection }
                     </Dropdown.Toggle>
@@ -157,15 +171,34 @@ export const Buscador = () => {
                     </Dropdown.Menu>
                 </Dropdown>
 
-                <ul className="list-group">
-                    <li className="list-group-item">{ selectedVehicle.name || 'No vehículo seleccionado' }</li>
-                </ul>
+                {
+                    pathwayTransportMean === PathwayTransportMeans.VEHICLE
+                    ?   <>
+                            <div className="input-group">
+                                <input
+                                    className="form-control"
+                                    id="selectedVehicle"
+                                    type="text"
+                                    name="selectedVehicle"
+                                    value={selectedVehicle.name || 'No vehículo seleccionado'}
+                                    readOnly={true}
+                                />
+                                <div className="input-group-append">
+                                    <button className="btn btn-outline-info"
+                                            onClick={handleShowVehicles}>
+                                        <i className="fa fa-info-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                        : <></>
+                }
 
                 {
                     (distance > 0 && duration > 0)
-                        ?   <>
+                        ? <>
                             <h3>Costes de la ruta</h3>
-                            <hr />
+                            <hr/>
                             <ul className="list-group">
                                 <li className="list-group-item">Distancia: {(distance / 1000).toFixed(4)} km</li>
                                 <li className="list-group-item">Duración: {Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>

@@ -54,7 +54,7 @@ export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }
                 lat: place.Latitud,
             });
             setShowSavedPlaces(false);
-            return
+            return;
         }
         navigate(`/places/editPlace/${place.Nombre}`);
     }
