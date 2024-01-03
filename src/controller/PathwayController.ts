@@ -25,7 +25,7 @@ export default class PathwayController {
         // });
     }
 
-    toggleFavourite(paramPathway: Pathway, userId?: string) {
+    toggleFavourite(paramPathway: Pathway, userId: string) {
         try {
             paramPathway = { ...paramPathway, favourite: !paramPathway.favourite };
             // this.toggleFavouriteLocally(paramPathway);
@@ -34,27 +34,7 @@ export default class PathwayController {
             throw error;
         }
     }
-    // private toggleFavouriteLocally(paramPathway: number | Pathway) {
-    //     if (this.pathways.length === 0) {
-    //         throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-    //     }
-    //     var searchPar: number;
 
-    //     if (typeof paramPathway === 'number') {
-    //         searchPar = paramPathway;
-    //     } else {
-    //         searchPar = paramPathway.id!;
-    //     }
-
-    //     const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
-
-    //     if (index !== -1) {
-    //         this.pathways[index].favourite = !this.pathways[index].favourite;
-    //         return true;
-    //     } else {
-    //         throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
-    //     }
-    // }
 
     async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
         if ((!from.lat || !from.lon) && from.name) {
@@ -66,7 +46,7 @@ export default class PathwayController {
         return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
-    async deletePathway(paramPathway: Pathway, userId?: string) {
+    async deletePathway(paramPathway: Pathway, userId: string) {
         try {
             this.deletePathwayLocally(paramPathway);
             await this.firebaseService.deletePathway(paramPathway, userId!);
@@ -99,40 +79,41 @@ export default class PathwayController {
         }
     }
 
-    getPathways() {
-        if (this.pathways.length === 0) {
-            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-        }
-        return this.pathways;
-    }
-
-    setPathways(pathways: Pathway[]) {
-        this.pathways = pathways;
-    }
-
-
-    addPathway(pathway: Pathway, userId?: string) {
+    async getPathways(userId: string) {
         try {
-            this.addPathwayLocally(pathway);
-            this.firebaseService.storePathway(pathway, userId!);
+            const pathways = await this.firebaseService.getPathways(userId);
+            return pathways;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async replacePathways(pathways: Pathway[], userId: string): Promise<void> {
+        await this.firebaseService.replacePathways(pathways, userId);
+    }
+
+
+    async addPathway(pathway: Pathway, userId: string) {
+        try {
+            await this.firebaseService.storePathway(pathway, userId);
         } catch (error) {
             throw error;
         }
     }
 
 
-    private addPathwayLocally(pathway: Pathway) {
-        if (!pathway || pathway.distance === 0) {
-            throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
-        }
-        const _ = require('lodash');
-        const isDuplicate = this.pathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
-        if (!isDuplicate) {
-            this.pathways.push(pathway);
-        } else {
-            throw new PathwayException(PathWayExceptionMessages.AlreadyExists);
-        }
-    }
+    // private addPathwayLocally(pathway: Pathway) {
+    //     if (!pathway || pathway.distance === 0) {
+    //         throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
+    //     }
+    //     const _ = require('lodash');
+    //     const isDuplicate = this.pathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
+    //     if (!isDuplicate) {
+    //         this.pathways.push(pathway);
+    //     } else {
+    //         throw new PathwayException(PathWayExceptionMessages.AlreadyExists);
+    //     }
+    // }
 
     calculateCalories(pathway: Pathway, vehicle: PathwayTransportMeans): number {
         if (!pathway || pathway.distance === 0) {

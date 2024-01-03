@@ -10,6 +10,7 @@ import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
 import EmptyPlacesException from "../exceptions/EmptyPlacesException.ts";
 import PlaceNotFoundException from "../exceptions/PlaceNotFoundException.ts";
+import { PathWayExceptionMessages, PathwayException } from "../exceptions/PathwayException.ts";
 
 export class FirebaseService {
 
@@ -137,14 +138,14 @@ export class FirebaseService {
             const modifiedPlaces: Place[] = currentPlaces.map(currentPlace => {
                 const modifiedPlace = newPlaces.find(place => place.Nombre === currentPlace.Nombre);
                 if (modifiedPlace) {
-                    return { ...currentPlace, Favorito: modifiedPlace.Favorito};
+                    return { ...currentPlace, Favorito: modifiedPlace.Favorito };
                 } else {
                     return currentPlace;
                 }
             });
             await updateDoc(docRef, { places: modifiedPlaces });
         } else {
-        await setDoc(docRef, { places: newPlaces }, { merge: true });
+            await setDoc(docRef, { places: newPlaces }, { merge: true });
         }
     }
 
@@ -154,6 +155,11 @@ export class FirebaseService {
         await setDoc(docRef, { places: newPlaces }, { merge: true });
     }
 
+
+    async replacePathways(newPathways: Pathway[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'pathways');
+        await setDoc(docRef, { pathways: newPathways }, { merge: true });
+    }
 
     async storeVehicle(vehicle: Vehicle, userId: string): Promise<void> {
         const _ = require('lodash');
@@ -210,7 +216,7 @@ export class FirebaseService {
 
     }
 
-    async storePathway(pathway: Pathway, userId: string): Promise<void> {
+    async storePathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
         const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
         const pathwayData = await this.getPathways(userId);
@@ -232,7 +238,8 @@ export class FirebaseService {
 
         // Save the updated pathways to Firestore
         await setDoc(docRef, { pathways: currentPathways }, { merge: true });
-
+        console.log('Hola mundo');
+        return currentPathways;
     }
 
     async deletePathway(paramPathway: Pathway, userId: string) {
@@ -262,6 +269,10 @@ export class FirebaseService {
             await setDoc(docRef, { pathways: [] });
             return { pathways: [] };
         }
+
+        // if (docSnap.data().pathways.length === 0) {
+        //     throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        // }
 
         return docSnap.data();
     }
