@@ -6,6 +6,7 @@ import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayE
 import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 import {OpenRoutingPostCall} from "../interfaces/OpenRoutingPostCall.ts";
+import {OpenRouteReverseGeocoding} from "../interfaces/OpenRouteReverseGeocoding.ts";
 
 const { VITE_ROUTES_API_KEY } = getEnvVariables();
 
@@ -23,6 +24,17 @@ export class OpenRouteService {
             lat: data.features[0].geometry.coordinates[1],
             lon: data.features[0].geometry.coordinates[0]
         }
+    }
+
+    async getPlaceNameByCoords( coords: Coords ): Promise<string> {
+        const { data } = await openRouteApi.get<OpenRouteReverseGeocoding>('/geocode/reverse', {
+            params: {
+                api_key: VITE_ROUTES_API_KEY,
+                'point.lon': coords.lon,
+                'point.lat': coords.lat,
+            }
+        });
+        return data.features[0].properties.region || '';
     }
 
     async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {

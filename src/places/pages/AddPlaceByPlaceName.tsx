@@ -1,4 +1,4 @@
-import {PlacesController, getPlacesController} from "../../controller/PlacesController.ts";
+import {getPlacesController, PlacesController} from "../../controller/PlacesController.ts";
 import React, {useContext, useState} from "react";
 import {MainLayout} from "../../layouts/MainLayout.tsx";
 import {Link} from "react-router-dom";
@@ -21,7 +21,7 @@ export const AddPlaceByPlaceName = () => {
     const handleAddPlaceByPlaceName = () => {
         try {
             placeController.addPlaceByToponym(placeName, user.uid).then(places => {
-                placesContext.setPlaces(places);
+                placesContext.setPlaces([...places]);
             });
         } catch (e) {
             console.log('Error al añadir el lugar');
@@ -30,15 +30,23 @@ export const AddPlaceByPlaceName = () => {
 
     return (
         <MainLayout>
-            <h1>Añadir lugar por topónimo</h1>
-            <hr />
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <h1>Añadir lugar usando topónimo</h1>
+                <Link
+                    to={'/places/addPlaceByCoords'}
+                    className="btn btn-outline-info"
+                >
+                    <i className={'fas fa-exchange-alt'}></i>
+                </Link>
+            </div>
+            <hr/>
             <div className="form-group">
                 <label htmlFor="placeName">Nombre del lugar</label>
                 <input
                     type="text"
                     id="placeName"
                     className="form-control"
-                    value={ placeName }
+                    value={placeName}
                     onChange={ handlePlaceNameChange }
                 />
             </div>

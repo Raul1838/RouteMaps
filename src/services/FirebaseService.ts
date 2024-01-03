@@ -79,7 +79,6 @@ export class FirebaseService {
 
 
     async storePlace(place: Place, userId: string): Promise<Place[]> {
-        console.log(place);
         const docRef = doc(FirebaseDB, userId, 'places');
         const placeData = await this.getPlaces(userId);
         const currentPlaces: Place[] = placeData.places || [];

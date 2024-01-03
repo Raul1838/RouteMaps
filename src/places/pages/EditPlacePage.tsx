@@ -100,7 +100,7 @@ export const EditPlacePage = () => {
     return (
         <MainLayout>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1>Edit Place Page</h1>
+                <h1>Editar lugar</h1>
                 <Button variant={place.Favorito ? "warning" : "outline-warning"} onClick={toggleFavorite}>
                     <i className={'fas fa-star'}></i>
                 </Button>

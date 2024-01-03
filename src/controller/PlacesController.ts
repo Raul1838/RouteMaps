@@ -38,6 +38,14 @@ export class PlacesController {
         }
     }
 
+    async getPlaceNameByCoords(coordenadas: Coords): Promise<string> {
+        try {
+            return await this.openRouteService.getPlaceNameByCoords(coordenadas);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     private checkValidCoordinates(coordenadas: Coords) {
         if ((typeof coordenadas.lat !== 'number') || (typeof coordenadas.lon !== 'number')) {
             throw new IllegalArgumentException();
@@ -61,8 +69,8 @@ export class PlacesController {
         await this.firebaseService.setPlaces(places, userId);
     }
 
-    async setPlace(place: Place, userId: string): Promise<void> {
-        await this.firebaseService.storePlace(place, userId);
+    async setPlace(place: Place, userId: string): Promise<Place[]> {
+        return await this.firebaseService.storePlace(place, userId);
     }
 
     //Otros métodos
