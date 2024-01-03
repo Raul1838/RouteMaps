@@ -78,6 +78,12 @@ export const Buscador = () => {
         }
     }
 
+    const transportMeanIcons: { [key: string]: string } = {
+        [PathwayTransportMeans.BIKE]: 'fas fa-bicycle',
+        [PathwayTransportMeans.VEHICLE]: 'fas fa-car',
+        [PathwayTransportMeans.WALKING]: 'fas fa-walking',
+    }
+
     return (
         <div className="card" style={{
             position: 'fixed',
@@ -100,7 +106,7 @@ export const Buscador = () => {
                             variant={pathwayTransportMean === transportMean ? "primary" : "white"}
                             onClick={() => handleTransportChange(transportMean)}
                         >
-                            { transportMean }
+                            <i className={ transportMeanIcons[transportMean] }></i>
                         </Button>
                     ))}
                 </ButtonGroup>
