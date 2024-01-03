@@ -12,6 +12,7 @@ interface AddVehicleComponentProps {
 const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) => {
     const [resultado, setResultado] = useState('');
     const navigate = useNavigate();
+    const [operationStatus, setOperationStatus] = useState(false);
     const [formState, setFormState] = useState({
         plate: '',
         name: '',
@@ -56,6 +57,7 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
             const result = await vehiclesViewModel.addVehicle(vehicleData);
             if (result) {
                 setResultado('Vehículo añadido con éxito');
+                setOperationStatus(true);
                 resetFormState();
                 setTimeout(() => {
                     navigate('/vehicles/getVehicles');
@@ -71,7 +73,6 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
     return (
         <div>
             <h1>Añadir Vehículo</h1>
-            {!resultado && <div className="alert alert-info">{resultado}</div>}
             <SmartForm 
                 formData={formState}
                 formFields={formFields}
@@ -79,6 +80,9 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
                 submitButtonLabel="Añadir Vehículo"
                 validations={validations}
             />
+            {resultado && (<div className={`alert ${operationStatus ? 'alert-info' : 'alert-danger'}`}>{resultado}</div>
+)}
+
             <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
         </div>
     );

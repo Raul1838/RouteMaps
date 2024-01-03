@@ -6,5 +6,5 @@ export default interface VehiclesInterface {
     deleteVehicle(plate: string): Boolean;
     setVehicles(vehicles: Vehicle[]): void;
     modifyVehicle(vehicle: Vehicle): Promise<Boolean>;
-    toggleFavourite({ plate }: { plate: string }): Boolean;
+    toggleFavourite(plate: string): Boolean;
 }

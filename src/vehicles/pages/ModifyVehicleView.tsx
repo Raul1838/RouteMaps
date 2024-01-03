@@ -87,7 +87,7 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
                 submitButtonLabel="Modificar Vehículo"
                 validations={validations}
             />
-            <div className="alert alert-info">{resultado}</div>
+            {resultado && <div className="alert alert-info">{resultado}</div>}
             <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
         </div>
     );

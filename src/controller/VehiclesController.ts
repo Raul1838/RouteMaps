@@ -18,7 +18,7 @@ export default class VehiclesController implements VehiclesInterface {
         // });
     }
 
-    toggleFavourite({ plate }: { plate: string }): boolean {
+    toggleFavourite(plate: string): boolean {
         if (this.vehicles.size === 0) {
             throw new EmptyVehiclesException();
         }
@@ -29,7 +29,6 @@ export default class VehiclesController implements VehiclesInterface {
                 vehicle.favorite = !vehicle.favorite;
                 return true;
             } else {
-                // Handle the case where the vehicle is not found (this should not happen)
                 throw new VehicleNotFoundException();
             }
         } else {

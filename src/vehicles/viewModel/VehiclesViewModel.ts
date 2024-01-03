@@ -32,4 +32,8 @@ export default class VehiclesViewModel {
         return this.vehiclesController.getVehicle(plate);
     }
 
+    toggleFavourite(plate: string): Boolean {
+        return this.vehiclesController.toggleFavourite(plate);
+    }
+
 }

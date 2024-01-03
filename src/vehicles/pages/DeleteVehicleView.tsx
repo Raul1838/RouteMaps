@@ -3,6 +3,8 @@ import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import { Link } from "react-router-dom";
 import { useParams, useNavigate } from 'react-router-dom';
 import Vehicle from '../../interfaces/Vehicle';
+import { SmartForm } from '../../components/SmartForm.tsx';
+
 
 
 
@@ -34,6 +36,19 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
         loadVehicleData();
     }, [plate, vehiclesViewModel, navigate]);
 
+    const formFields = [
+        { id: 'plate', label: 'Matrícula del Vehículo', type: 'text', placeholder: '', disabled: true },
+        { id: 'name', label: 'Nombre del Vehículo', type: 'text', placeholder: '', disabled: true },
+        { id: 'propulsion', label: 'Propulsión', type: 'text', placeholder: '', disabled: true },
+        { id: 'consumption', label: 'Consumo', type: 'text', placeholder: '', disabled: true },
+    ];
+
+    const initialFormData = vehicleData ? {
+        plate: vehicleData.plate,
+        name: vehicleData.name,
+        propulsion: vehicleData.propulsion,
+        consumption: vehicleData.consumption.toString(),
+    } : {};
 
     const handleSubmit = async () => {
         if (!plate) {
@@ -55,17 +70,14 @@ const DeleteVehicleView = ({ vehiclesViewModel }: DeleteVehicleViewProps) => {
     return (
         <div>
             <h1>Eliminar Vehículo</h1>
-            {vehicleData && (
-                <div>
-                    <p>Matrícula: {vehicleData.plate}</p>
-                    <p>Nombre: {vehicleData.name}</p>
-                    <p>Propulsión: {vehicleData.propulsion}</p>
-                    <p>Consumo: {vehicleData.consumption}</p>
-                    <p>¿Es favorito?: {vehicleData.favorite ? 'Sí' : 'No'}</p>
-                </div>
-            )}
-            <button onClick={handleSubmit}>Eliminar Vehículo</button>
-            <div className="alert alert-info">{resultado}</div>
+            <SmartForm 
+                formData={initialFormData}
+                formFields={formFields}
+                onSubmit={handleSubmit}
+                submitButtonLabel="Eliminar Vehículo"
+                validations={{}}
+            />
+            {resultado && <div className="alert alert-info">{resultado}</div>}
             <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
         </div>
     );
