@@ -103,7 +103,7 @@ export const Buscador = () => {
                     {Object.values(PathwayTransportMeans).map((transportMean) => (
                         <Button
                             key={transportMean}
-                            variant={pathwayTransportMean === transportMean ? "primary" : "white"}
+                            variant={pathwayTransportMean === transportMean ? "info" : "white"}
                             onClick={() => handleTransportChange(transportMean)}
                         >
                             <i className={ transportMeanIcons[transportMean] }></i>

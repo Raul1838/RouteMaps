@@ -2,7 +2,7 @@ import {Map, Marker} from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {useContext, useEffect, useRef} from 'react';
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
-import {getPathwayController, PathwayController} from "../../controller/PathwayController.ts";
+import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
 import {Coords} from "../../interfaces/Coords.ts";
 import polyline from '@mapbox/polyline';
 

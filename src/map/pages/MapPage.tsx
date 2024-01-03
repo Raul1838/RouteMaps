@@ -17,18 +17,19 @@ export const MapPage = () => {
     return (
         <>
             <MainLayout>
-                <div style={{ display: 'flex', flexDirection: 'row', height: '100vh' }}>
-                    <Buscador />
-                    {
-                        showSavedPlaces &&
+                <Buscador />
+                <InteractiveMap />
+                {
+                    showSavedPlaces &&
+                    <div style={{ display: 'flex', flexDirection: 'row', height: '100vh', position: 'relative', zIndex: 2 }}>
+                        <Buscador />
                         <Card style={{ width: 'calc(100% - 350px)', position: 'fixed', top: '55px', left: '350px', height: 'calc(100% - 60px)' }}>
                             <Card.Body>
                                 <PlacesList showCrudOptions={ false } />
                             </Card.Body>
                         </Card>
-                    }
-                </div>
-                <InteractiveMap />
+                    </div>
+                }
                 {
                     wantDetails && <DetailsPage />
                 }
