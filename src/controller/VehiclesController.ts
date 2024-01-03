@@ -12,18 +12,19 @@ export default class VehiclesController implements VehiclesInterface {
 
     private vehicles: Map<string, Vehicle> = new Map<string, Vehicle>();
 
-    constructor(private firebaseService: FirebaseService) {
+    constructor( private firebaseService: FirebaseService ) {
         // firebaseService.getVehicles().then(vehicles => {
         //     setVehicles(vehicles);
         // });
     }
 
-    toggleFavourite({ plate }: { plate: string }, userId?: string): void {
+    toggleFavourite({ plate }: { plate: string }, userId?: string): boolean {
         try {
             this.toggleFavouriteLocally({ plate });
             const vehiclePuppet: Vehicle = { plate: plate, consumption: 0, name: '', propulsion: Combustible.Diesel };
 
             this.firebaseService.storeVehicle(vehiclePuppet, userId!);
+            return true;
         } catch (error) {
             throw error;
         }
@@ -48,10 +49,11 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    addVehicle(paramVehicle: Vehicle, userId?: string): void {
+    async addVehicle(paramVehicle: Vehicle, userId?: string): Promise<boolean> {
         try {
             this.addVehicleLocally(paramVehicle);
-            this.firebaseService.storeVehicle(paramVehicle, userId!);
+            await this.firebaseService.storeVehicle(paramVehicle, userId!);
+            return true;
         } catch (error) {
             throw error;
         }
@@ -74,7 +76,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    getVehicle(plate: string): Vehicle {
+    async getVehicle(plate: string): Promise<Vehicle>{
         return this.vehicles.get(plate) || {
             plate: '',
             name: '',
@@ -88,11 +90,12 @@ export default class VehiclesController implements VehiclesInterface {
         return Array.from(this.vehicles.values());
     }
 
-    deleteVehicle(plate: string, userId?: string): void {
+    async deleteVehicle(plate: string, userId?: string): Promise<boolean> {
         try {
             this.deleteVehicleLocally(plate);
             const vehiclePuppet: Vehicle = { plate: plate, consumption: 0, name: '', propulsion: Combustible.Diesel };
-            this.firebaseService.deleteVehicle(vehiclePuppet, userId!)
+            await this.firebaseService.deleteVehicle(vehiclePuppet, userId!)
+            return true;
         } catch (error) {
             throw error;
         }
@@ -111,10 +114,11 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    modifyVehicle(paramVehicle: Vehicle, userId?: string): void {
+    async modifyVehicle(paramVehicle: Vehicle, userId?: string): Promise<boolean> {
         try {
             this.modifyVehicleLocally(paramVehicle);
-            this.firebaseService.storeVehicle(paramVehicle, userId!);
+            await this.firebaseService.storeVehicle(paramVehicle, userId!);
+            return true;
         } catch (error) {
             throw error;
         }

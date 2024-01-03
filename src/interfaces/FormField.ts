@@ -4,4 +4,6 @@ export interface FormField {
     label: string;
     type: string;
     placeholder?: string;
+    disabled?: boolean;
+    options?: string[];
 }

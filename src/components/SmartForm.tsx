@@ -7,6 +7,7 @@ interface Errors {
     [key: string]: string | null;
 }
 
+
 export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additionalFormLink,
                                                    onSubmit, submitButtonLabel, validations, inputButtonsSpecification }) => {
     const { formState, onInputChange } = useForm( formData );
@@ -35,31 +36,50 @@ export const SmartForm: React.FC<FormProps> = ({ formData, formFields, additiona
         onSubmit(formState);
     }
 
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        onInputChange(event as unknown as React.ChangeEvent<HTMLInputElement>);
+    };
+
     return(
         <>
             <form onSubmit={ handleOnSubmit }>
                 {formFields.map((field) => (
                     <div className="form-group" key={field.id} style={{ marginBottom: '20px' }}>
                         <label htmlFor={field.id}>{field.label}</label>
-                        <div className="input-group">
-                            <input
+                        {field.type === 'select' ? (
+                            <select
                                 className="form-control"
-                                id={ field.id }
-                                type={ field.type }
-                                name={ field.id }
-                                value={ formState[field.id] }
-                                onChange={ onInputChange }
-                                placeholder={ field.placeholder || '' }
-                                required={ true }
-                            />
-                            {inputButtonsSpecification &&
-                                <div className="input-group-append">
-                                    <button className="btn btn-outline-info" onClick={() => inputButtonsSpecification.onClick(field.id) }>
-                                        <i className={inputButtonsSpecification.icon}></i>
-                                    </button>
-                                </div>
-                            }
-                        </div>
+                                id={field.id}
+                                name={field.id}
+                                value={formState[field.id]}
+                                onChange={handleSelectChange}
+                                disabled={field.disabled || false}
+                            >
+                                {field.options && field.options.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                        ) : (
+                            <div className="input-group">
+                                <input
+                                    className="form-control"
+                                    id={ field.id }
+                                    type={ field.type }
+                                    name={ field.id }
+                                    value={ formState[field.id] }
+                                    onChange={ onInputChange }
+                                    placeholder={ field.placeholder || '' }
+                                    required={ true }
+                                />
+                                {inputButtonsSpecification &&
+                                    <div className="input-group-append">
+                                        <button className="btn btn-outline-info" onClick={() => inputButtonsSpecification.onClick(field.id) }>
+                                            <i className={inputButtonsSpecification.icon}></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        )}
                         {
                             dirty && errors[field.id] ? <small className="text-danger">{ errors[field.id] }</small> : null
                         }
