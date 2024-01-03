@@ -1,9 +1,7 @@
-import { combustiblePriceServiceApi, lightPriceServiceApi } from "../api/PricesServiceApi";
+import {combustiblePriceServiceApi, lightPriceServiceApi} from "../api/PricesServiceApi";
 import Combustible from "../enums/Combustible";
-import { getEnvVariables } from "../helpers/getEnvVariables";
-import { CombustiblePriceInterface } from "../interfaces/combustiblePriceInterface";
-import { LightPriceInterface } from "../interfaces/lightPriceInterface";
-import { CombustiblePriceService } from "./CombustiblePriceService";
+import {CombustiblePriceInterface} from "../interfaces/combustiblePriceInterface";
+import {LightPriceInterface} from "../interfaces/lightPriceInterface";
 
 
 export class PriceService {

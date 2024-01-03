@@ -1,5 +1,5 @@
 import {Coords} from "../../src/interfaces/Coords";
-import {getPathwayController, PathwayController,} from "../../src/controller/PathwayController";
+import PathwayController, {getPathwayController} from "../../src/controller/PathwayController";
 import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/PathwayException";
 import {Pathway} from "../../src/interfaces/Pathway";
 import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
