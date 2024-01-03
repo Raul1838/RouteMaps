@@ -1,13 +1,15 @@
-import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
-import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
-import {UserModel} from "../interfaces/UserModel.ts";
-import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
-import {doc, getDoc, setDoc, updateDoc} from "firebase/firestore/lite";
-import {Pathway} from "../interfaces/Pathway.ts";
+import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
+import { UserModel } from "../interfaces/UserModel.ts";
+import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore/lite";
+import { Pathway } from "../interfaces/Pathway.ts";
 import Combustible from "../enums/Combustible.ts";
-import {PathwayTypes} from "../enums/PathwayTypes.ts";
+import { PathwayTypes } from "../enums/PathwayTypes.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
+import EmptyPlacesException from "../exceptions/EmptyPlacesException.ts";
+import PlaceNotFoundException from "../exceptions/PlaceNotFoundException.ts";
 
 export class FirebaseService {
 
@@ -101,8 +103,15 @@ export class FirebaseService {
     async deletePlace(placeToDelete: Place, userId: string) {
         const docRef = doc(FirebaseDB, userId, 'places');
         const placeData = await this.getPlaces(userId);
+        if (placeData.places.length === 0) {
+            throw new EmptyPlacesException();
+        }
+
         let currentPlaces: Place[] = placeData?.places || [];
         const modifiedPlaces: Place[] = currentPlaces.filter(currentPlace => currentPlace.Nombre !== placeToDelete.Nombre);
+        if (modifiedPlaces.length === currentPlaces.length) {
+            throw new PlaceNotFoundException();
+        }
         await setDoc(docRef, { places: modifiedPlaces }, { merge: true });
     }
 
@@ -122,7 +131,6 @@ export class FirebaseService {
     async setPlaces(newPlaces: Place[], userId: string) {
         const docRef = doc(FirebaseDB, `${userId}`, 'places');
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
             const currentPlaces: Place[] = docSnap.data().places;
 
@@ -136,8 +144,14 @@ export class FirebaseService {
             });
             await updateDoc(docRef, { places: modifiedPlaces });
         } else {
-            await setDoc(docRef, { places: newPlaces }, { merge: true });
+        await setDoc(docRef, { places: newPlaces }, { merge: true });
         }
+    }
+
+
+    async replacePlaces(newPlaces: Place[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'places');
+        await setDoc(docRef, { places: newPlaces }, { merge: true });
     }
 
 

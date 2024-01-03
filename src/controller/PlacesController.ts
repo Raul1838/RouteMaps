@@ -1,11 +1,13 @@
 import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
-import {Coords} from "../interfaces/Coords";
+import { Coords } from "../interfaces/Coords";
 import Place from "../interfaces/Place";
 import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import APIPlacesService from "../api/APIPlacesService.ts";
-import {OpenRouteService} from "../services/OpenRouteService.ts";
-import {FirebaseService} from "../services/FirebaseService.ts";
+import { OpenRouteService } from "../services/OpenRouteService.ts";
+import { FirebaseService } from "../services/FirebaseService.ts";
+import PlaceNotFoundException from "../exceptions/PlaceNotFoundException.ts";
+import EmptyPlacesException from "../exceptions/EmptyPlacesException.ts";
 
 
 export class PlacesController {
@@ -14,6 +16,30 @@ export class PlacesController {
         private openRouteService: OpenRouteService,
         private firebaseService: FirebaseService,
     ) { }
+
+    async toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }, userId: string): Promise<Boolean> {
+        const data: any = await this.firebaseService.getPlaces(userId);
+        const placesLength: number = data.places.length;
+        if (placesLength === 0) {
+            throw new EmptyPlacesException();
+        }
+
+        const index = data.places.findIndex((place: Place) => (this.areFloatsEqual(place.Longitud, Longitud)
+            && this.areFloatsEqual(place.Latitud, Latitud)));
+
+        if (index !== -1) {
+            data.places[index].Favorito = !data.places[index].Favorito;
+            await this.firebaseService.storePlace(data.places[index], userId);
+            return true;
+        } else {
+            throw new PlaceNotFoundException();
+        }
+
+    }
+
+    private areFloatsEqual(a: number, b: number, epsilon: number = Number.EPSILON): boolean {
+        return Math.abs(a - b) < epsilon;
+    }
 
     async addPlaceByToponym(placeName: string, favorite: boolean, userId: string): Promise<Place[]> {
         const completePlace: Coords = await this.openRouteService.getCoordinatesFromPlaceName(placeName);
@@ -61,12 +87,16 @@ export class PlacesController {
     }
 
     async getPlaces(userId: string): Promise<Place[]> {
-        const data = await this.firebaseService.getPlaces( userId );
+        const data = await this.firebaseService.getPlaces(userId);
         return data?.places || [];
     }
 
     async setPlaces(places: Place[], userId: string): Promise<void> {
         await this.firebaseService.setPlaces(places, userId);
+    }
+
+    async replacePlaces(places: Place[], userId: string): Promise<void> {
+        await this.firebaseService.replacePlaces(places, userId);
     }
 
     async setPlace(place: Place, userId: string): Promise<Place[]> {
@@ -88,7 +118,7 @@ export class PlacesController {
 
     async transformToValidCoords(inputTerm: string): Promise<Coords> {
         const splitInputTerm: string[] = inputTerm.split(',');
-        if( splitInputTerm.length > 1 ) {
+        if (splitInputTerm.length > 1) {
             if (splitInputTerm.every((value: string) => this.containsNumber(value))) {
                 return { lat: parseFloat(splitInputTerm[1]), lon: parseFloat(splitInputTerm[0]) };
             }
