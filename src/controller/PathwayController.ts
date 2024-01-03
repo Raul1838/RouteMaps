@@ -1,13 +1,13 @@
-import { Coords } from "../interfaces/Coords.ts";
-import { OpenRouteService } from "../services/OpenRouteService.ts";
-import { Pathway } from "../interfaces/Pathway.ts";
+import {Coords} from "../interfaces/Coords.ts";
+import {OpenRouteService} from "../services/OpenRouteService.ts";
+import {Pathway} from "../interfaces/Pathway.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
-import { PriceService } from "../services/PriceService.ts";
+import {PriceService} from "../services/PriceService.ts";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts";
-import { PathwayException, PathWayExceptionMessages } from "../exceptions/PathwayException.ts";
-import { FirebaseService } from "../services/FirebaseService.ts";
-import { PathwayTypes } from "../enums/PathwayTypes.ts";
-import { PathwayTransportMeans } from "../enums/PathwayTransportMeans.ts";
+import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
+import {FirebaseService} from "../services/FirebaseService.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
+import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 
 export default class PathwayController {
 
@@ -81,8 +81,7 @@ export default class PathwayController {
 
     async getPathways(userId: string) {
         try {
-            const pathways = await this.firebaseService.getPathways(userId);
-            return pathways;
+            return await this.firebaseService.getPathways(userId);
         } catch (error) {
             throw error;
         }
@@ -115,14 +114,14 @@ export default class PathwayController {
     //     }
     // }
 
-    calculateCalories(pathway: Pathway, vehicle: PathwayTransportMeans): number {
-        if (!pathway || pathway.distance === 0) {
+    calculateCalories(distance: number, vehicle: PathwayTransportMeans): number {
+        if (distance === 0) {
             throw new PathwayException(PathWayExceptionMessages.FarPathway);
         }
         if (vehicle === PathwayTransportMeans.WALKING) {
-            return (pathway.distance * 12 / 250);
+            return (distance * 12 / 250);
         } else if (vehicle === PathwayTransportMeans.BIKE) {
-            return (pathway.distance * 6 / 250);
+            return (distance * 6 / 250);
         } else {
             throw new VehicleNotFoundException('No se ha seleccionado un vehículo de tipo Bicicleta o Andando');
         }
@@ -141,15 +140,15 @@ export default class PathwayController {
         return data;
     }
 
-    async calculatePrice(pathway: Pathway, vehicle: Vehicle): Promise<number> {
+    async calculatePrice(distance: number, vehicle: Vehicle): Promise<number> {
         if (vehicle.consumption === undefined) {
             throw new VehicleNotFoundException('El vehículo no existe');
         }
-        if (pathway.distance === undefined) {
+        if (distance === undefined) {
             throw new PathwayException(PathWayExceptionMessages.FarPathway);
         }
         const price = await this.priceService.getPrice(vehicle.propulsion);
-        let priceConsumido = ((price * vehicle.consumption * pathway.distance) / 10000);
+        let priceConsumido = ((price * vehicle.consumption * distance) / 10000);
         return parseFloat(priceConsumido.toFixed(2));
     }
 }

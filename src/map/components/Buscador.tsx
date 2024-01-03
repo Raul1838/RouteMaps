@@ -1,27 +1,61 @@
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {FormField} from "../../interfaces/FormField.ts";
 import {FormState} from "../../hooks/useForm.ts";
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 import {SmartForm} from "../../components/SmartForm.tsx";
-import {PlacesController, getPlacesController} from "../../controller/PlacesController.ts";
+import {getPlacesController, PlacesController} from "../../controller/PlacesController.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
 import {Button, ButtonGroup, Dropdown} from "react-bootstrap";
 import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
 import {PathwayTypes} from "../../enums/PathwayTypes.ts";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {InputButtonSpecification} from "../../interfaces/InputButtonSpecification.ts";
+import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
+import Vehicle from "../../interfaces/Vehicle.ts";
+import Combustible from "../../enums/Combustible.ts";
+import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
 
 const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => value !== PathwayTypes.UNDEFINED);
 
 export const Buscador = () => {
 
     const authContext: AuthContextInterface = useContext(AuthContext);
-    const { defaultPathwayType } = authContext;
+    const { defaultPathwayType, defaultVehiclePlate } = authContext;
 
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { distance, duration, pathwayTransportMean} = navigationContext;
 
+    const pathwayController: PathwayController = getPathwayController();
+    const vehiclesController: VehiclesController = getVehiclesController();
+
     const [selection, setSelection] = useState<PathwayTypes>(defaultPathwayType);
+    const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>({
+        consumption: 0,
+        favorite: false,
+        name: "",
+        plate: "",
+        propulsion: Combustible.Gasolina
+    });
+    const [pathwayCost, setPathwayCost] = useState<number>(0);
+
+    useEffect(() => {
+        if( defaultVehiclePlate ) {
+           vehiclesController.getVehicle(defaultVehiclePlate).then((vehicle) => {
+                setSelectedVehicle(vehicle);
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        calculatePathwayCost();
+    }, [pathwayTransportMean, selectedVehicle, distance, duration]);
+
+    const calculatePathwayCost = async () => {
+        if( pathwayTransportMean === PathwayTransportMeans.VEHICLE )
+            setPathwayCost( await pathwayController.calculatePrice(distance, selectedVehicle) );
+        else
+            setPathwayCost( pathwayController.calculateCalories(distance, pathwayTransportMean) );
+    }
 
     const formData = {
         from: navigationContext.from.name,
@@ -123,6 +157,10 @@ export const Buscador = () => {
                     </Dropdown.Menu>
                 </Dropdown>
 
+                <ul className="list-group">
+                    <li className="list-group-item">{ selectedVehicle.name || 'No vehículo seleccionado' }</li>
+                </ul>
+
                 {
                     (distance > 0 && duration > 0)
                         ?   <>
@@ -131,6 +169,11 @@ export const Buscador = () => {
                             <ul className="list-group">
                                 <li className="list-group-item">Distancia: {(distance / 1000).toFixed(4)} km</li>
                                 <li className="list-group-item">Duración: {Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>
+                                <li className="list-group-item">Coste: {
+                                    pathwayCost.toFixed(2)
+                                } {
+                                    pathwayTransportMean === PathwayTransportMeans.VEHICLE ? '€' : 'cal'
+                                }</li>
                             </ul>
                         </>
                         : <></>
