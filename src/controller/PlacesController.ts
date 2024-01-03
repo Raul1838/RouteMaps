@@ -15,14 +15,14 @@ export class PlacesController {
         private firebaseService: FirebaseService,
     ) { }
 
-    async addPlaceByToponym(placeName: string, userId: string): Promise<Place[]> {
+    async addPlaceByToponym(placeName: string, favorite: boolean, userId: string): Promise<Place[]> {
         const completePlace: Coords = await this.openRouteService.getCoordinatesFromPlaceName(placeName);
         this.checkForValidToponym(completePlace.name);
         return await this.savePlaceIntoDatabase({
             Nombre: completePlace.name || '',
             Latitud: completePlace.lat || 0,
             Longitud: completePlace.lon || 0,
-            Favorito: false
+            Favorito: favorite
         }, userId);
     }
 

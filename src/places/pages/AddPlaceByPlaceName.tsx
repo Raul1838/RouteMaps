@@ -4,6 +4,7 @@ import {MainLayout} from "../../layouts/MainLayout.tsx";
 import {Link} from "react-router-dom";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {PlacesContext, PlacesContextInterface} from "../../context/PlacesContext.tsx";
+import {Button} from "react-bootstrap";
 
 export const AddPlaceByPlaceName = () => {
 
@@ -13,6 +14,11 @@ export const AddPlaceByPlaceName = () => {
     const placeController: PlacesController = getPlacesController();
 
     const [placeName, setPlaceName] = useState<string>('');
+    const [favorite, setFavorite] = useState<boolean>(false);
+
+    const toggleFavorite = () => {
+        setFavorite(!favorite);
+    }
 
     const handlePlaceNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPlaceName(event.target.value);
@@ -20,7 +26,7 @@ export const AddPlaceByPlaceName = () => {
 
     const handleAddPlaceByPlaceName = () => {
         try {
-            placeController.addPlaceByToponym(placeName, user.uid).then(places => {
+            placeController.addPlaceByToponym(placeName, favorite, user.uid).then(places => {
                 placesContext.setPlaces([...places]);
             });
         } catch (e) {
@@ -32,12 +38,17 @@ export const AddPlaceByPlaceName = () => {
         <MainLayout>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <h1>Añadir lugar usando topónimo</h1>
-                <Link
-                    to={'/places/addPlaceByCoords'}
-                    className="btn btn-outline-info"
-                >
-                    <i className={'fas fa-exchange-alt'}></i>
-                </Link>
+                <div>
+                    <Button variant={favorite ? "warning" : "outline-warning"} onClick={toggleFavorite}>
+                        <i className={'fas fa-star'}></i>
+                    </Button>
+                    <Link
+                        to={'/places/addPlaceByCoords'}
+                        className="btn btn-outline-info"
+                    >
+                        <i className={'fas fa-exchange-alt'}></i>
+                    </Link>
+                </div>
             </div>
             <hr/>
             <div className="form-group">

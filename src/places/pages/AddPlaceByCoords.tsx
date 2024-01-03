@@ -3,11 +3,12 @@ import {Link} from "react-router-dom";
 import {SmartForm} from "../../components/SmartForm.tsx";
 import {FormField} from "../../interfaces/FormField.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Coords} from "../../interfaces/Coords.ts";
 import {getPlacesController, PlacesController} from "../../controller/PlacesController.ts";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {PlacesContext, PlacesContextInterface} from "../../context/PlacesContext.tsx";
+import {Button} from "react-bootstrap";
 
 export const AddPlaceByCoords = () => {
 
@@ -22,6 +23,17 @@ export const AddPlaceByCoords = () => {
     const [coordsSetted, setCoordsSetted] = useState<boolean>(false);
 
     const [placeName, setPlaceName] = useState<string>('');
+
+    const [favorite, setFavorite] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (coordsSetted) {
+            placesController.getPlaceNameByCoords(coords).then(name => {
+                setPlaceName(name);
+            });
+        }
+    }, [coordsSetted, coords]);
+
 
     const formData = {
         Longitud: coords.lon,
@@ -58,13 +70,16 @@ export const AddPlaceByCoords = () => {
         }
     }
 
+    const toggleFavorite = () => {
+        setFavorite(!favorite);
+    }
+
     const handleSetCoords = async (formData: any) => {
+        if( formData.Longitud === coords.lon && formData.Latitud === coords.lat ) return;
         setCoords({
             lon: formData.Longitud,
             lat: formData.Latitud,
         });
-        const name: string = await placesController.getPlaceNameByCoords(coords);
-        setPlaceName(name);
         setCoordsSetted(true);
     }
 
@@ -82,7 +97,7 @@ export const AddPlaceByCoords = () => {
             Nombre: placeName,
             Longitud: coords.lon || 0,
             Latitud: coords.lat || 0,
-            Favorito: false,
+            Favorito: favorite,
         }, user.uid).then(places => {
             placesContext.setPlaces([...places]);
         });
@@ -92,12 +107,17 @@ export const AddPlaceByCoords = () => {
         <MainLayout>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <h1>Añadir lugar usando coordenadas</h1>
-                <Link
-                    to={'/places/addPlaceByToponym'}
-                    className="btn btn-outline-info"
-                >
-                    <i className={'fas fa-exchange-alt'}></i>
-                </Link>
+                <div>
+                    <Button variant={favorite ? "warning" : "outline-warning"} onClick={toggleFavorite}>
+                        <i className={'fas fa-star'}></i>
+                    </Button>
+                    <Link
+                        to={'/places/addPlaceByToponym'}
+                        className="btn btn-outline-info"
+                    >
+                        <i className={'fas fa-exchange-alt'}></i>
+                    </Link>
+                </div>
             </div>
             <hr/>
             <SmartForm  formData={ formData } formFields={ formFields } onSubmit={ handleSetCoords }
