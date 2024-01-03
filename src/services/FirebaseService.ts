@@ -238,7 +238,6 @@ export class FirebaseService {
 
         // Save the updated pathways to Firestore
         await setDoc(docRef, { pathways: currentPathways }, { merge: true });
-        console.log('Hola mundo');
         return currentPathways;
     }
 

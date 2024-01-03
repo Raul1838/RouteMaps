@@ -28,9 +28,6 @@ describe('Tests sobre gestión de rutas', () => {
         loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
     });
 
-
-
-
     const validPathway1: Pathway = {
         id: 100,
         start: {
@@ -41,56 +38,7 @@ describe('Tests sobre gestión de rutas', () => {
             lat: 39.986597808112535,
             lon: -0.05682265874338428
         },
-        path: [
-            {
-                "distance": 52.9,
-                "duration": 38.1,
-                "instruction": "Head southwest on Calle Pintor Oliet",
-                "name": "Calle Pintor Oliet",
-            },
-            {
-                "distance": 5.9,
-                "duration": 4.3,
-                "instruction": "Turn right",
-                "name": "-",
-            },
-            {
-                "distance": 151.3,
-                "duration": 109.0,
-                "instruction": "Turn left",
-                "name": "-",
-            },
-            {
-                "distance": 133.1,
-                "duration": 95.8,
-                "instruction": "Continue straight onto Camino Viejo Alcora",
-                "name": "Camino Viejo Alcora",
-            },
-            {
-                "distance": 109.5,
-                "duration": 78.8,
-                "instruction": "Continue straight onto Camino Viejo Alcora",
-                "name": "Camino Viejo Alcora",
-            },
-            {
-                "distance": 56.1,
-                "duration": 40.4,
-                "instruction": "Turn left onto Calle Budapest",
-                "name": "Calle Budapest",
-            },
-            {
-                "distance": 46.5,
-                "duration": 33.5,
-                "instruction": "Turn right onto Avenida Alcora, CV-1540",
-                "name": "Avenida Alcora, CV-1540",
-            },
-            {
-                "distance": 0.0,
-                "duration": 0.0,
-                "instruction": "Arrive at Avenida Alcora, CV-1540, on the right",
-                "name": "-",
-            }
-        ],
+        codifiedPath: "pathCodified",
         duration: 399.9,
         distance: 555.4,
         type: PathwayTypes.RECOMMENDED,
@@ -108,56 +56,7 @@ describe('Tests sobre gestión de rutas', () => {
             lat: 39.986597808112535,
             lon: -0.05682265874338428
         },
-        path: [
-            {
-                "distance": 52.9,
-                "duration": 38.1,
-                "instruction": "Head southwest on Calle Pintor Oliet",
-                "name": "Calle Pintor Oliet",
-            },
-            {
-                "distance": 5.9,
-                "duration": 4.3,
-                "instruction": "Turn right",
-                "name": "-",
-            },
-            {
-                "distance": 151.3,
-                "duration": 109.0,
-                "instruction": "Turn left",
-                "name": "-",
-            },
-            {
-                "distance": 133.1,
-                "duration": 95.8,
-                "instruction": "Continue straight onto Camino Viejo Alcora",
-                "name": "Camino Viejo Alcora",
-            },
-            {
-                "distance": 109.5,
-                "duration": 78.8,
-                "instruction": "Continue straight onto Camino Viejo Alcora",
-                "name": "Camino Viejo Alcora",
-            },
-            {
-                "distance": 56.1,
-                "duration": 40.4,
-                "instruction": "Turn left onto Calle Budapest",
-                "name": "Calle Budapest",
-            },
-            {
-                "distance": 46.5,
-                "duration": 33.5,
-                "instruction": "Turn right onto Avenida Alcora, CV-1540",
-                "name": "Avenida Alcora, CV-1540",
-            },
-            {
-                "distance": 0.0,
-                "duration": 0.0,
-                "instruction": "Arrive at Avenida Alcora, CV-1540, on the right",
-                "name": "-",
-            }
-        ],
+        codifiedPath: 'pathCodified',
         duration: 100.9,
         distance: 500.4,
         type: PathwayTypes.SHORTEST,
@@ -221,7 +120,7 @@ describe('Tests sobre gestión de rutas', () => {
                 lat: 39.986597808112535,
                 lon: -0.05682265874338428
             },
-            path: "",
+            codifiedPath: "",
             duration: 399.9,
             distance: 555.4,
             type: PathwayTypes.RECOMMENDED,
@@ -230,7 +129,7 @@ describe('Tests sobre gestión de rutas', () => {
         };
         await pathwayController.addPathway(pathway, loggedUser.uid);
         const pathwaysGotten = await pathwayController.getPathways(loggedUser.uid);
-        expect(pathwaysGotten).toHaveLength(1);
+        expect(pathwaysGotten.pathways).toHaveLength(1);
     });
 
 
@@ -258,8 +157,8 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU19 - E01 - Hay rutas dadas de alta y existe la ruta que se quiere eliminar', async () => {
         expect.assertions(1);
-        await pathwayController.replacePathways([validPathway1, validPathway2]);
-        await pathwayController.deletePathway(validPathway1.id!);
+        await pathwayController.replacePathways([validPathway1, validPathway2], loggedUser.uid);
+        await pathwayController.deletePathway(validPathway1, loggedUser.uid);
         expect(await pathwayController.getPathways(loggedUser.uid)).toHaveLength(1);
     });
 
@@ -267,7 +166,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         try {
-            await pathwayController.deletePathway(validPathway2.id!, loggedUser.uid);
+            await pathwayController.deletePathway(validPathway2, loggedUser.uid);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
@@ -281,7 +180,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
-            await pathwayController.deletePathway(validPathway1.id!);
+            await pathwayController.deletePathway(validPathway1, loggedUser.uid);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
@@ -294,7 +193,7 @@ describe('Tests sobre gestión de rutas', () => {
     test('HU22 - E01 - Existe una lista con rutas dadas de alta y existe la ruta que se quiere marcar como favorita.', async () => {
         expect.assertions(1);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
-        await pathwayController.toggleFavourite(validPathway1.id!);
+        await pathwayController.toggleFavourite(validPathway1, loggedUser.uid);
         expect(await pathwayController.getPathways(loggedUser.uid)[0].favourite).toBe(true);
     });
 
@@ -302,7 +201,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         try {
-            await pathwayController.toggleFavourite(validPathway2.id!);
+            await pathwayController.toggleFavourite(validPathway2, loggedUser.uid);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
@@ -316,7 +215,7 @@ describe('Tests sobre gestión de rutas', () => {
         expect.assertions(1);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
-            await pathwayController.toggleFavourite(validPathway2.id!);
+            await pathwayController.toggleFavourite(validPathway2, loggedUser.uid);
         } catch (error) {
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
