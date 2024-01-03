@@ -120,7 +120,12 @@ export class PlacesController {
         const splitInputTerm: string[] = inputTerm.split(',');
         if (splitInputTerm.length > 1) {
             if (splitInputTerm.every((value: string) => this.containsNumber(value))) {
-                return { lat: parseFloat(splitInputTerm[1]), lon: parseFloat(splitInputTerm[0]) };
+                const placeName: string = await this.openRouteService.getPlaceNameByCoords({ lon: parseFloat(splitInputTerm[0]), lat: parseFloat(splitInputTerm[1]) });
+                return {
+                    lat: parseFloat(splitInputTerm[1]),
+                    lon: parseFloat(splitInputTerm[0]),
+                    name: placeName
+                };
             }
         }
         const place: Place = await this.apiService.getPlaceByToponym(inputTerm);

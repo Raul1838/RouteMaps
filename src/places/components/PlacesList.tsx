@@ -16,7 +16,7 @@ export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }
     const navigate = useNavigate()
     const { places, setPlaces }: PlacesContextInterface = useContext(PlacesContext);
     const { user }: AuthContextInterface = useContext(AuthContext);
-    const { fieldInSelection, setShowSavedPlaces, from, setFrom, to, setTo }: NavigationContextInterface = useContext(NavigationContext);
+    const { fieldInSelection, setShowSavedPlaces, setFrom, setTo }: NavigationContextInterface = useContext(NavigationContext);
 
     const placesController: PlacesController = getPlacesController();
 
@@ -41,20 +41,22 @@ export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }
         setPlaces([...places]);
     };
 
-    const goToDetails = (placeName: string) => {
+    const goToDetails = (place: Place) => {
         if( !showCrudOptions ) {
             if( fieldInSelection === 'from' ) setFrom({
-                ...from,
-                name: placeName
+                name: place.Nombre,
+                lon: place.Longitud,
+                lat: place.Latitud,
             });
             if( fieldInSelection === 'to' ) setTo({
-                ...to,
-                name: placeName
+                name: place.Nombre,
+                lon: place.Longitud,
+                lat: place.Latitud,
             });
             setShowSavedPlaces(false);
             return
         }
-        navigate(`/places/editPlace/${placeName}`);
+        navigate(`/places/editPlace/${place.Nombre}`);
     }
 
     const deletePlace = (place: Place) => {
@@ -99,7 +101,7 @@ export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }
                                 places
                                     .filter(place => !filterFavorites || place.Favorito)
                                     .map((place, index) => (
-                                        <tr key={index} onClick={() => goToDetails(place.Nombre)}>
+                                        <tr key={index} onClick={() => goToDetails(place)}>
                                             <td>{place.Nombre}</td>
                                             <td className="text-center">
                                                 <Button disabled={ !showCrudOptions } variant={place.Favorito ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(place);}}>

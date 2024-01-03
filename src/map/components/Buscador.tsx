@@ -50,10 +50,10 @@ export const Buscador = () => {
 
     const handleNavigate = async ( formState: FormState ) => {
         const placesController: PlacesController = getPlacesController();
-        const [fromCoords, toCoords] = await Promise.all([
-            placesController.transformToValidCoords(formState.from),
-            placesController.transformToValidCoords(formState.to)
-        ]);
+        let fromCoords = navigationContext.from;
+        if( navigationContext.from.name !== formState.from ) fromCoords = await placesController.transformToValidCoords(formState.from);
+        let toCoords = navigationContext.to;
+        if( navigationContext.to.name !== formState.to ) toCoords = await placesController.transformToValidCoords(formState.to);
         navigationContext.setFrom({...fromCoords});
         navigationContext.setTo({...toCoords});
         navigationContext.setPathwayType(selection as PathwayTypes);
@@ -123,8 +123,8 @@ export const Buscador = () => {
                             <h3>Costes de la ruta</h3>
                             <hr />
                             <ul className="list-group">
-                                <li className="list-group-item">Distancia: { distance / 1000 } km</li>
-                                <li className="list-group-item">Duración: { Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>
+                                <li className="list-group-item">Distancia: {(distance / 1000).toFixed(4)} km</li>
+                                <li className="list-group-item">Duración: {Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>
                             </ul>
                         </>
                         : <></>
