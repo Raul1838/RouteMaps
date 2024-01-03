@@ -1,18 +1,22 @@
-import {useContext, useEffect, useState} from 'react';
-import {Button, Form, Table} from 'react-bootstrap';
-import {PlacesContext, PlacesContextInterface} from "../../context/PlacesContext.tsx";
-import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
-import {getPlacesController, PlacesController} from "../../controller/PlacesController.ts";
-import {MainLayout} from "../../layouts/MainLayout.tsx";
-import {Link, useNavigate} from "react-router-dom";
+import {Button, Form, Table} from "react-bootstrap";
 import Place from "../../interfaces/Place.ts";
+import React, {useContext, useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {PlacesContext, PlacesContextInterface} from "../../context/PlacesContext.tsx";
+import {getPlacesController, PlacesController} from "../../controller/PlacesController.ts";
+import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 
-export const PlacesList = () => {
+interface PlacesListProps {
+    showCrudOptions?: boolean;
+}
+
+export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }) => {
 
     const navigate = useNavigate()
-
     const { places, setPlaces }: PlacesContextInterface = useContext(PlacesContext);
     const { user }: AuthContextInterface = useContext(AuthContext);
+    const { fieldInSelection, setShowSavedPlaces, from, setFrom, to, setTo }: NavigationContextInterface = useContext(NavigationContext);
 
     const placesController: PlacesController = getPlacesController();
 
@@ -38,6 +42,18 @@ export const PlacesList = () => {
     };
 
     const goToDetails = (placeName: string) => {
+        if( !showCrudOptions ) {
+            if( fieldInSelection === 'from' ) setFrom({
+                ...from,
+                name: placeName
+            });
+            if( fieldInSelection === 'to' ) setTo({
+                ...to,
+                name: placeName
+            });
+            setShowSavedPlaces(false);
+            return
+        }
         navigate(`/places/editPlace/${placeName}`);
     }
 
@@ -48,9 +64,7 @@ export const PlacesList = () => {
     }
 
     return (
-        <MainLayout>
-            <h1>Lugares guardados</h1>
-            <hr />
+        <>
             <Form>
                 <Form.Check
                     type="switch"
@@ -68,6 +82,14 @@ export const PlacesList = () => {
                             <thead>
                             <tr>
                                 <th className="col-10"></th>
+                                {
+                                    showCrudOptions
+                                    ?   <>
+                                            <th className="col-1"></th>
+                                            <th className="col-1"></th>
+                                        </>
+                                    :   <th className="col-2"></th>
+                                }
                                 <th className="col-1"></th>
                                 <th className="col-1"></th>
                             </tr>
@@ -80,15 +102,18 @@ export const PlacesList = () => {
                                         <tr key={index} onClick={() => goToDetails(place.Nombre)}>
                                             <td>{place.Nombre}</td>
                                             <td className="text-center">
-                                                <Button variant={place.Favorito ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(place);}}>
+                                                <Button disabled={ !showCrudOptions } variant={place.Favorito ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(place);}}>
                                                     <i className={'fas fa-star'}></i>
                                                 </Button>
                                             </td>
-                                            <td className="text-center">
-                                                <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deletePlace(place);}}>
-                                                    <i className={'fas fa-trash'}></i>
-                                                </Button>
-                                            </td>
+                                            {
+                                                showCrudOptions &&
+                                                <td className="text-center">
+                                                    <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deletePlace(place);}}>
+                                                        <i className={'fas fa-trash'}></i>
+                                                    </Button>
+                                                </td>
+                                            }
                                         </tr>
                                     ))
                             }
@@ -96,11 +121,6 @@ export const PlacesList = () => {
                         </Table>
                     </>
             }
-            <Link
-                to={'/places/addPlaceByToponym'}
-                className="btn btn-outline-primary mt-3"
-            >Añadir lugar</Link>
-        </MainLayout>
-    );
-
+        </>
+    )
 }

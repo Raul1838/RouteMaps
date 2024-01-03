@@ -16,12 +16,16 @@ export interface NavigationContextInterface {
     setDistance(distance: number): void;
     duration: number;
     setDuration(duration: number): void;
+    showSavedPlaces: boolean;
+    setShowSavedPlaces(showSavedPlaces: boolean): void;
+    fieldInSelection: string;
+    setFieldInSelection(fieldInSelection: string): void;
 }
 
 export const NavigationContext = React.createContext<NavigationContextInterface>({
-    from: {lat: 0, lon: 0},
+    from: {lat: 0, lon: 0, name: ''},
     setFrom: () => {},
-    to: {lat: 0, lon: 0},
+    to: {lat: 0, lon: 0, name: ''},
     setTo: () => {},
     pathwayTransportMean: PathwayTransportMeans.VEHICLE,
     setPathwayTransportMean: () => {},
@@ -30,17 +34,23 @@ export const NavigationContext = React.createContext<NavigationContextInterface>
     distance: 0,
     setDistance: () => {},
     duration: 0,
-    setDuration: () => {}
+    setDuration: () => {},
+    showSavedPlaces: false,
+    setShowSavedPlaces: () => {},
+    fieldInSelection: '',
+    setFieldInSelection: () => {},
 });
 
 export const NavigationProvider = ({children}: { children: React.ReactNode }) => {
 
-    const [from, setFrom] = useState<Coords>({ lat: 0, lon: 0 });
-    const [to, setTo] = useState<Coords>({ lat: 0, lon: 0 });
+    const [from, setFrom] = useState<Coords>({ lat: 0, lon: 0, name: '' });
+    const [to, setTo] = useState<Coords>({ lat: 0, lon: 0, name: '' });
     const [pathwayTransportMean, setPathwayTransportMean] = useState<PathwayTransportMeans>(PathwayTransportMeans.VEHICLE);
     const [pathwayType, setPathwayType] = useState<PathwayTypes>(PathwayTypes.RECOMMENDED);
     const [distance, setDistance] = useState<number>(0);
     const [duration, setDuration] = useState<number>(0);
+    const [showSavedPlaces, setShowSavedPlaces] = useState<boolean>(false);
+    const [fieldInSelection, setFieldInSelection] = useState<string>('');
 
     const value: NavigationContextInterface = {
         from,
@@ -54,7 +64,11 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
         distance,
         setDistance,
         duration,
-        setDuration
+        setDuration,
+        showSavedPlaces,
+        setShowSavedPlaces,
+        fieldInSelection,
+        setFieldInSelection
     };
 
     return (

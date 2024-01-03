@@ -1,7 +1,7 @@
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {useContext, useEffect, useState} from "react";
 import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
-import {getPathwayController, PathwayController} from "../../controller/PathwayController.ts";
+import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
 import Vehicle from "../../interfaces/Vehicle.ts";
 import {DefaultVehicleDetails} from "../components/DefaultVehicleDetails.tsx";
 import {PathwayTypes} from "../../enums/PathwayTypes.ts";

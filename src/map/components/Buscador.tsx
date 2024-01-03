@@ -9,6 +9,7 @@ import {Button, ButtonGroup, Dropdown} from "react-bootstrap";
 import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
 import {PathwayTypes} from "../../enums/PathwayTypes.ts";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+import {InputButtonSpecification} from "../../interfaces/InputButtonSpecification.ts";
 
 const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => value !== PathwayTypes.UNDEFINED);
 
@@ -20,13 +21,11 @@ export const Buscador = () => {
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { distance, duration, pathwayTransportMean} = navigationContext;
 
-    const [from, setFrom] = useState('');
-    const [to, setTo] = useState('');
     const [selection, setSelection] = useState<PathwayTypes>(defaultPathwayType);
 
     const formData = {
-        from,
-        to
+        from: navigationContext.from.name,
+        to: navigationContext.to.name
     }
 
     const formFields: FormField[] = [
@@ -50,8 +49,6 @@ export const Buscador = () => {
     }
 
     const handleNavigate = async ( formState: FormState ) => {
-        setFrom(formState.from);
-        setTo(formState.to);
         const placesController: PlacesController = getPlacesController();
         const [fromCoords, toCoords] = await Promise.all([
             placesController.transformToValidCoords(formState.from),
@@ -60,6 +57,14 @@ export const Buscador = () => {
         navigationContext.setFrom({...fromCoords});
         navigationContext.setTo({...toCoords});
         navigationContext.setPathwayType(selection as PathwayTypes);
+    }
+
+    const inputButtonSpecification: InputButtonSpecification = {
+        icon: 'fas fa-map-marker-alt',
+        onClick: (id: string) => {
+            navigationContext.setShowSavedPlaces(!navigationContext.showSavedPlaces);
+            navigationContext.setFieldInSelection(id);
+        }
     }
 
     const handleTransportChange = (transportMean: PathwayTransportMeans) => {
@@ -86,7 +91,7 @@ export const Buscador = () => {
                 <h3 className="card-title">Ruta</h3>
                 <hr />
                 <SmartForm formData={ formData } formFields={ formFields } onSubmit={ handleNavigate }
-                           submitButtonLabel={ 'Navegar' } validations={ validations } />
+                           submitButtonLabel={ 'Navegar' } validations={ validations } inputButtonsSpecification={ inputButtonSpecification } />
 
                 <ButtonGroup aria-label="Transport means">
                     {Object.values(PathwayTransportMeans).map((transportMean) => (
