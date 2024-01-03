@@ -12,7 +12,7 @@ export default class VehiclesController implements VehiclesInterface {
 
     private vehicles: Map<string, Vehicle> = new Map<string, Vehicle>();
 
-    constructor( private firebaseService: FirebaseService ) {
+    constructor(private firebaseService: FirebaseService) {
         // firebaseService.getVehicles().then(vehicles => {
         //     setVehicles(vehicles);
         // });
@@ -49,7 +49,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    async addVehicle(paramVehicle: Vehicle, userId?: string): Promise<boolean> {
+    async addVehicle(paramVehicle: Vehicle, userId: string): Promise<boolean> {
         try {
             this.addVehicleLocally(paramVehicle);
             await this.firebaseService.storeVehicle(paramVehicle, userId!);
@@ -76,7 +76,7 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-    async getVehicle(plate: string): Promise<Vehicle>{
+    async getVehicle(plate: string): Promise<Vehicle> {
         return this.vehicles.get(plate) || {
             plate: '',
             name: '',

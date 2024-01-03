@@ -13,6 +13,34 @@ import PlaceNotFoundException from "../exceptions/PlaceNotFoundException.ts";
 import { PathWayExceptionMessages, PathwayException } from "../exceptions/PathwayException.ts";
 
 export class FirebaseService {
+    async toggleFavouritePathway(pathway: Pathway, userId: string) {
+        const _ = require('lodash');
+        const docRef = doc(FirebaseDB, userId, 'pathways');
+        const pathwayData = await this.getPathways(userId);
+        const currentPathways: Pathway[] = pathwayData.pathways || [];
+
+        if (currentPathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        }
+
+        const existingPathwayIndex = currentPathways.findIndex(element =>
+            _.isEqual(pathway.start, element.start) &&
+            _.isEqual(pathway.end, element.end) &&
+            pathway.type === element.type &&
+            pathway.vehicle === element.vehicle
+        );
+
+        if (existingPathwayIndex !== -1) {
+            // Update the existing pathway
+            currentPathways[existingPathwayIndex] = pathway;
+        } else {
+            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
+        }
+
+        // Save the updated pathways to Firestore
+        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
+        return currentPathways;
+    }
 
 
     async createUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
@@ -68,12 +96,12 @@ export class FirebaseService {
     }
 
     async setDefaultVehicle(vehiclePlate: string, userId: string): Promise<void> {
-        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
+        const docRef = doc(FirebaseDB, userId, 'defaultVehicle');
         await setDoc(docRef, { id: vehiclePlate });
     }
 
     async getDefaultVehicle(userId: string) {
-        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
+        const docRef = doc(FirebaseDB, userId, 'defaultVehicle');
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists())
             throw new Error('No such document!');
@@ -219,8 +247,17 @@ export class FirebaseService {
     async storePathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
         const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
-        const pathwayData = await this.getPathways(userId);
-        const currentPathways: Pathway[] = pathwayData.pathways || [];
+        var pathwayData;
+        try {
+            pathwayData = await this.getPathways(userId);
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                pathwayData = { pathways: [] };
+            } else {
+                throw error;
+            }
+        }
+        const currentPathways: Pathway[] = pathwayData!.pathways || [];
         const existingPathwayIndex = currentPathways.findIndex(element =>
             _.isEqual(pathway.start, element.start) &&
             _.isEqual(pathway.end, element.end) &&
@@ -238,7 +275,6 @@ export class FirebaseService {
 
         // Save the updated pathways to Firestore
         await setDoc(docRef, { pathways: currentPathways }, { merge: true });
-        console.log('Hola mundo');
         return currentPathways;
     }
 
@@ -246,6 +282,10 @@ export class FirebaseService {
         const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
         const pathwayData = await this.getPathways(userId);
+
+        if (pathwayData.pathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        }
         var currentPathways: Pathway[] = pathwayData.pathways || [];
         const existingPathwayIndex = currentPathways.findIndex(element =>
             _.isEqual(paramPathway.start, element.start) &&
@@ -255,6 +295,8 @@ export class FirebaseService {
         );
         if (existingPathwayIndex !== -1) {
             currentPathways = currentPathways.splice(existingPathwayIndex, 1);
+        } else {
+            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
         }
 
         await setDoc(docRef, { pathways: currentPathways }, { merge: true });
@@ -270,10 +312,10 @@ export class FirebaseService {
             return { pathways: [] };
         }
 
-        // if (docSnap.data().pathways.length === 0) {
-        //     throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-        // }
-
+        const pathway = docSnap.data();
+        if (pathway.pathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        }
         return docSnap.data();
     }
 

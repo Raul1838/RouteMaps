@@ -1,4 +1,4 @@
-import PlacesController from "../../src/controller/PlacesController";
+import PlacesController, { getPlacesController } from "../../src/controller/PlacesController";
 import APINotAvailableExeption from "../../src/exceptions/APINotAvailableExeption";
 import EmptyPlacesException from "../../src/exceptions/EmptyPlacesException";
 import IllegalArgumentException from "../../src/exceptions/IllegalArgumentException";
@@ -8,7 +8,7 @@ import Place from "../../src/interfaces/Place";
 import MockAPIPlacesService from "../helpers/MockApiPlacesService";
 
 var mockedApiService: MockAPIPlacesService = new MockAPIPlacesService();
-var placesController: PlacesController = new PlacesController(mockedApiService);
+var placesController: PlacesController = getPlacesController();
 
 describe('Tests sobre los lugares', () => {
 

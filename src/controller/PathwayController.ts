@@ -25,11 +25,13 @@ export default class PathwayController {
         // });
     }
 
-    toggleFavourite(paramPathway: Pathway, userId: string) {
+
+
+    async toggleFavourite(paramPathway: Pathway, userId: string) {
         try {
             paramPathway = { ...paramPathway, favourite: !paramPathway.favourite };
             // this.toggleFavouriteLocally(paramPathway);
-            this.firebaseService.storePathway(paramPathway, userId!);
+            await this.firebaseService.toggleFavouritePathway(paramPathway, userId!);
         } catch (error) {
             throw error;
         }
@@ -48,7 +50,7 @@ export default class PathwayController {
 
     async deletePathway(paramPathway: Pathway, userId: string) {
         try {
-            this.deletePathwayLocally(paramPathway);
+            // this.deletePathwayLocally(paramPathway);
             await this.firebaseService.deletePathway(paramPathway, userId!);
         } catch (error) {
             throw error;
@@ -57,27 +59,27 @@ export default class PathwayController {
 
 
 
-    private deletePathwayLocally(paramPathway: number | Pathway) {
-        if (this.pathways.length === 0) {
-            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-        }
-        var searchPar: number;
+    // private deletePathwayLocally(paramPathway: number | Pathway) {
+    //     if (this.pathways.length === 0) {
+    //         throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+    //     }
+    //     var searchPar: number;
 
-        if (typeof paramPathway === 'number') {
-            searchPar = paramPathway;
-        } else {
-            searchPar = paramPathway.id!;
-        }
+    //     if (typeof paramPathway === 'number') {
+    //         searchPar = paramPathway;
+    //     } else {
+    //         searchPar = paramPathway.id!;
+    //     }
 
-        const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
+    //     const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
 
-        if (index !== -1) {
-            this.pathways.splice(index, 1);
+    //     if (index !== -1) {
+    //         this.pathways.splice(index, 1);
 
-        } else {
-            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
-        }
-    }
+    //     } else {
+    //         throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
+    //     }
+    // }
 
     async getPathways(userId: string) {
         try {
