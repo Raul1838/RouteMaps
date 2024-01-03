@@ -9,7 +9,7 @@ import {FormState} from "../../hooks/useForm.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
 import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
 import {PathwayTypes} from "../../enums/PathwayTypes.ts";
-import {getPathwayController, PathwayController} from "../../controller/PathwayController.ts";
+import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
 
 export const LoginPage = () => {
     const authContext : AuthContextInterface = useContext(AuthContext);

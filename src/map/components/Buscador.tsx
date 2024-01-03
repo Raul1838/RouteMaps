@@ -3,12 +3,13 @@ import {FormField} from "../../interfaces/FormField.ts";
 import {FormState} from "../../hooks/useForm.ts";
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 import {SmartForm} from "../../components/SmartForm.tsx";
-import PlacesController, {getPlacesController} from "../../controller/PlacesController.ts";
+import {PlacesController, getPlacesController} from "../../controller/PlacesController.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
 import {Button, ButtonGroup, Dropdown} from "react-bootstrap";
 import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
 import {PathwayTypes} from "../../enums/PathwayTypes.ts";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+import {InputButtonSpecification} from "../../interfaces/InputButtonSpecification.ts";
 
 const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => value !== PathwayTypes.UNDEFINED);
 
@@ -20,13 +21,11 @@ export const Buscador = () => {
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { distance, duration, pathwayTransportMean} = navigationContext;
 
-    const [from, setFrom] = useState('');
-    const [to, setTo] = useState('');
     const [selection, setSelection] = useState<PathwayTypes>(defaultPathwayType);
 
     const formData = {
-        from,
-        to
+        from: navigationContext.from.name,
+        to: navigationContext.to.name
     }
 
     const formFields: FormField[] = [
@@ -50,16 +49,22 @@ export const Buscador = () => {
     }
 
     const handleNavigate = async ( formState: FormState ) => {
-        setFrom(formState.from);
-        setTo(formState.to);
         const placesController: PlacesController = getPlacesController();
-        const [fromCoords, toCoords] = await Promise.all([
-            placesController.transformToValidCoords(formState.from),
-            placesController.transformToValidCoords(formState.to)
-        ]);
+        let fromCoords = navigationContext.from;
+        if( navigationContext.from.name !== formState.from ) fromCoords = await placesController.transformToValidCoords(formState.from);
+        let toCoords = navigationContext.to;
+        if( navigationContext.to.name !== formState.to ) toCoords = await placesController.transformToValidCoords(formState.to);
         navigationContext.setFrom({...fromCoords});
         navigationContext.setTo({...toCoords});
         navigationContext.setPathwayType(selection as PathwayTypes);
+    }
+
+    const inputButtonSpecification: InputButtonSpecification = {
+        icon: 'fas fa-map-marker-alt',
+        onClick: (id: string) => {
+            navigationContext.setShowSavedPlaces(!navigationContext.showSavedPlaces);
+            navigationContext.setFieldInSelection(id);
+        }
     }
 
     const handleTransportChange = (transportMean: PathwayTransportMeans) => {
@@ -86,7 +91,7 @@ export const Buscador = () => {
                 <h3 className="card-title">Ruta</h3>
                 <hr />
                 <SmartForm formData={ formData } formFields={ formFields } onSubmit={ handleNavigate }
-                           submitButtonLabel={ 'Navegar' } validations={ validations } />
+                           submitButtonLabel={ 'Navegar' } validations={ validations } inputButtonsSpecification={ inputButtonSpecification } />
 
                 <ButtonGroup aria-label="Transport means">
                     {Object.values(PathwayTransportMeans).map((transportMean) => (
@@ -118,8 +123,8 @@ export const Buscador = () => {
                             <h3>Costes de la ruta</h3>
                             <hr />
                             <ul className="list-group">
-                                <li className="list-group-item">Distancia: { distance / 1000 } km</li>
-                                <li className="list-group-item">Duración: { Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>
+                                <li className="list-group-item">Distancia: {(distance / 1000).toFixed(4)} km</li>
+                                <li className="list-group-item">Duración: {Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>
                             </ul>
                         </>
                         : <></>

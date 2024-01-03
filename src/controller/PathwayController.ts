@@ -27,33 +27,34 @@ export default class PathwayController {
 
     toggleFavourite(paramPathway: Pathway, userId?: string) {
         try {
-            this.toggleFavouriteLocally(paramPathway);
+            paramPathway = { ...paramPathway, favourite: !paramPathway.favourite };
+            // this.toggleFavouriteLocally(paramPathway);
             this.firebaseService.storePathway(paramPathway, userId!);
         } catch (error) {
             throw error;
         }
     }
-    private toggleFavouriteLocally(paramPathway: number | Pathway) {
-        if (this.pathways.length === 0) {
-            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-        }
-        var searchPar: number;
+    // private toggleFavouriteLocally(paramPathway: number | Pathway) {
+    //     if (this.pathways.length === 0) {
+    //         throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+    //     }
+    //     var searchPar: number;
 
-        if (typeof paramPathway === 'number') {
-            searchPar = paramPathway;
-        } else {
-            searchPar = paramPathway.id!;
-        }
+    //     if (typeof paramPathway === 'number') {
+    //         searchPar = paramPathway;
+    //     } else {
+    //         searchPar = paramPathway.id!;
+    //     }
 
-        const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
+    //     const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
 
-        if (index !== -1) {
-            this.pathways[index].favourite = !this.pathways[index].favourite;
-            return true;
-        } else {
-            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
-        }
-    }
+    //     if (index !== -1) {
+    //         this.pathways[index].favourite = !this.pathways[index].favourite;
+    //         return true;
+    //     } else {
+    //         throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
+    //     }
+    // }
 
     async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
         if ((!from.lat || !from.lon) && from.name) {

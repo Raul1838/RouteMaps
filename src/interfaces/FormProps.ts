@@ -2,6 +2,7 @@ import {FormField} from "./FormField.ts";
 import {FormLink} from "./FormLink.ts";
 import {FormState} from "../hooks/useForm.ts";
 import {FormValidations} from "./FormValidations.ts";
+import {InputButtonSpecification} from "./InputButtonSpecification.ts";
 
 export interface FormProps {
     formData: { [key: string]: any };
@@ -10,4 +11,5 @@ export interface FormProps {
     onSubmit: (formState: FormState) => Promise<void> | void;
     submitButtonLabel: string;
     validations?: FormValidations
+    inputButtonsSpecification?: InputButtonSpecification;
 }
