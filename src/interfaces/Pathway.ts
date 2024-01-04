@@ -3,7 +3,7 @@ import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 
 export interface Pathway {
-    id?: number,
+    id: number,
     type: PathwayTypes;
     start: Coords;
     end: Coords;

@@ -340,7 +340,6 @@ export class FirebaseService {
         const docSnap = await getDoc(docRef);
 
         if (!docSnap.exists()) {
-            // Crea el documento si no existe
             await setDoc(docRef, { pathways: [] });
             return { pathways: [] };
         }

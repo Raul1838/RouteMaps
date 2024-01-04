@@ -59,10 +59,10 @@ export default class PathwayController {
         }
     }
 
-    async getPathways(userId: string) {
+    async getPathways(userId: string): Promise<Pathway[]>{
         try {
-            const pathways = await this.firebaseService.getPathways(userId);
-            return pathways;
+            const data = await this.firebaseService.getPathways(userId);
+            return data?.pathways || [];
         } catch (error) {
             throw error;
         }

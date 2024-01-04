@@ -20,7 +20,6 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
     const navigate = useNavigate();
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const { user }: AuthContextInterface = useContext(AuthContext);
-    const [error, setError] = useState<string>("");
 
     const vehiclesController: VehiclesController = getVehiclesController();
 
