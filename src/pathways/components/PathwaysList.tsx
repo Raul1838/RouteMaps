@@ -38,7 +38,7 @@ export const PathwaysList = () => {
 
     const deletePathway = (pathway: Pathway) => {
         pathwayController.deletePathway(pathway, user.uid).then(() => {
-            setPathways([...pathways.filter(element => pathwayController.pathwaysAreEqual(pathway, element))] );
+            setPathways([...pathways.filter(element => !pathwayController.pathwaysAreEqual(pathway, element))] );
         });
     }
 
