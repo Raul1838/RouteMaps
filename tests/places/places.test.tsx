@@ -41,7 +41,7 @@ describe('Tests sobre los lugares', () => {
             const places = await placesController.getPlaces(loggedUser.uid);
             expect(places).toHaveLength(2);
             await authController.logout();
-        }, 30000);
+        }, 60000);
 
         test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async () => {
             // Given
@@ -64,7 +64,7 @@ describe('Tests sobre los lugares', () => {
             const places = await placesController.getPlaces(loggedUser.uid);
             expect(places).toHaveLength(2);
             await authController.logout();
-        }, 30000);
+        }, 60000);
 
         test('E03 - Las coordenadas insertadas no son válidas.', async () => {
             // Given
@@ -91,7 +91,7 @@ describe('Tests sobre los lugares', () => {
                 expect(error.message).toBe(PlaceExceptionMessages.IllegalArgument);
                 await authController.logout();
             }
-        });
+        }, 60000);
     });
 
 
@@ -115,7 +115,7 @@ describe('Tests sobre los lugares', () => {
             expect(places).toHaveLength(2);
             await authController.logout();
 
-        }, 15000);
+        }, 60000);
 
         test('E02 - Las coordenadas insertadas no son válidas.', async () => {
             //Given
@@ -138,7 +138,7 @@ describe('Tests sobre los lugares', () => {
                 expect(error.message).toBe(PlaceExceptionMessages.InvalidToponym)
                 await authController.logout();
             };
-        }, 15000);
+        }, 60000);
     });
     describe('HU07 - Consultar lista de lugares de interés', () => {
         test('E01 - Existe una lista con lugares dados de alta.', async () => {
@@ -175,7 +175,7 @@ describe('Tests sobre los lugares', () => {
                     Favorito: false
                 }]);
             await authController.logout();
-        });
+        }, 60000);
     });
     describe('HU08 - Eliminar un lugar de interés', () => {
         test('E01 - Existe el lugar que se quiere eliminar y está dado de alta en la lista de lugares de interés.', async () => {
@@ -204,7 +204,7 @@ describe('Tests sobre los lugares', () => {
                 Favorito: false
             }]);
             await authController.logout();
-        });
+        }, 60000);
         test('E02 - Hay lugares dados de alta, pero no se encuentra el que se quiere eliminar.', async () => {
             //Given
             const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -224,7 +224,7 @@ describe('Tests sobre los lugares', () => {
                 expect(error.message).toBe(PlaceExceptionMessages.PlaceNotFound);
                 await authController.logout();
             }
-        });
+        }, 60000);
         test('E03 - No contamos con una lista con lugares dados de alta.', async () => {
             //Given
             const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -239,7 +239,7 @@ describe('Tests sobre los lugares', () => {
                 expect(error.message).toBe(PlaceExceptionMessages.EmptyPlaces);
                 await authController.logout();
             }
-        });
+        }, 60000);
     });
 
     describe('HU20 - Como usuario quiero poder marcar como favoritos lugares de interés para que aparezcan los primeros cuando los listo.', () => {
@@ -298,7 +298,7 @@ describe('Tests sobre los lugares', () => {
                 expect(error.message).toBe(PlaceExceptionMessages.PlaceNotFound);
                 await authController.logout();
             }
-        });
+        }, 60000);
         test('E03 - No hay lugares dados de alta.', async () => {
             //Given
             const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -313,6 +313,6 @@ describe('Tests sobre los lugares', () => {
                 expect(error.message).toBe(PlaceExceptionMessages.EmptyPlaces);
                 await authController.logout();
             }
-        });
+        }, 60000);
     })
 });

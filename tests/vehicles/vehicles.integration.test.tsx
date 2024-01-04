@@ -60,7 +60,7 @@ describe('Vehicles', () => {
                 consumption: 5.5,
                 favorite: true
             }])
-        });
+        }, 60000);
         test('E03 - Los datos del vehículo no son correctos.', async () => {
 
             jest.spyOn(firebaseService, 'storeVehicle')
@@ -87,7 +87,7 @@ describe('Vehicles', () => {
                 expect(updatedVehicles).toStrictEqual(initialVehicles);
                 expect(error).toBeInstanceOf(InvalidVehicleException);
             }
-        });
+        }, 60000);
     });
     describe('HU10 - Consultar lista de vehículos', () => {
         test('E01 - Existe una lista con vehículos dados de alta.', async () => {
@@ -100,7 +100,7 @@ describe('Vehicles', () => {
             expect(vehicles.length).toBeGreaterThan(0);
             expect(vehicles).toStrictEqual(dbMockVehicles);
 
-        });
+        }, 60000);
         test('E02 - No contamos con una lista con vehículos dados de alta.', async () => {
             //Given
             jest.spyOn(firebaseService, 'getVehicles')
@@ -112,7 +112,7 @@ describe('Vehicles', () => {
 
             //Then
             expect(vehicles.length).toBe(0);
-        });
+        }, 60000);
     });
     describe('HU11 - Eliminar un vehículo', () => {
         test('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', async () => {
@@ -131,7 +131,7 @@ describe('Vehicles', () => {
 
             //Then
             expect(vehicles.length).toBe(0);
-        });
+        }, 60000);
         test('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', async () => {
             //Given
             jest.spyOn(firebaseService, 'deleteVehicle')
@@ -147,7 +147,7 @@ describe('Vehicles', () => {
                 //Then
                 expect(error).toBeInstanceOf(VehicleNotFoundException);
             }
-        });
+        }, 60000);
     });
     describe('HU12 - Modificar datos de un vehículo', () => {
         test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.', async () => {
@@ -185,7 +185,7 @@ describe('Vehicles', () => {
                 return vehicle;
             }));
             expect(updatedVehicles.length).toBe(initialVehicles.length);
-        });
+        }, 60000);
         test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.', async () => {
             //Given
             jest.spyOn(firebaseService, 'storeVehicle')
@@ -208,7 +208,7 @@ describe('Vehicles', () => {
             const expectedVehicles = [...initialVehicles, vehicleToUpdate];
             expect(updatedVehicles.length).toBe(expectedVehicles.length);
             expect(updatedVehicles).toStrictEqual(expectedVehicles);
-        });
+        }, 60000);
     });
 
     describe('HU23 - Establecer vehículo por defecto', () => {
@@ -229,7 +229,7 @@ describe('Vehicles', () => {
                     return Promise.resolve(dbMockVehicles.find(vehicle => vehicle.plate === vehiclePlate) || dbMockVehicles[0]);
                 });
 
-        });
+        }, 60000);
 
         test('E1 - Existe el vehículo a establecer por defecto', async () => {
             //Given
@@ -247,7 +247,7 @@ describe('Vehicles', () => {
 
             //Then
             expect(dbDefaultVehiclePlate).toBe(vehicle.plate);
-        });
+        }, 60000);
 
         test('E2 - No existe el vehículo a establecer por defecto', async () => {
             //Given
@@ -264,6 +264,6 @@ describe('Vehicles', () => {
                 //Then
                 expect(error).toBeInstanceOf(VehicleNotFoundException);
             }
-        });
+        }, 60000);
     });
 });

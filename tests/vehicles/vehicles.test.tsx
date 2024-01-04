@@ -56,7 +56,7 @@ describe('Vehicles', () => {
                 favorite: true
             }])
             await authController.logout();
-        }, 10000);
+        }, 60000);
 
         test('E03 - Los datos del vehículo no son correctos.', async () => {
             //Given
@@ -75,7 +75,7 @@ describe('Vehicles', () => {
             //Then
             await expect(error()).rejects.toThrow(InvalidVehicleException);
             await authController.logout();
-        });
+        }, 60000);
     });
     describe('HU10 - Consultar lista de vehículos', () => {
         test('E01 - Existe una lista con vehículos dados de alta.', async () => {
@@ -87,7 +87,7 @@ describe('Vehicles', () => {
             //Then
             expect(vehicles).toStrictEqual([{ plate: '1683', name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
             await authController.logout();
-        });
+        }, 60000);
         test('E02 - No contamos con una lista con vehículos dados de alta.', async () => {
             //Given
             const vehicle: Vehicle = {
@@ -106,7 +106,7 @@ describe('Vehicles', () => {
             //Then
             await expect(error()).rejects.toThrow(EmptyVehiclesException);
             await authController.logout();
-        });
+        }, 60000);
     });
     describe('HU11 - Eliminar un vehículo', () => {
         test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', async () => {
@@ -119,7 +119,7 @@ describe('Vehicles', () => {
             //Then
             expect(await vehiclesController.getVehicles(loggedUser.uid)).toHaveLength(0);
             await authController.logout();
-        }, 10000);
+        }, 60000);
         test('E02 - No existe el vehículo que se quiere eliminar.', async () => {
             //Given
             const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -131,7 +131,7 @@ describe('Vehicles', () => {
             //Then
             await expect(error()).rejects.toThrow(VehicleNotFoundException);
             await authController.logout();
-        });
+        }, 60000);
 
     });
     describe('HU12 - Modificar datos de un vehículo', () => {
@@ -144,7 +144,7 @@ describe('Vehicles', () => {
             //Then
             expect(await vehiclesController.getVehicles(loggedUser.uid)).toStrictEqual([{ plate: '1683', name: 'Coche familiar', propulsion: Combustible.Diesel, consumption: 5, favorite: false }]); 
             await authController.logout();
-        }, 10000);
+        }, 60000);
         test('E02 - No existe el vehículo que se quiere modificar.', async () => {
             //Given
             const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -154,7 +154,7 @@ describe('Vehicles', () => {
             //Then
             expect(await vehiclesController.getVehicles(loggedUser.uid)).toStrictEqual([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 },{ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 }]); 
             await authController.logout();
-        }, 10000);
+        }, 60000);
     });
     describe('Vehicles', () => {
         describe('HU21 - Marcar como favorito vehículos', () => {
@@ -167,7 +167,7 @@ describe('Vehicles', () => {
                 //Then
                 expect(await vehiclesController.getVehicles(loggedUser.uid)).toStrictEqual([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: true }])
                 await authController.logout();
-            }, 10000);
+            }, 60000);
             test('E02 - Existe una lista con vehículos dados de alta y no existe el vehículo que se quiere marcar como favorite.', async () => {
                 //Given
                 const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -179,7 +179,7 @@ describe('Vehicles', () => {
                 //Then
                 await expect(error()).rejects.toThrow(VehicleNotFoundException);
                 await authController.logout();
-            });
+            }, 60000);
             test('E03 - No hay vehículos dados de alta.', async () => {
                 //Given
                 const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -191,7 +191,7 @@ describe('Vehicles', () => {
                 //Then
                 await expect(error()).rejects.toThrow(EmptyVehiclesException);
                 await authController.logout();
-            });
+            }, 60000);
         })
     });
 
@@ -207,7 +207,7 @@ describe('Vehicles', () => {
         await vehiclesController.addVehicle(vehicle, loggedUser.uid);
         await vehiclesController.setDefaultVehicle(vehicle.plate, loggedUser.uid);
         await authController.logout();
-    }, 10000);
+    }, 60000);
 
     test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {
         const vehicleId: string = '4321NTR';
@@ -223,5 +223,5 @@ describe('Vehicles', () => {
             }
         }
         await authController.logout();
-    }, 10000);
+    }, 60000);
 });

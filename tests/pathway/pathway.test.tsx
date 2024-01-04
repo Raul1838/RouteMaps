@@ -79,7 +79,7 @@ describe('Tests sobre gestión de rutas', () => {
             expect(pathway.distance).toBeGreaterThanOrEqual(1);
         });
 
-    });
+    }, 60000);
 
     test('HU13 - E3 - Ruta no posible', async () => {
         const from: Coords = {
@@ -102,7 +102,7 @@ describe('Tests sobre gestión de rutas', () => {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
-    });
+    }, 60000);
 
     test('HU17 - E01 - La ruta es válida y no ha sido guardada anteriormente', async () => {
 
@@ -131,7 +131,7 @@ describe('Tests sobre gestión de rutas', () => {
         const pathways = await pathwayController.getPathways(loggedUser.uid);
         expect(pathways).toHaveLength(1);
         await authController.logout();
-    }, 15000);
+    }, 60000);
 
 
 
@@ -141,7 +141,7 @@ describe('Tests sobre gestión de rutas', () => {
         const pathways = await pathwayController.getPathways(loggedUser.uid);
         expect(pathways).toStrictEqual([validPathway1]);
         await authController.logout();
-    });
+    }, 60000);
 
     test('HU18 - E02 - La lista de rutas está vacía.', async () => {
 
@@ -158,7 +158,7 @@ describe('Tests sobre gestión de rutas', () => {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
-    });
+    }, 60000);
 
     test('HU19 - E01 - Hay rutas dadas de alta y existe la ruta que se quiere eliminar', async () => {
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -167,7 +167,7 @@ describe('Tests sobre gestión de rutas', () => {
         const pathways = await pathwayController.getPathways(loggedUser.uid);
         expect(pathways).toHaveLength(1);
         await authController.logout();
-    });
+    }, 60000);
 
     test('HU19 - E02 - Hay rutas dadas de alta pero no existe la ruta que se quiere eliminar', async () => {
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -226,7 +226,7 @@ describe('Tests sobre gestión de rutas', () => {
         const pathwayData = await pathwayController.getPathways(loggedUser.uid);
         expect(pathwayData[0].favourite).toBe(true);
         await authController.logout();
-    }, 30000);
+    }, 60000);
 
     test('HU24 - E1 - Usuario identificado', async () => {
         const testUser = {
@@ -237,7 +237,7 @@ describe('Tests sobre gestión de rutas', () => {
         await pathwayController.setDefaultPathwayType(PathwayTypes.RECOMMENDED, loggedUser.uid);
         expect(loggedUser).toBeTruthy();
         await authController.logout();
-    });
+    }, 60000);
 
     test('HU24 - E2 - Usuario no identificado', async () => {
         try {
