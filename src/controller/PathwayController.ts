@@ -50,28 +50,38 @@ export default class PathwayController {
         return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
-    async deletePathway(paramPathway: Pathway, userId: string) {
+    async calculatePrice(distance: number, vehicle: Vehicle): Promise<number> {
+        if (vehicle.consumption === undefined) {
+            throw new VehicleNotFoundException('El vehículo no existe');
+        }
+        if (distance === undefined) {
+            throw new PathwayException(PathWayExceptionMessages.FarPathway);
+        }
+        const price = await this.priceService.getPrice(vehicle.propulsion);
+        let priceConsumido = ((price * vehicle.consumption * distance) / 10000);
+        return parseFloat(priceConsumido.toFixed(2));
+    }
+
+    calculateCalories(distance: number, vehicle: PathwayTransportMeans): number {
+        if (distance === 0) {
+            throw new PathwayException(PathWayExceptionMessages.FarPathway);
+        }
+        if (vehicle === PathwayTransportMeans.WALKING) {
+            return (distance * 12 / 250);
+        } else if (vehicle === PathwayTransportMeans.BIKE) {
+            return (distance * 6 / 250);
+        } else {
+            throw new VehicleNotFoundException('No se ha seleccionado un vehículo de tipo Bicicleta o Andando');
+        }
+    }
+
+    async getPathways(userId: string) {
         try {
-            // this.deletePathwayLocally(paramPathway);
-            await this.firebaseService.deletePathway(paramPathway, userId!);
+            return await this.firebaseService.getPathways(userId);
         } catch (error) {
             throw error;
         }
     }
-
-    async getPathways(userId: string): Promise<Pathway[]>{
-        try {
-            const data = await this.firebaseService.getPathways(userId);
-            return data?.pathways || [];
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async replacePathways(pathways: Pathway[], userId: string): Promise<void> {
-        await this.firebaseService.replacePathways(pathways, userId);
-    }
-
 
     async addPathway(pathway: Pathway, userId: string) {
         try {
@@ -81,43 +91,33 @@ export default class PathwayController {
         }
     }
 
-    calculateCalories(pathway: Pathway, vehicle: PathwayTransportMeans): number {
-        if (!pathway || pathway.distance === 0) {
-            throw new PathwayException(PathWayExceptionMessages.FarPathway);
-        }
-        if (vehicle === PathwayTransportMeans.WALKING) {
-            return (pathway.distance * 12 / 250);
-        } else if (vehicle === PathwayTransportMeans.BIKE) {
-            return (pathway.distance * 6 / 250);
-        } else {
-            throw new VehicleNotFoundException('No se ha seleccionado un vehículo de tipo Bicicleta o Andando');
+    async deletePathway(paramPathway: Pathway, userId: string) {
+        try {
+            await this.firebaseService.deletePathway(paramPathway, userId!);
+        } catch (error) {
+            throw error;
         }
     }
 
+
+    async replacePathways(pathways: Pathway[], userId: string): Promise<void> {
+        await this.firebaseService.replacePathways(pathways, userId);
+    }
 
     async setDefaultPathwayType(pathwayType: PathwayTypes, userId: string) {
         await this.firebaseService.setDefaultPathwayType(pathwayType, userId);
+        localStorage.setItem('defaultPathwayType', pathwayType);
     }
 
     async getDefaultPathwayType(userId: string): Promise<PathwayTypes> {
-        let data: PathwayTypes = PathwayTypes.UNDEFINED;
+        let defaultPathwayType: PathwayTypes = PathwayTypes.UNDEFINED;
         await this.firebaseService.getDefaultPathwayType(userId).then((value) => {
-            data = value.pathwayType;
+            defaultPathwayType = value.pathwayType;
         });
-        return data;
+        localStorage.setItem('defaultPathwayType', defaultPathwayType);
+        return defaultPathwayType;
     }
 
-    async calculatePrice(pathway: Pathway, vehicle: Vehicle): Promise<number> {
-        if (vehicle.consumption === undefined) {
-            throw new VehicleNotFoundException('El vehículo no existe');
-        }
-        if (pathway.distance === undefined) {
-            throw new PathwayException(PathWayExceptionMessages.FarPathway);
-        }
-        const price = await this.priceService.getPrice(vehicle.propulsion);
-        let priceConsumido = ((price * vehicle.consumption * pathway.distance) / 10000);
-        return parseFloat(priceConsumido.toFixed(2));
-    }
 }
 
 let _instance: PathwayController;

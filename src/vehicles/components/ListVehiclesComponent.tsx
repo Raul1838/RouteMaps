@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
+import React, {useContext, useEffect, useState} from 'react';
 import Vehicle from '../../interfaces/Vehicle';
-import EmptyVehiclesException from '../../exceptions/EmptyVehiclesException';
-import { MainLayout } from "../../layouts/MainLayout.tsx";
-import { Link, useNavigate } from "react-router-dom";
-import { Table, Button, Form } from "react-bootstrap";
+import {useNavigate} from "react-router-dom";
+import {Button, Form, Table} from "react-bootstrap";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+import VehiclesController, {getVehiclesController} from '../../controller/VehiclesController.ts';
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
-import VehiclesController, { getVehiclesController } from '../../controller/VehiclesController.ts';
-
 
 
 interface VehiclesListProps {
@@ -18,11 +14,12 @@ interface VehiclesListProps {
 export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOptions = true }) => {
 
     const navigate = useNavigate();
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-    const { user }: AuthContextInterface = useContext(AuthContext);
+    const { user, defaultVehiclePlate, setDefaultVehiclePlate }: AuthContextInterface = useContext(AuthContext);
+    const { setShowVehicles, setVehicle }: NavigationContextInterface = useContext(NavigationContext);
 
     const vehiclesController: VehiclesController = getVehiclesController();
 
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [filterFavorites, setFilterFavorites] = useState(false);
 
 
@@ -46,8 +43,19 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
         setVehicles([...vehicles]);
     };
 
-    const goToDetails = (vehiclePlate: string) => {
-        navigate(`/vehicles/modifyVehicle/${vehiclePlate}`);
+    const toggleDefault = (vehicle: Vehicle) => {
+        vehiclesController.setDefaultVehicle(vehicle.plate, user.uid).then(() => {
+            setDefaultVehiclePlate(vehicle.plate);
+        });
+    };
+
+    const goToDetails = (selectedVehicle: Vehicle) => {
+        if( !showCrudOptions ) {
+            setVehicle(selectedVehicle);
+            setShowVehicles(false);
+            return;
+        }
+        navigate(`/vehicles/modifyVehicle/${selectedVehicle.plate}`);
     };
 
     const deleteVehicle = (vehicle: Vehicle) => {
@@ -74,17 +82,19 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                         <Table striped bordered hover>
                             <thead>
                             <tr>
-                                <th className="col-10"></th>
                                 {
                                     showCrudOptions
                                     ?   <>
+                                            <th className="col-9"></th>
+                                            <th className="col-1"></th>
                                             <th className="col-1"></th>
                                             <th className="col-1"></th>
                                         </>
-                                    :   <th className="col-2"></th>
+                                    :   <>
+                                            <th className="col-10"></th>
+                                            <th className="col-2"></th>
+                                        </>
                                 }
-                                <th className="col-1"></th>
-                                <th className="col-1"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -92,7 +102,7 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                                 vehicles
                                     .filter(vehicle => !filterFavorites || vehicle.favorite)
                                     .map((vehicle, index) => (
-                                        <tr key={index} onClick={() => goToDetails(vehicle.plate)}>
+                                        <tr key={index} onClick={() => goToDetails(vehicle)}>
                                             <td>{vehicle.plate}</td>
                                             <td className="text-center">
                                                 <Button disabled={ !showCrudOptions } variant={vehicle.favorite ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(vehicle);}}>
@@ -101,11 +111,18 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                                             </td>
                                             {
                                                 showCrudOptions &&
-                                                <td className="text-center">
-                                                    <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deleteVehicle(vehicle);}}>
-                                                        <i className={'fas fa-trash'}></i>
-                                                    </Button>
-                                                </td>
+                                                <>
+                                                    <td className="text-center">
+                                                        <Button variant={ vehicle.plate === defaultVehiclePlate ? "info" : 'outline-info'} onClick={(e) => {e.stopPropagation(); toggleDefault(vehicle);}}>
+                                                            <i className={'fas fa-check'}></i>
+                                                        </Button>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deleteVehicle(vehicle);}}>
+                                                            <i className={'fas fa-trash'}></i>
+                                                        </Button>
+                                                    </td>
+                                                </>
                                             }
                                         </tr>
                                     ))

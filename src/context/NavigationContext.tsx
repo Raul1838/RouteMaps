@@ -2,6 +2,8 @@ import {Coords} from "../interfaces/Coords.ts";
 import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import React, {useState} from "react";
 import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
+import Vehicle from "../interfaces/Vehicle.ts";
+import Combustible from "../enums/Combustible.ts";
 
 export interface NavigationContextInterface {
     from: Coords;
@@ -20,6 +22,12 @@ export interface NavigationContextInterface {
     setShowSavedPlaces(showSavedPlaces: boolean): void;
     fieldInSelection: string;
     setFieldInSelection(fieldInSelection: string): void;
+    showVehicles: boolean;
+    setShowVehicles(showVehicles: boolean): void;
+    vehicle: Vehicle,
+    setVehicle(vehicle: Vehicle): void;
+    codifiedPath: string;
+    setCodifiedPath(codifiedPath: string): void;
 }
 
 export const NavigationContext = React.createContext<NavigationContextInterface>({
@@ -39,6 +47,12 @@ export const NavigationContext = React.createContext<NavigationContextInterface>
     setShowSavedPlaces: () => {},
     fieldInSelection: '',
     setFieldInSelection: () => {},
+    showVehicles: false,
+    setShowVehicles: () => {},
+    vehicle: { name: '', plate: '', propulsion: Combustible.Gasolina, consumption: 0, favorite: false },
+    setVehicle: () => {},
+    codifiedPath: '',
+    setCodifiedPath: () => {},
 });
 
 export const NavigationProvider = ({children}: { children: React.ReactNode }) => {
@@ -51,6 +65,9 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
     const [duration, setDuration] = useState<number>(0);
     const [showSavedPlaces, setShowSavedPlaces] = useState<boolean>(false);
     const [fieldInSelection, setFieldInSelection] = useState<string>('');
+    const [showVehicles, setShowVehicles] = useState<boolean>(false);
+    const [vehicle, setVehicle] = useState<Vehicle>({ name: '', plate: '', propulsion: Combustible.Gasolina, consumption: 0, favorite: false });
+    const [codifiedPath, setCodifiedPath] = useState<string>('');
 
     const value: NavigationContextInterface = {
         from,
@@ -68,7 +85,13 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
         showSavedPlaces,
         setShowSavedPlaces,
         fieldInSelection,
-        setFieldInSelection
+        setFieldInSelection,
+        showVehicles,
+        setShowVehicles,
+        vehicle,
+        setVehicle,
+        codifiedPath,
+        setCodifiedPath,
     };
 
     return (

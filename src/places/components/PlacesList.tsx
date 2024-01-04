@@ -41,22 +41,22 @@ export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }
         setPlaces([...places]);
     };
 
-    const goToDetails = (place: Place) => {
+    const goToDetails = (selectedPlace: Place) => {
         if( !showCrudOptions ) {
             if( fieldInSelection === 'from' ) setFrom({
-                name: place.Nombre,
-                lon: place.Longitud,
-                lat: place.Latitud,
+                name: selectedPlace.Nombre,
+                lon: selectedPlace.Longitud,
+                lat: selectedPlace.Latitud,
             });
             if( fieldInSelection === 'to' ) setTo({
-                name: place.Nombre,
-                lon: place.Longitud,
-                lat: place.Latitud,
+                name: selectedPlace.Nombre,
+                lon: selectedPlace.Longitud,
+                lat: selectedPlace.Latitud,
             });
             setShowSavedPlaces(false);
-            return
+            return;
         }
-        navigate(`/places/editPlace/${place.Nombre}`);
+        navigate(`/places/editPlace/${selectedPlace.Nombre}`);
     }
 
     const deletePlace = (place: Place) => {
@@ -92,8 +92,6 @@ export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }
                                         </>
                                     :   <th className="col-2"></th>
                                 }
-                                <th className="col-1"></th>
-                                <th className="col-1"></th>
                             </tr>
                             </thead>
                             <tbody>

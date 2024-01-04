@@ -1,45 +1,17 @@
-import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
-import { UserModel } from "../interfaces/UserModel.ts";
-import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore/lite";
-import { Pathway } from "../interfaces/Pathway.ts";
+import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
+import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
+import {UserModel} from "../interfaces/UserModel.ts";
+import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
+import {doc, getDoc, setDoc, updateDoc} from "firebase/firestore/lite";
+import {Pathway} from "../interfaces/Pathway.ts";
 import Combustible from "../enums/Combustible.ts";
-import { PathwayTypes } from "../enums/PathwayTypes.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
-import { PathWayExceptionMessages, PathwayException } from "../exceptions/PathwayException.ts";
-import { PlaceException, PlaceExceptionMessages } from "../exceptions/PlaceException.ts";
+import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
+import {PlaceException, PlaceExceptionMessages} from "../exceptions/PlaceException.ts";
 
 export class FirebaseService {
-    async toggleFavouritePathway(pathway: Pathway, userId: string) {
-        const _ = require('lodash');
-        const docRef = doc(FirebaseDB, userId, 'pathways');
-        const pathwayData = await this.getPathways(userId);
-        const currentPathways: Pathway[] = pathwayData.pathways || [];
-
-        if (currentPathways.length === 0) {
-            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-        }
-
-        const existingPathwayIndex = currentPathways.findIndex(element =>
-            _.isEqual(pathway.start, element.start) &&
-            _.isEqual(pathway.end, element.end) &&
-            pathway.type === element.type &&
-            pathway.vehicle === element.vehicle
-        );
-
-        if (existingPathwayIndex !== -1) {
-            // Update the existing pathway
-            currentPathways[existingPathwayIndex] = pathway;
-        } else {
-            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
-        }
-
-        // Save the updated pathways to Firestore
-        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
-        return currentPathways;
-    }
 
 
     async createUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
@@ -95,12 +67,12 @@ export class FirebaseService {
     }
 
     async setDefaultVehicle(vehiclePlate: string, userId: string): Promise<void> {
-        const docRef = doc(FirebaseDB, userId, 'defaultVehicle');
-        await setDoc(docRef, { id: vehiclePlate });
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehiclePlate');
+        await setDoc(docRef, { vehiclePlate: vehiclePlate });
     }
 
     async getDefaultVehicle(userId: string) {
-        const docRef = doc(FirebaseDB, userId, 'defaultVehicle');
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehiclePlate');
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists())
             throw new Error('No such document!');
@@ -193,42 +165,42 @@ export class FirebaseService {
         const vehicleData = await this.getVehicles(userId);
         const currentVehicles: Vehicle[] = vehicleData.vehicles || [];
         const currentVehicleIndex = currentVehicles.findIndex(v => v.plate === vehicle.plate);
-    
+
         if (currentVehicleIndex !== -1) {
             currentVehicles[currentVehicleIndex] = vehicle;
         } else {
             currentVehicles.push(vehicle);
         }
-    
+
         await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
         return currentVehicles;
     }
-    
+
 
     async getVehicle(userId: string, plate: string): Promise<Vehicle> {
         const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
         const docSnap = await getDoc(docRef);
-    
+
         if (!docSnap.exists()) {
             throw new Error('No vehicles document found for the user!');
         }
-    
+
         const vehicleData = docSnap.data();
         if (!vehicleData || !Array.isArray(vehicleData.vehicles)) {
             throw new Error('Invalid vehicle data!');
         }
-    
+
         const vehicles: Vehicle[] = vehicleData.vehicles;
         const foundVehicle = vehicles.find(vehicle => vehicle.plate === plate);
-    
+
         if (!foundVehicle) {
             throw new Error('Vehicle not found!');
         }
-    
+
         return foundVehicle;
     }
-    
-    
+
+
 
     async getVehicles(userId: string) {
         const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
@@ -267,7 +239,7 @@ export class FirebaseService {
         const vehicleData = await this.getVehicles(userId);
         let currentVehicles: Vehicle[] = vehicleData.vehicles || [];
         const existingVehicleIndex = currentVehicles.findIndex(element => element.plate === vehicle.plate);
-    
+
         if (existingVehicleIndex !== -1) {
             currentVehicles.splice(existingVehicleIndex, 1);
             await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
@@ -275,12 +247,11 @@ export class FirebaseService {
             throw new Error('Vehicle not found!');
         }
     }
-    
+
 
     async storePathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
-        const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
-        var pathwayData;
+        let pathwayData;
         try {
             pathwayData = await this.getPathways(userId);
         } catch (error) {
@@ -292,10 +263,10 @@ export class FirebaseService {
         }
         const currentPathways: Pathway[] = pathwayData!.pathways || [];
         const existingPathwayIndex = currentPathways.findIndex(element =>
-            _.isEqual(pathway.start, element.start) &&
-            _.isEqual(pathway.end, element.end) &&
+            pathway.start === element.start &&
+            pathway.end === element.end &&
             pathway.type === element.type &&
-            pathway.vehicle === element.vehicle
+            pathway.vehiclePlate === element.vehiclePlate
         );
 
         if (existingPathwayIndex !== -1) {
@@ -324,7 +295,7 @@ export class FirebaseService {
             _.isEqual(paramPathway.start, element.start) &&
             _.isEqual(paramPathway.end, element.end) &&
             paramPathway.type === element.type &&
-            paramPathway.vehicle === element.vehicle
+            paramPathway.vehiclePlate === element.vehiclePlate
         );
         if (existingPathwayIndex !== -1) {
             currentPathways = currentPathways.splice(existingPathwayIndex, 1);
