@@ -1,97 +1,120 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Vehicle from '../../interfaces/Vehicle';
 import EmptyVehiclesException from '../../exceptions/EmptyVehiclesException';
-import {MainLayout} from "../../layouts/MainLayout.tsx";
-import { Link } from "react-router-dom";
-import FavoriteStar from '../../components/FavoriteStar.tsx';
+import { MainLayout } from "../../layouts/MainLayout.tsx";
+import { Link, useNavigate } from "react-router-dom";
+import { Table, Button, Form } from "react-bootstrap";
+import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
+import VehiclesController, { getVehiclesController } from '../../controller/VehiclesController.ts';
 
 
 
-interface ListVehiclesComponentProps {
-    vehiclesViewModel: VehiclesViewModel;
+interface VehiclesListProps {
+    showCrudOptions?: boolean;
 }
 
-export const ListVehiclesComponent = ({ vehiclesViewModel }: ListVehiclesComponentProps) => {
+export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOptions = true }) => {
+
+    const navigate = useNavigate();
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const { user }: AuthContextInterface = useContext(AuthContext);
     const [error, setError] = useState<string>("");
 
+    const vehiclesController: VehiclesController = getVehiclesController();
+
+    const [filterFavorites, setFilterFavorites] = useState(false);
+
+
     useEffect(() => {
-        const fetchVehicles = async () => {
-            try {
-                const loadedVehicles = await vehiclesViewModel.getVehicles();
-                setVehicles(loadedVehicles);
-            } catch (e) {
-                if (e instanceof EmptyVehiclesException) {
-                    setError("No hay vehículos disponibles");
-                } else {
-                    setError("Error al cargar los vehículos");
-                }
-
-            }
-        };
-
-        fetchVehicles();
-    }, [vehiclesViewModel]);
-
-    const toggleVehicleFavorite = async (vehiclePlate: string) => {
-        try {
-            await vehiclesViewModel.toggleFavourite(vehiclePlate);
-
-            const updatedVehicles = vehiclesViewModel.getVehicles();
-            setVehicles(updatedVehicles);
-    
-        } catch (error) {
-            console.error('Error al cambiar el estado de favorito', error);
+        if( vehicles.length === 0 ) {
+            vehiclesController.getVehicles(user.uid).then(vehicles => setVehicles([...vehicles]) );
         }
+
+        return () => {
+            saveVehiclesOnExit();
+        }
+    }, []);
+
+    const saveVehiclesOnExit = async() => {
+        await vehiclesController.setVehicles(vehicles, user.uid);
+    }
+
+    const toggleFavorite = (vehicle: Vehicle) => {
+        vehiclesController.toggleFavourite(vehicle.plate, user.uid);
+        vehicle.favorite = !vehicle.favorite;
+        setVehicles([...vehicles]);
     };
-    
+
+    const goToDetails = (vehiclePlate: string) => {
+        navigate(`/vehicles/modifyVehicle/${vehiclePlate}`);
+    };
+
+    const deleteVehicle = (vehicle: Vehicle) => {
+        vehiclesController.deleteVehicle(vehicle, user.uid).then(() => {
+            setVehicles(vehicles.filter(v => v.plate !== vehicle.plate));
+        });
+    }
 
     return (
-        <MainLayout>
-            <div>
-                <h1>Vehículos disponibles</h1>
-                {error && <div>{error}</div>}
-                {vehicles.length === 0 ? (
-                    <div>No hay vehículos añadidos</div>
-                ) : (
-                    <div className="table-responsive">
-                        <table className="table table-hover">
+        <>
+        <Form>
+                <Form.Check
+                    type="switch"
+                    id="custom-switch"
+                    label="Filtrar por favoritos"
+                    checked={filterFavorites}
+                    onChange={() => setFilterFavorites(!filterFavorites)}
+                />
+            </Form>
+            {
+                vehicles.length === 0
+                    ? <p>No hay lugares guardados</p>
+                    :   <>
+                        <Table striped bordered hover>
                             <thead>
-                                <tr>
-                                    <th>Matrícula</th>
-                                    <th>Nombre</th>
-                                    <th>Propulsión</th>
-                                    <th>Consumo</th>
-                                    <th>Favorito</th>
-                                    <th>Acciones</th>
-                                </tr>
+                            <tr>
+                                <th className="col-10"></th>
+                                {
+                                    showCrudOptions
+                                    ?   <>
+                                            <th className="col-1"></th>
+                                            <th className="col-1"></th>
+                                        </>
+                                    :   <th className="col-2"></th>
+                                }
+                                <th className="col-1"></th>
+                                <th className="col-1"></th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {vehicles.map(vehicle => (
-                                    <tr key={vehicle.plate}>
-                                        <td>{vehicle.plate}</td>
-                                        <td>{vehicle.name}</td>
-                                        <td>{vehicle.propulsion}</td>
-                                        <td>{vehicle.consumption}</td>
-                                        <td>
-                                            <FavoriteStar
-                                                isFavorite={vehicle.favorite || false}
-                                                onToggle={() => toggleVehicleFavorite(vehicle.plate)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <Link to={`/vehicles/modifyVehicle/${vehicle.plate}`} className="btn btn-primary btn-sm mx-1">Edit</Link>
-                                            <Link to={`/vehicles/deleteVehicle/${vehicle.plate}`} className="btn btn-danger btn-sm mx-1">Delete</Link>
-                                        </td>
-                                    </tr>
-                                ))}
+                            {
+                                vehicles
+                                    .filter(vehicle => !filterFavorites || vehicle.favorite)
+                                    .map((vehicle, index) => (
+                                        <tr key={index} onClick={() => goToDetails(vehicle.plate)}>
+                                            <td>{vehicle.plate}</td>
+                                            <td className="text-center">
+                                                <Button disabled={ !showCrudOptions } variant={vehicle.favorite ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(vehicle);}}>
+                                                    <i className={'fas fa-star'}></i>
+                                                </Button>
+                                            </td>
+                                            {
+                                                showCrudOptions &&
+                                                <td className="text-center">
+                                                    <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deleteVehicle(vehicle);}}>
+                                                        <i className={'fas fa-trash'}></i>
+                                                    </Button>
+                                                </td>
+                                            }
+                                        </tr>
+                                    ))
+                            }
                             </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-        </MainLayout>
+                        </Table>
+                    </>
+            }
+        </>
     );
-    
 };

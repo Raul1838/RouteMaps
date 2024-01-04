@@ -1,20 +1,24 @@
-import { useState, useEffect } from 'react';
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
+import { useState, useEffect, useContext } from 'react';
 import Combustible from '../../enums/Combustible';
 import { FormState } from '../../hooks/useForm';
 import { Link } from "react-router-dom";
 import { SmartForm } from "../../components/SmartForm.tsx";
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '../../layouts/MainLayout.tsx';
+import VehiclesController, { getVehiclesController } from '../../controller/VehiclesController.ts';
+import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 
-interface ModifyVehicleViewProps {
-    vehiclesViewModel: VehiclesViewModel;
-}
 
-const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
-    const { plate } = useParams();
+
+
+const ModifyVehicleView = () => {
+    const { plate } = useParams<{plate: string}>();
     const navigate = useNavigate();
     const [resultado, setResultado] = useState('');
+    const { user }: AuthContextInterface = useContext(AuthContext);
+
+
+    const vehiclesController: VehiclesController = getVehiclesController();
 
     const [formState, setFormState] = useState({
         plate: '',
@@ -31,7 +35,7 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
         }
         const loadVehicleData = async () => {
             try {
-                const vehicleData = await vehiclesViewModel.getVehicle(plate);
+                const vehicleData = await vehiclesController.getVehicle(plate, user.uid);
                 setFormState({
                     plate: vehicleData.plate,
                     name: vehicleData.name,
@@ -45,7 +49,7 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
         };
 
         loadVehicleData();
-    }, [vehiclesViewModel, plate, navigate]);
+    }, [plate]);
 
     const formFields = [
         { id: 'plate', label: 'Matrícula del Vehículo', type: 'string', placeholder: 'Matrícula del Vehículo', disabled: true},
@@ -62,17 +66,15 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
 
     const handleSubmit = async (currentFormState: FormState) => {
         try {
-            const result = await vehiclesViewModel.modifyVehicle({
+            const result = await vehiclesController.modifyVehicle({
                 plate: currentFormState.plate,
                 name: currentFormState.name,
                 propulsion: currentFormState.propulsion,
                 consumption: parseFloat(currentFormState.consumption),
                 favorite: currentFormState.favorite
-            });
+            }, user.uid);
             setResultado(result ? 'Vehículo modificado con éxito' : 'Error al modificar vehículo');
-            setTimeout(() => {
-                navigate('/vehicles/getVehicles');
-            }, 2000);
+            navigate('/vehicles/getVehicles');
         } catch (error) {
             setResultado('Error al procesar la solicitud');
         }
@@ -90,7 +92,7 @@ const ModifyVehicleView = ({ vehiclesViewModel }: ModifyVehicleViewProps) => {
                     validations={validations}
                 />
                 {resultado && <div className="alert alert-info">{resultado}</div>}
-                <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
+                <Link className="btn btn-outline-primary mt-3" to={'/vehicles/getVehicles'}>Ver vehículos</Link>
             </div>
         </MainLayout>
     );

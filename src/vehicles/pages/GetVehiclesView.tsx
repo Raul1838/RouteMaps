@@ -1,21 +1,17 @@
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
-
 import { Link } from "react-router-dom";
 import {MainLayout} from "../../layouts/MainLayout.tsx";
 import { ListVehiclesComponent } from '../components/ListVehiclesComponent.tsx';
 
-interface ListVehiclesComponentProps {
-    vehiclesViewModel: VehiclesViewModel;
-}
 
-const GetVehiclesView = ({ vehiclesViewModel }: ListVehiclesComponentProps) => {
+const GetVehiclesView = () => {
 
     return (
         <MainLayout>
-            <div>
-            <ListVehiclesComponent vehiclesViewModel={vehiclesViewModel} />
-            <Link className="btn btn-outline-primary" to={'/vehicles/addVehicle'}>Añadir vehículo</Link>
-            </div>
+            <h1>Vehículos guardados</h1>
+            <hr />
+            <ListVehiclesComponent/>
+            <Link className="btn btn-outline-primary mt-3" to={'/vehicles/addVehicle'}>Añadir vehículo</Link>
+            
         </MainLayout>
     );
 };

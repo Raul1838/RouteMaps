@@ -14,10 +14,10 @@ const vehiclesViewModel = new VehiclesViewModel(vehiclesController);
 export const VehiclesRouter = () => {
     return (
         <Routes>
-            <Route path='/addVehicle' element={<AddVehicleView vehiclesViewModel={vehiclesViewModel}></AddVehicleView>} />
-            <Route path='/modifyVehicle/:plate' element={<ModifyVehicleView vehiclesViewModel={vehiclesViewModel}></ModifyVehicleView>} />
+            <Route path='/addVehicle' element={<AddVehicleView></AddVehicleView>} />
+            <Route path='/modifyVehicle/:plate' element={<ModifyVehicleView></ModifyVehicleView>} />
             <Route path='/deleteVehicle/:plate' element={<DeleteVehicleView vehiclesViewModel={vehiclesViewModel}></DeleteVehicleView>} />
-            <Route path='/getVehicles' element={<GetVehiclesView vehiclesViewModel={vehiclesViewModel}></GetVehiclesView>} />
+            <Route path='/getVehicles' element={<GetVehiclesView></GetVehiclesView>} />
             <Route path='/*' element={<Navigate to={'/vehicles/getVehicles'} />} />
         </Routes>
     )

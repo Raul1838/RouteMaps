@@ -29,6 +29,7 @@ export class PlacesController {
         if (placesLength === 0) {
             throw new PlaceException(PlaceExceptionMessages.EmptyPlaces);
         }
+        console.log("AQUIII")
 
         const index = data.places.findIndex((place: Place) => (this.areFloatsEqual(place.Longitud, Longitud)
             && this.areFloatsEqual(place.Latitud, Latitud)));
