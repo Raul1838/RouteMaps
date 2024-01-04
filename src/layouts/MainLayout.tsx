@@ -1,4 +1,4 @@
-import {ReactNode, useContext} from 'react';
+import React, {ReactNode, useContext} from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import {NavBar} from "../components/NavBar.tsx";
 import {SideBar} from "../components/SideBar.tsx";

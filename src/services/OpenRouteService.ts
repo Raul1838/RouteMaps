@@ -71,6 +71,7 @@ export class OpenRouteService {
             favourite: false,
             transportMean: pathwayTransportMean,
             type: pathwayType,
+            cost: 0,
         };
     }
 
