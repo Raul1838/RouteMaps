@@ -33,7 +33,7 @@ export const DetailsPage = () => {
                     <li className="list-group-item"><strong>e-mail</strong> - { email }</li>
                 </ul>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <button className="btn btn-outline-primary mt-3" onClick={ closeDetails }>Cerrar</button>
+                    <button className="btn btn-primary mt-3" onClick={ closeDetails }>Cerrar</button>
                     <button className="btn btn-outline-danger mt-3" onClick={ deleteAccount }>Eliminar cuenta</button>
                 </div>
             </div>

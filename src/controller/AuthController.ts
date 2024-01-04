@@ -7,10 +7,13 @@ export class AuthController {
 
     constructor( private firebaseService: FirebaseService ) { }
 
-    public async registerUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
+    async registerUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
         if (email.includes('@') && password.length > 5) {
             const user: UserModel = await this.firebaseService.createUserWithEmailAndPassword(email, password, displayName);
             await this.firebaseService.setDefaultPathwayType(PathwayTypes.RECOMMENDED, user.uid);
+            localStorage.setItem('uuid', user.uid);
+            localStorage.setItem('displayName', user.displayName);
+            localStorage.setItem('email', user.email);
             return user;
         } else {
             throw new AuthException(AuthExceptionMessages.InvalidRegister);
@@ -19,7 +22,11 @@ export class AuthController {
 
     async loginWithEmailAndPassword(email: string, password: string): Promise<UserModel> {
         if (email.includes('@') && password.length > 5) {
-            return await this.firebaseService.startLoginWithEmailAndPassword(email, password);
+            const user = await this.firebaseService.startLoginWithEmailAndPassword(email, password);
+            localStorage.setItem('uuid', user.uid);
+            localStorage.setItem('displayName', user.displayName);
+            localStorage.setItem('email', user.email);
+            return user;
         } else {
             throw new AuthException(AuthExceptionMessages.InvalidLogin);
         }
@@ -27,10 +34,12 @@ export class AuthController {
 
     async logout() {
         await this.firebaseService.startLogout();
+        localStorage.clear();
     }
 
     async deleteUser() {
-        return await this.firebaseService.startDeletingUser();
+        await this.firebaseService.startDeletingUser();
+        localStorage.clear();
     }
 
 }

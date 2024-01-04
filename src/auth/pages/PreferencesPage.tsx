@@ -1,7 +1,7 @@
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {useContext, useEffect, useState} from "react";
 import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
-import {getPathwayController, PathwayController} from "../../controller/PathwayController.ts";
+import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
 import Vehicle from "../../interfaces/Vehicle.ts";
 import {DefaultVehicleDetails} from "../components/DefaultVehicleDetails.tsx";
 import {PathwayTypes} from "../../enums/PathwayTypes.ts";
@@ -22,19 +22,19 @@ export const PreferencesPage = () => {
     }, []);
 
     const getVehicleFromDb = async () => {
-        let dbVehicleId: string = '';
+        let dbVehiclePlate: string = '';
         if( !defaultVehiclePlate ) {
             try {
-                dbVehicleId = await vehiclesController.getDefaultVehicle(user.uid);
+                dbVehiclePlate = await vehiclesController.getDefaultVehicle(user.uid);
             } catch (error) {
                 setVehicleErrorMessage('No hay vehículo por defecto');
                 return;
             }
-            authContext.setDefaultVehiclePlate(dbVehicleId);
+            authContext.setDefaultVehiclePlate(dbVehiclePlate);
         } else {
-            dbVehicleId = defaultVehiclePlate;
+            dbVehiclePlate = defaultVehiclePlate;
         }
-        setDefaultVehicle(vehiclesController.getVehicle(dbVehicleId));
+        setDefaultVehicle(await vehiclesController.getVehicle(dbVehiclePlate, user.uid));
     }
 
     const getPathwayTypeFromDb = async () => {
@@ -67,7 +67,7 @@ export const PreferencesPage = () => {
                         : <DefaultPathwayTypeSwitcher pathwayType={defaultPathwayType} />
                 }
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <button className="btn btn-outline-primary mt-3" onClick={closePreferences}>Cerrar</button>
+                    <button className="btn btn-primary mt-3" onClick={closePreferences}>Cerrar</button>
                 </div>
             </div>
         </div>

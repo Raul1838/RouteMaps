@@ -2,11 +2,11 @@ import { Coords } from "./Coords";
 import Place from "./Place";
 
 export default interface LugaresInterface {
-    addPlaceByCoords(coordenadas: Coords): Promise<Boolean>;
-    addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean>;
+    addPlaceByCoords(coordenadas: Coords, userId?: string | undefined): Promise<void>;
+    addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined, userId?: string | undefined): Promise<void>;
     setPlaces(places: Place[]): void;
     getPlaces(): Place[];
-    deletePlace(lugar: Place): Boolean;
-    toggleFavourite({Longitud, Latitud}: {Longitud: number, Latitud: number}): Boolean;
+    deletePlace(paramPlace: Place, userId?: string | undefined): Promise<void>;
+    toggleFavourite({ Longitud, Latitud }: { Longitud: number, Latitud: number }, userId: string | undefined): void;
 
 }

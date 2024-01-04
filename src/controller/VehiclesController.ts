@@ -1,16 +1,13 @@
-import VehicleAlreadyExistException from "../exceptions/VehicleAlreadyExistException";
 import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
-import Combustible from "../enums/Combustible";
-import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
 import {FirebaseService} from "../services/FirebaseService.ts";
+import InvalidVehicleException from "../exceptions/InvalidVehicleException.ts";
 
 
 export default class VehiclesController implements VehiclesInterface {
 
-    private vehicles: Map<string, Vehicle> = new Map<string, Vehicle>();
 
     constructor( private firebaseService: FirebaseService ) {
         // firebaseService.getVehicles().then(vehicles => {
@@ -18,102 +15,88 @@ export default class VehiclesController implements VehiclesInterface {
         // });
     }
 
-    toggleFavourite({ plate }: { plate: string }): boolean {
-        if (this.vehicles.size === 0) {
+    async toggleFavourite(plate: string , userId: string): Promise<boolean> {
+        const data: any = await this.firebaseService.getVehicles(userId);
+        const vehiclesLength: number = data.vehicles.length;
+        if (vehiclesLength === 0) {
             throw new EmptyVehiclesException();
         }
-    
-        if (this.vehicles.has(plate)) {
-            const vehicle = this.vehicles.get(plate);
-            if (vehicle) {
-                vehicle.favorite = !vehicle.favorite;
-                return true;
-            } else {
-                // Handle the case where the vehicle is not found (this should not happen)
-                throw new VehicleNotFoundException();
-            }
+
+        const index = data.vehicles.findIndex((vehicle: Vehicle) => (vehicle.plate === plate));
+
+        if (index !== -1) {
+            data.vehicles[index].favorite = !data.vehicles[index].favorite;
+            await this.firebaseService.storeVehicle(data.vehicles[index], userId);
+            return true;
         } else {
             throw new VehicleNotFoundException();
         }
     }
 
-    addVehicle(paramVehicle: Vehicle): Boolean {
-        if (typeof paramVehicle.plate !== 'string'
-            || typeof paramVehicle.name !== 'string'
-            || !Object.values(Combustible).includes(paramVehicle.propulsion)
-            || typeof paramVehicle.consumption !== 'number'
-            || typeof paramVehicle.favorite !== 'boolean') {
+    async addVehicle(paramVehicle: Vehicle, userId: string): Promise<boolean> {
+        const spanishPlateRegex = /^[0-9]{4}[BCDFGHJKLMNPRSTVWXYZ]{3}$/;
+        if (!spanishPlateRegex.test(paramVehicle.plate) || paramVehicle.consumption > 50 || paramVehicle.name.length > 30) {
             throw new InvalidVehicleException();
         }
-
-        if (!this.vehicles.has(paramVehicle.plate)) {
-            this.vehicles.set(paramVehicle.plate, paramVehicle);
+        try {
+            await this.firebaseService.storeVehicle(paramVehicle, userId!);
             return true;
-        } else {
-            throw new VehicleAlreadyExistException();
+        } catch (error) {
+            throw error;
         }
     }
 
-    getVehicle(plate: string): Vehicle{
-        return this.vehicles.get(plate) || {
-            plate: '',
-            name: '',
-            propulsion: Combustible.Gasolina,
-            consumption: 0,
-            favorite: false
-        };
+    async setVehicles(vehicles: Vehicle[], userId: string): Promise<void> {
+        await this.firebaseService.setVehicles(vehicles, userId);
     }
 
-    getVehicles(): Vehicle[] {
-        return Array.from(this.vehicles.values());
+    async getVehicle(plate: string, userId: string): Promise<Vehicle>{
+        return this.firebaseService.getVehicle(userId, plate);
     }
 
-    deleteVehicle(plate: string): Boolean {
-        if (this.vehicles.size === 0) {
-            throw new EmptyVehiclesException();
-        }
+    async setVehicle(vehicle: Vehicle, userId: string): Promise<Vehicle[]> {
+        return await this.firebaseService.storeVehicle(vehicle, userId);
+    }
 
-        if (this.vehicles.has(plate)) {
-            this.vehicles.delete(plate);
+    async getVehicles(userId: string): Promise<Vehicle[]> {
+        const data = await this.firebaseService.getVehicles(userId);
+        return data?.vehicles || [];
+    }
+
+    async deleteVehicle(vehicle: Vehicle, userId: string): Promise<void> {
+        await this.firebaseService.deleteVehicle(vehicle, userId)
+    }
+
+    async modifyVehicle(paramVehicle: Vehicle, userId: string): Promise<boolean> {
+        try {
+            await this.firebaseService.storeVehicle(paramVehicle, userId);
             return true;
-        } else {
-            throw new VehicleNotFoundException();
+        } catch (error) {
+            throw error;
         }
     }
 
-    modifyVehicle(paramVehicle: Vehicle): Boolean {
-        if (this.vehicles.size === 0) {
-            throw new EmptyVehiclesException();
-        }
-
-        if (this.vehicles.has(paramVehicle.plate)) {
-            this.vehicles.set(paramVehicle.plate, { ...this.vehicles.get(paramVehicle.plate), ...paramVehicle });
-            return true;
-        } else {
-            throw new VehicleNotFoundException();
-        }
-    }
-
-    setVehicles(vehicles: Vehicle[]): void {
-        this.vehicles = new Map(vehicles.map(vehicle => [vehicle.plate, vehicle]));
+    async updateVehicles(vehicles: Vehicle[], userId: string): Promise<void> {
+        await this.firebaseService.updateVehicles(vehicles, userId);
     }
 
     async setDefaultVehicle(plate: string, userId: string): Promise<void> {
-        if (this.vehicles.has(plate)) {
-            await this.firebaseService.setDefaultVehicle(plate, userId);
-        } else {
+        await this.getVehicle(plate, userId).catch(() => {
             throw new VehicleNotFoundException('El vehículo no existe');
-        }
+        });
+        await this.firebaseService.setDefaultVehicle(plate, userId);
+        localStorage.setItem('defaultVehiclePlate', plate);
     }
 
     async getDefaultVehicle(userId: string): Promise<string> {
-        let data: string = '';
+        let vehiclePlate: string = '';
         await this.firebaseService.getDefaultVehicle(userId).then((data) => {
-            data = data.vehiclePlate;
+            vehiclePlate = data.vehiclePlate;
         }).catch(() => {
             throw new VehicleNotFoundException('El usuario no tiene vehículo por defecto');
         });
-        return data;
+        localStorage.setItem('defaultVehiclePlate', vehiclePlate);
+        return vehiclePlate;
     }
 }
 

@@ -8,24 +8,32 @@ export default class VehiclesViewModel {
         this.vehiclesController = vehiclesController;
     }
 
-    addVehicle(vehicle: Vehicle): Boolean {
-        return this.vehiclesController.addVehicle(vehicle);
+    async addVehicle(vehicle: Vehicle): Promise<Boolean> {
+        return await this.vehiclesController.addVehicle(vehicle);
+    }    
+    
+    deleteVehicle(plate: string): Boolean {
+        return this.vehiclesController.deleteVehicle(plate);
     }
     
-    deleteVehicle(id: number): Boolean {
-        return this.vehiclesController.deleteVehicle(id);
-    }
-    
-    modifyVehicle(vehicle: Vehicle): Boolean {
+    async modifyVehicle(vehicle: Vehicle): Promise<Boolean> {
         return this.vehiclesController.modifyVehicle(vehicle);
     }
 
     setVehicles(vehicles: Vehicle[]): void {
-        this.vehiclesController.setVehicles(vehicles);
+        this.vehiclesController.updateVehicles(vehicles);
     }
 
     getVehicles(): Vehicle[] {
         return this.vehiclesController.getVehicles();
+    }
+
+    async getVehicle(plate: string): Promise<Vehicle> {
+        return this.vehiclesController.getVehicle(plate);
+    }
+
+    toggleFavourite(plate: string): Boolean {
+        return this.vehiclesController.toggleFavourite(plate);
     }
 
 }

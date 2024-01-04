@@ -1,8 +1,9 @@
-import {AuthController, getAuthController} from "../../src/controller/AuthController";
-import {UserModel} from "../../src/interfaces/UserModel";
-import {AuthException, AuthExceptionMessages} from "../../src/exceptions/AuthException";
-import {FirebaseAuth} from "../../src/firebase/config";
+import { AuthController, getAuthController } from "../../src/controller/AuthController";
+import { UserModel } from "../../src/interfaces/UserModel";
+import { AuthException, AuthExceptionMessages } from "../../src/exceptions/AuthException";
+import { FirebaseAuth } from "../../src/firebase/config";
 import { FirebaseService } from "../../src/services/FirebaseService";
+import { updateProfile } from "firebase/auth";
 
 
 describe('Tests sobre gestión de usuarios en Firebase', () => {
@@ -17,8 +18,8 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
     }
 
     beforeAll(() => {
-        firebaseService = new FirebaseService();        
-        authController = getAuthController(firebaseService)
+        firebaseService = new FirebaseService();
+        authController = getAuthController(firebaseService);
     });
 
     beforeEach(() => jest.clearAllMocks());
@@ -29,8 +30,14 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             email: testUser.email,
             displayName: testUser.displayName
         })
+        jest.spyOn(firebaseService, 'setDefaultPathwayType').mockResolvedValue();
 
+        if (FirebaseAuth.currentUser) {
+            await updateProfile(FirebaseAuth.currentUser, { displayName: testUser.displayName });
+        }
+        
         let user: UserModel = await authController.registerUserWithEmailAndPassword(testUser.email, testUser.password, testUser.displayName);
+
         expect(user).toBeTruthy();
         expect(user.email).toBe(testUser.email);
         expect(user.displayName).toBe(testUser.displayName);
@@ -38,7 +45,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
 
     test('HU01 - E3 - registro fallido con email inválido', async () => {
         jest.spyOn(firebaseService, 'createUserWithEmailAndPassword').mockRejectedValue(new AuthException(AuthExceptionMessages.InvalidRegister));
-        
+
         try {
             await authController.registerUserWithEmailAndPassword(testUser.email, testUser.password, testUser.displayName);
             throw new Error();
@@ -56,7 +63,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             email: 'usuario.permanente@test.com',
             password: '123456789',
         }
-        
+
         jest.spyOn(firebaseService, 'startLoginWithEmailAndPassword').mockResolvedValue({
             uid: 'mockUid',
             email: testUser.email,
@@ -106,7 +113,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
         })
         jest.spyOn(firebaseService, 'startLogout').mockResolvedValue();
 
-        await authController.loginWithEmailAndPassword( testUser.email, testUser.password);
+        await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await authController.logout();
 
         expect(firebaseService.startLogout).toHaveBeenCalled();

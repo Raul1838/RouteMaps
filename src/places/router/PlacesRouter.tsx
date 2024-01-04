@@ -1,27 +1,18 @@
-import { Navigate, Route, Routes } from "react-router-dom"
-import AddPlaceByCoordsComponent from "../pages/AddPlaceByCoordsView"
-import AddPlaceByToponymComponent from "../pages/AddPlaceByToponymView"
-import GetPlacesView from "../pages/GetPlacesView"
-import DeletePlacesView from "../pages/DeletePlaceView"
-import PlacesViewModel from "../viewModel/PlacesViewModel"
-import PlacesController from "../../controller/PlacesController"
-import APIPlacesService from "../../api/APIPlacesService"
-
-
-
-const aPIPlacesService = new APIPlacesService();
-const placesController = new PlacesController(aPIPlacesService);
-const placesViewModel = new PlacesViewModel(placesController);
+import {Navigate, Route, Routes} from "react-router-dom"
+import {PlacesPage} from "../pages/PlacesPage.tsx";
+import {AddPlaceByPlaceName} from "../pages/AddPlaceByPlaceName.tsx";
+import {EditPlacePage} from "../pages/EditPlacePage.tsx";
+import {AddPlaceByCoords} from "../pages/AddPlaceByCoords.tsx";
 
 
 export const PlacesRouter = () => {
     return (
         <Routes>
-            <Route path='/addPlaceByToponym' element={<AddPlaceByToponymComponent placesViewModel={placesViewModel}></AddPlaceByToponymComponent>} />
-            <Route path='/addPlaceByCoords' element={<AddPlaceByCoordsComponent placesViewModel={placesViewModel}></AddPlaceByCoordsComponent>} />
-            <Route path='/deletePlace' element={<DeletePlacesView placesViewModel={placesViewModel}></DeletePlacesView>} />
-            <Route path='/getPlaces' element={<GetPlacesView placesViewModel={placesViewModel}></GetPlacesView>} />
-            <Route path='/*' element={<Navigate to={'/addPlaceByToponym'} />} />
+            <Route path='/addPlaceByToponym' element={ <AddPlaceByPlaceName /> } />
+            <Route path='/addPlaceByCoords' element={ <AddPlaceByCoords /> } />
+            <Route path='/getPlaces' element={ <PlacesPage /> } />
+            <Route path='/editPlace/:placeName' element={ <EditPlacePage /> } />
+            <Route path='/*' element={<Navigate to={'/places/getPlaces'} />} />
         </Routes>
     )
 }

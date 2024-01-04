@@ -1,16 +1,21 @@
-import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { FirebaseAuth, FirebaseDB } from "../firebase/config.ts";
-import { UserModel } from "../interfaces/UserModel.ts";
-import { AuthException, AuthExceptionMessages } from "../exceptions/AuthException.ts";
-import { doc, getDoc, setDoc } from "firebase/firestore/lite";
-import { Pathway } from "../interfaces/Pathway.ts";
-import { arrayUnion } from "firebase/firestore";
+import {createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword, updateProfile} from "firebase/auth";
+import {FirebaseAuth, FirebaseDB} from "../firebase/config.ts";
+import {UserModel} from "../interfaces/UserModel.ts";
+import {AuthException, AuthExceptionMessages} from "../exceptions/AuthException.ts";
+import {doc, getDoc, setDoc, updateDoc} from "firebase/firestore/lite";
+import {Pathway} from "../interfaces/Pathway.ts";
 import Combustible from "../enums/Combustible.ts";
-import { PathwayTypes } from "../enums/PathwayTypes.ts";
+import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
+import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
+import {PlaceException, PlaceExceptionMessages} from "../exceptions/PlaceException.ts";
+import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
+import EmptyVehiclesException from "../exceptions/EmptyVehiclesException.ts";
+import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts";
 
 export class FirebaseService {
+
 
     async createUserWithEmailAndPassword(email: string, password: string, displayName: string): Promise<UserModel> {
         let resp;
@@ -65,12 +70,12 @@ export class FirebaseService {
     }
 
     async setDefaultVehicle(vehiclePlate: string, userId: string): Promise<void> {
-        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
-        await setDoc(docRef, { id: vehiclePlate });
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehiclePlate');
+        await setDoc(docRef, { vehiclePlate: vehiclePlate });
     }
 
     async getDefaultVehicle(userId: string) {
-        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehicle');
+        const docRef = doc(FirebaseDB, `${userId}`, 'defaultVehiclePlate');
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists())
             throw new Error('No such document!');
@@ -78,17 +83,41 @@ export class FirebaseService {
     }
 
 
-    async storePlace(place: Place, userId: string): Promise<void> {
-        const _ = require('lodash');
+    async storePlace(place: Place, userId: string): Promise<Place[]> {
         const docRef = doc(FirebaseDB, userId, 'places');
         const placeData = await this.getPlaces(userId);
         const currentPlaces: Place[] = placeData.places || [];
-        const isDuplicate = currentPlaces.some(element => (place.Nombre === element.Nombre) || (place.Latitud === element.Latitud && place.Longitud === element.Longitud));
+        const existingPlaceIndex = currentPlaces.findIndex(element =>
+            (place.Nombre === element.Nombre) || (place.Latitud === element.Latitud && place.Longitud === element.Longitud)
+        );
 
-        if (!isDuplicate) {
+        if (existingPlaceIndex !== -1) {
+            // Update the existing place
+            currentPlaces[existingPlaceIndex] = place;
+        } else {
+            // Add the new place if not a duplicate
             currentPlaces.push(place);
-            await setDoc(docRef, { places: currentPlaces }, { merge: true });
         }
+        await setDoc(docRef, { places: currentPlaces }, { merge: true });
+        return currentPlaces;
+
+    }
+
+    async deletePlace(placeToDelete: Place, userId: string) {
+        const docRef = doc(FirebaseDB, userId, 'places');
+        const placeData = await this.getPlaces(userId);
+
+
+        if (placeData.places.length === 0) {
+            throw new PlaceException(PlaceExceptionMessages.EmptyPlaces);
+        }
+
+        let currentPlaces: Place[] = placeData?.places || [];
+        const modifiedPlaces: Place[] = currentPlaces.filter(currentPlace => currentPlace.Nombre !== placeToDelete.Nombre);
+        if (modifiedPlaces.length === currentPlaces.length) {
+            throw new PlaceException(PlaceExceptionMessages.PlaceNotFound);
+        }
+        await setDoc(docRef, { places: modifiedPlaces }, { merge: true });
     }
 
     async getPlaces(userId: string) {
@@ -104,30 +133,85 @@ export class FirebaseService {
         return docSnap.data();
     }
 
-    async storeVehicle(vehicle: Vehicle, userId: string): Promise<void> {
-        const _ = require('lodash');
-        const docRef = doc(FirebaseDB, userId, 'vehicles'); 
-        const vehicleData = await this.getVehicles(userId);
-        const currentVehicles: Vehicle[] = vehicleData.vehicles || [];
-        const isDuplicate = currentVehicles.some(element =>
-            vehicle.plate === element.plate &&
-            vehicle.name === element.name &&
-            vehicle.propulsion === element.propulsion &&
-            vehicle.consumption === element.consumption
-        );
+    async setPlaces(newPlaces: Place[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'places');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const currentPlaces: Place[] = docSnap.data().places;
 
-        if (!isDuplicate) {
-            currentVehicles.push(vehicle);
-            await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
+            const modifiedPlaces: Place[] = currentPlaces.map(currentPlace => {
+                const modifiedPlace = newPlaces.find(place => place.Nombre === currentPlace.Nombre);
+                if (modifiedPlace) {
+                    return { ...currentPlace, Favorito: modifiedPlace.Favorito };
+                } else {
+                    return currentPlace;
+                }
+            });
+            await updateDoc(docRef, { places: modifiedPlaces });
+        } else {
+            await setDoc(docRef, { places: newPlaces }, { merge: true });
         }
     }
+
+
+    async replacePlaces(newPlaces: Place[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'places');
+        await setDoc(docRef, { places: newPlaces }, { merge: true });
+    }
+
+
+    async replacePathways(newPathways: Pathway[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'pathways');
+        await setDoc(docRef, { pathways: newPathways }, { merge: true });
+    }
+
+    async storeVehicle(vehicle: Vehicle, userId: string): Promise<Vehicle[]> {
+        const docRef = doc(FirebaseDB, userId, 'vehicles');
+        const vehicleData = await this.getVehicles(userId);
+        const currentVehicles: Vehicle[] = vehicleData.vehicles || [];
+        const currentVehicleIndex = currentVehicles.findIndex(v => v.plate === vehicle.plate);
+
+        if (currentVehicleIndex !== -1) {
+            currentVehicles[currentVehicleIndex] = vehicle;
+        } else {
+            currentVehicles.push(vehicle);
+        }
+
+        await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
+        return currentVehicles;
+    }
+
+
+    async getVehicle(userId: string, plate: string): Promise<Vehicle> {
+        const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+            throw new Error('No vehicles document found for the user!');
+        }
+
+        const vehicleData = docSnap.data();
+        if (!vehicleData || !Array.isArray(vehicleData.vehicles)) {
+            throw new Error('Invalid vehicle data!');
+        }
+
+        const vehicles: Vehicle[] = vehicleData.vehicles;
+        const foundVehicle = vehicles.find(vehicle => vehicle.plate === plate);
+
+        if (!foundVehicle) {
+            throw new EmptyVehiclesException();
+        }
+
+        return foundVehicle;
+    }
+
+
 
     async getVehicles(userId: string) {
         const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
         const docSnap = await getDoc(docRef);
 
         if (!docSnap.exists()) {
-            // Crea el documento si no existe
             await setDoc(docRef, { vehicles: [] });
             return { vehicles: [] };
         }
@@ -135,17 +219,95 @@ export class FirebaseService {
         return docSnap.data();
     }
 
-    async storePathway(pathway: Pathway, userId: string): Promise<void> {
-        const _ = require('lodash');
+    async updateVehicles(newVehicles: Vehicle[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const currentVehicles: Vehicle[] = docSnap.data().vehicles;
+
+            const modifiedVehicles: Vehicle[] = currentVehicles.map(currentVehicle => {
+                const modifiedVehicle = newVehicles.find(vehicle => vehicle.plate === currentVehicle.plate);
+                if (modifiedVehicle) {
+                    return { ...currentVehicle, favorite: modifiedVehicle.favorite };
+                } else {
+                    return currentVehicle;
+                }
+            });
+            await updateDoc(docRef, { vehicles: modifiedVehicles });
+        } else {
+            await setDoc(docRef, { vehicles: newVehicles }, { merge: true });
+        }
+    }
+
+    async setVehicles(newVehicles: Vehicle[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
+        await setDoc(docRef, { vehicles: newVehicles }, { merge: true });
+    }
+
+    async deleteVehicle(vehicle: Vehicle, userId: string) {
+        const docRef = doc(FirebaseDB, userId, 'vehicles');
+        const vehicleData = await this.getVehicles(userId);
+        let currentVehicles: Vehicle[] = vehicleData.vehicles || [];
+        const existingVehicleIndex = currentVehicles.findIndex(element => element.plate === vehicle.plate);
+
+        if (existingVehicleIndex !== -1) {
+            currentVehicles.splice(existingVehicleIndex, 1);
+            await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
+        } else {
+            throw new VehicleNotFoundException();
+        }
+    }
+
+    private pathwaysAreEqual( first: Pathway, second: Pathway ): boolean {
+        return first.start.name === second.start.name &&
+            first.end.name === second.end.name &&
+            first.type === second.type &&
+            (first.transportMean !== PathwayTransportMeans.VEHICLE || first.vehiclePlate === second.vehiclePlate)
+    }
+
+    async storePathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
+        const docRef = doc(FirebaseDB, userId, 'pathways');
+        let pathwayData;
+        try {
+            pathwayData = await this.getPathways(userId);
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                pathwayData = { pathways: [] };
+            } else {
+                throw error;
+            }
+        }
+        const currentPathways: Pathway[] = pathwayData!.pathways || [];
+        //imprime ne un objeto el currentPathways[0].start y el pathway.start
+        const existingPathwayIndex = currentPathways.findIndex(element => this.pathwaysAreEqual(pathway, element) );
+
+        if (existingPathwayIndex !== -1) {
+            // Update the existing pathway
+            currentPathways[existingPathwayIndex] = pathway;
+        } else {
+            // Add the new pathway if not a duplicate
+            currentPathways.push(pathway);
+        }
+
+        // Save the updated pathways to Firestore
+        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
+        return currentPathways;
+    }
+
+    async deletePathway(paramPathway: Pathway, userId: string) {
         const docRef = doc(FirebaseDB, userId, 'pathways');
         const pathwayData = await this.getPathways(userId);
-        const currentPathways: Pathway[] = pathwayData.pathways || [];
-        const isDuplicate = currentPathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
 
-        if (!isDuplicate) {
-            currentPathways.push(pathway);
-            await setDoc(docRef, { pathways: currentPathways }, { merge: true });
+        if (pathwayData.pathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
         }
+        let currentPathways: Pathway[] = pathwayData.pathways;
+        currentPathways = currentPathways.filter(element => !this.pathwaysAreEqual(paramPathway, element));
+        if (currentPathways.length === pathwayData.pathways.length) {
+            throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
+        }
+
+        await setDoc(docRef, { pathways: currentPathways }, { merge: true });
     }
 
     async getPathways(userId: string) {
@@ -158,7 +320,20 @@ export class FirebaseService {
             return { pathways: [] };
         }
 
+        const pathway = docSnap.data();
+        if (pathway.pathways.length === 0) {
+            throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
+        }
         return docSnap.data();
+    }
+
+    async updatePathways(newPathways: Pathway[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'pathways');
+        const docSnap = await getDoc(docRef);
+        if( docSnap.exists() )
+           await updateDoc(docRef, { pathways: newPathways });
+        else
+            await setDoc(docRef, { pathways: newPathways }, { merge: true });
     }
 
     async storeFuelPrice(fuel: Combustible, fuelPrice: number) {
@@ -190,4 +365,5 @@ export class FirebaseService {
             throw new Error('No such document!');
         return docSnap.data();
     }
+
 }

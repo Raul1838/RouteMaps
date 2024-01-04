@@ -1,112 +1,119 @@
-import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
 import { Coords } from "../interfaces/Coords";
-import PlacesInterface from "../interfaces/LugaresInterface";
 import Place from "../interfaces/Place";
-import IllegalArgumentException from "../exceptions/IllegalArgumentException";
-import EmptyPlacesException from "../exceptions/EmptyPlacesException";
-import PlaceNotFoundException from "../exceptions/PlaceNotFoundException";
 import APIPlacesService from "../api/APIPlacesService.ts";
+import { OpenRouteService } from "../services/OpenRouteService.ts";
+import { FirebaseService } from "../services/FirebaseService.ts";
+import { PlaceException, PlaceExceptionMessages } from "../exceptions/PlaceException.ts";
 
 
-export default class PlacesController implements PlacesInterface {
-    private places: Array<Place>;
-    private apiService: APIPlacesInterface;
-    constructor(apiService: APIPlacesInterface) {
-        this.apiService = apiService;
-        this.places = [];
+
+export class PlacesController {
+    constructor(
+        private apiService: APIPlacesInterface,
+        private openRouteService: OpenRouteService,
+        private firebaseService: FirebaseService,
+    ) { }
+
+    getApiService() {
+        return this.apiService;
     }
 
-    toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }): Boolean {
-        if (this.places.length === 0) {
-            throw new EmptyPlacesException();
+    getOpenRouteService() {
+        return this.openRouteService;
+    }
+
+    async toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }, userId: string): Promise<Boolean> {
+        const data: any = await this.firebaseService.getPlaces(userId);
+        const placesLength: number = data.places.length;
+
+        if (placesLength === 0) {
+            throw new PlaceException(PlaceExceptionMessages.EmptyPlaces);
         }
-        const index = this.places.findIndex(place => (place.Longitud === Longitud
-            && place.Latitud === Latitud));
+
+        const index = await data.places.findIndex((place: Place) => (this.areFloatsEqual(place.Longitud, Longitud)
+            && this.areFloatsEqual(place.Latitud, Latitud)));
 
         if (index !== -1) {
-            this.places[index].Favorito = !this.places[index].Favorito;
+            data.places[index].Favorito = !data.places[index].Favorito;
+            await this.firebaseService.storePlace(data.places[index], userId);
             return true;
         } else {
-            throw new PlaceNotFoundException();
+            throw new PlaceException(PlaceExceptionMessages.PlaceNotFound);
         }
     }
 
-    async addPlaceByToponym(placeName?: string | undefined, coordenadas?: Coords | undefined): Promise<Boolean> {
-        var result: Place | undefined;
-        try {
-            if (placeName !== undefined) {
-                this.checkForValidToponym(placeName);
-                result = await this.apiService.getPlaceByToponym(placeName!);
-            } else if (coordenadas !== undefined) {
-                result = await this.apiService.getPlaceByCoord(coordenadas!);
-            } else {
-                throw new Error("Input inválido: debe especificar un nombre o coordenadas");
-            }
-            if (result?.Nombre !== undefined) {
-                this.places.push(result);
-                return true;
-            } else {
-                return false;
-            }
-        } catch (error) {
-            throw error;
-        }
+    private areFloatsEqual(a: number, b: number, epsilon: number = Number.EPSILON): boolean {
+        return Math.abs(a - b) < epsilon;
     }
 
-    async addPlaceByCoords(coordenadas: Coords): Promise<Boolean> {
+    async addPlaceByToponym(placeName: string, favorite: boolean, userId: string): Promise<Place[]> {
+        const completePlace: Coords = await this.openRouteService.getCoordinatesFromPlaceName(placeName);
+        this.checkForValidToponym(completePlace.name);
+        return await this.savePlaceIntoDatabase({
+            Nombre: completePlace.name || '',
+            Latitud: completePlace.lat || 0,
+            Longitud: completePlace.lon || 0,
+            Favorito: favorite
+        }, userId);
+    }
+
+    async addPlaceByCoords(coordenadas: Coords, userId: string): Promise<Boolean> {
         try {
             this.checkValidCoordinates(coordenadas);
-            var result: Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
-            if (result.Nombre !== undefined) {
-                this.places.push(result);
-                return true;
-            } else {
-                return false;
-            }
+            const result: Place | undefined = await this.apiService.getPlaceByCoord(coordenadas);
+            if (!result) return false;
+            await this.savePlaceIntoDatabase(result, userId);
+            return true;
         } catch (error) {
             throw error;
         }
     }
+
+    async getPlaceNameByCoords(coordenadas: Coords): Promise<string> {
+        try {
+            return await this.openRouteService.getPlaceNameByCoords(coordenadas);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     private checkValidCoordinates(coordenadas: Coords) {
         if ((typeof coordenadas.lat !== 'number') || (typeof coordenadas.lon !== 'number')) {
-            throw new IllegalArgumentException();
+            throw new PlaceException(PlaceExceptionMessages.IllegalArgument);
         }
     }
 
-    deletePlace(paramPlace: Place): Boolean {
-        if (this.places.length === 0) {
-            throw new EmptyPlacesException("No hay lugares para eliminar.");
-        }
-        const index = this.places.findIndex(place => (place.Nombre === paramPlace.Nombre &&
-            place.Latitud === paramPlace.Latitud &&
-            place.Longitud === paramPlace.Longitud));
-
-        if (index !== -1) {
-            this.places.splice(index, 1);
-            return true;
-        } else {
-            throw new PlaceNotFoundException("No se encontró el lugar a eliminar.");
-        }
+    private async savePlaceIntoDatabase(place: Place, userId: string): Promise<Place[]> {
+        return await this.firebaseService.storePlace(place, userId);
     }
 
-    setPlaces(places: Place[]): void {
-        this.places = places;
+    async deletePlace(place: Place, userId: string): Promise<void> {
+        await this.firebaseService.deletePlace(place, userId);
     }
 
-    getPlaces(): Place[] {
-        if (this.places.length === 0) {
-            throw new EmptyPlacesException();
-        }
-        return this.places
+    async getPlaces(userId: string): Promise<Place[]> {
+        const data = await this.firebaseService.getPlaces(userId);
+        return data?.places || [];
     }
 
+    async setPlaces(places: Place[], userId: string): Promise<void> {
+        await this.firebaseService.setPlaces(places, userId);
+    }
+
+    async replacePlaces(places: Place[], userId: string): Promise<void> {
+        await this.firebaseService.replacePlaces(places, userId);
+    }
+
+    async setPlace(place: Place, userId: string): Promise<Place[]> {
+        return await this.firebaseService.storePlace(place, userId);
+    }
 
     //Otros métodos
 
     checkForValidToponym(placeName: string | undefined) {
         if (this.containsNumber(placeName!)) {
-            throw new InvalidToponymException("El nombre del lugar no puede contener números");
+            throw new PlaceException(PlaceExceptionMessages.InvalidToponym);
         }
     }
 
@@ -117,9 +124,14 @@ export default class PlacesController implements PlacesInterface {
 
     async transformToValidCoords(inputTerm: string): Promise<Coords> {
         const splitInputTerm: string[] = inputTerm.split(',');
-        if( splitInputTerm.length > 1 ) {
+        if (splitInputTerm.length > 1) {
             if (splitInputTerm.every((value: string) => this.containsNumber(value))) {
-                return { lat: parseFloat(splitInputTerm[1]), lon: parseFloat(splitInputTerm[0]) };
+                const placeName: string = await this.openRouteService.getPlaceNameByCoords({ lon: parseFloat(splitInputTerm[0]), lat: parseFloat(splitInputTerm[1]) });
+                return {
+                    lat: parseFloat(splitInputTerm[1]),
+                    lon: parseFloat(splitInputTerm[0]),
+                    name: placeName
+                };
             }
         }
         const place: Place = await this.apiService.getPlaceByToponym(inputTerm);
@@ -132,9 +144,12 @@ export default class PlacesController implements PlacesInterface {
 }
 
 let _instance: PlacesController;
-export function getPlacesController(apiService?: APIPlacesInterface): PlacesController {
+export function getPlacesController(apiService?: APIPlacesInterface, openRouteService?: OpenRouteService, firebaseService?: FirebaseService): PlacesController {
     if (!_instance) {
-        _instance = new PlacesController((!apiService ? new APIPlacesService(): apiService));
+        if (!apiService) apiService = new APIPlacesService();
+        if (!openRouteService) openRouteService = new OpenRouteService();
+        if (!firebaseService) firebaseService = new FirebaseService();
+        _instance = new PlacesController(apiService, openRouteService, firebaseService);
     }
     return _instance;
 }

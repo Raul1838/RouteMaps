@@ -17,7 +17,7 @@ export const DefaultPathwayTypeSwitcher: React.FC<{ pathwayType: PathwayTypes }>
 
     return (
         <Dropdown onSelect={handleSelect}>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
+            <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
                 {selection}
             </Dropdown.Toggle>
 
