@@ -11,6 +11,8 @@ import Place from "../interfaces/Place.ts";
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
 import {PlaceException, PlaceExceptionMessages} from "../exceptions/PlaceException.ts";
 import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
+import EmptyVehiclesException from "../exceptions/EmptyVehiclesException.ts";
+import VehicleNotFoundException from "../exceptions/VehicleNotFoundException.ts";
 
 export class FirebaseService {
 
@@ -195,7 +197,7 @@ export class FirebaseService {
         const foundVehicle = vehicles.find(vehicle => vehicle.plate === plate);
 
         if (!foundVehicle) {
-            throw new Error('Vehicle not found!');
+            throw new EmptyVehiclesException();
         }
 
         return foundVehicle;
@@ -250,7 +252,7 @@ export class FirebaseService {
             currentVehicles.splice(existingVehicleIndex, 1);
             await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
         } else {
-            throw new Error('Vehicle not found!');
+            throw new VehicleNotFoundException();
         }
     }
 
