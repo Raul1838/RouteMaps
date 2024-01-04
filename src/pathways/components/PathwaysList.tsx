@@ -79,6 +79,7 @@ export const PathwaysList = () => {
                                 <th>Duración</th>
                                 <th>Coste</th>
                                 <th>Tipo transporte</th>
+                                <th>Tipo de ruta</th>
                                 <th>Vehículo</th>
                                 <th></th>
                                 <th></th>
@@ -99,6 +100,7 @@ export const PathwaysList = () => {
                                         pathway.transportMean === PathwayTransportMeans.VEHICLE ? '€' : 'cal'
                                     }</td>
                                     <td>{ pathway.transportMean }</td>
+                                    <td>{ pathway.type }</td>
                                     <td>
                                         {
                                             pathway.transportMean === PathwayTransportMeans.VEHICLE
