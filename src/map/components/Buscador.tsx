@@ -14,10 +14,14 @@ import PathwayController, {getPathwayController} from "../../controller/PathwayC
 import Vehicle from "../../interfaces/Vehicle.ts";
 import Combustible from "../../enums/Combustible.ts";
 import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
+import {useNavigate} from "react-router-dom";
+import {PathwayContext, PathwayContextInterface} from "../../context/PathwayContext.tsx";
 
 const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => value !== PathwayTypes.UNDEFINED);
 
 export const Buscador = () => {
+
+    const navigation = useNavigate();
 
     const authContext: AuthContextInterface = useContext(AuthContext);
     const { user, defaultPathwayType, defaultVehiclePlate } = authContext;
@@ -25,10 +29,12 @@ export const Buscador = () => {
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { distance, duration, pathwayTransportMean, vehicle} = navigationContext;
 
+    const { setPathways, loadedPathway }: PathwayContextInterface = useContext(PathwayContext);
+
     const pathwayController: PathwayController = getPathwayController();
     const vehiclesController: VehiclesController = getVehiclesController();
 
-    const [selection, setSelection] = useState<PathwayTypes>(defaultPathwayType);
+    const [selectedPathwayType, setSelectedPathwayType] = useState<PathwayTypes>(defaultPathwayType);
     const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>({
         consumption: 0,
         favorite: false,
@@ -39,12 +45,12 @@ export const Buscador = () => {
     const [pathwayCost, setPathwayCost] = useState<number>(0);
 
     useEffect(() => {
-        console.log(defaultVehiclePlate);
         if( defaultVehiclePlate ) {
            vehiclesController.getVehicle(defaultVehiclePlate, user.uid).then((vehicle) => {
                 setSelectedVehicle(vehicle);
             });
         }
+        if( loadedPathway.type !== PathwayTypes.UNDEFINED ) setSelectedPathwayType(loadedPathway.type);
     }, []);
 
     useEffect(() => {
@@ -101,7 +107,7 @@ export const Buscador = () => {
         if( navigationContext.to.name !== formState.to ) toCoords = await placesController.transformToValidCoords(formState.to);
         navigationContext.setFrom({...fromCoords});
         navigationContext.setTo({...toCoords});
-        navigationContext.setPathwayType(selection as PathwayTypes);
+        navigationContext.setPathwayType(selectedPathwayType as PathwayTypes);
     }
 
     const inputButtonSpecification: InputButtonSpecification = {
@@ -118,7 +124,7 @@ export const Buscador = () => {
 
     const handleSelectPathwayType = ( eventKey: string | null ) => {
         if( eventKey ) {
-            setSelection(eventKey as PathwayTypes);
+            setSelectedPathwayType(eventKey as PathwayTypes);
             navigationContext.setPathwayType(eventKey as PathwayTypes);
         }
     }
@@ -133,6 +139,22 @@ export const Buscador = () => {
         navigationContext.setShowVehicles(!navigationContext.showVehicles);
     }
 
+    const saveRoute = async () => {
+        await pathwayController.addPathway({
+            type: selectedPathwayType,
+            start: navigationContext.from,
+            end: navigationContext.to,
+            codifiedPath: navigationContext.codifiedPath,
+            duration: duration,
+            distance: distance,
+            favourite: false,
+            transportMean: pathwayTransportMean,
+            vehiclePlate: pathwayTransportMean === PathwayTransportMeans.VEHICLE ? selectedVehicle.plate : 'Sin vehículo',
+            cost: pathwayCost
+        }, user.uid).then(pathways => setPathways(pathways));
+        navigation('/pathways');
+    }
+
     return (
         <div className="card" style={{
             position: 'fixed',
@@ -143,10 +165,16 @@ export const Buscador = () => {
             zIndex: 1,
         }}>
             <div className="card-body">
-                <h3 className="card-title">Ruta</h3>
-                <hr />
-                <SmartForm formData={ formData } formFields={ formFields } onSubmit={ handleNavigate }
-                           submitButtonLabel={ 'Navegar' } validations={ validations } inputButtonsSpecification={ inputButtonSpecification } />
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <h3 className="card-title">Ruta</h3>
+                    <Button style={{ 'display': duration > 0 && distance > 0 && pathwayCost > 0 ? 'block' : 'none' }} variant={"outline-info"} onClick={ saveRoute } >
+                        <i className={'fas fa-save'}></i>
+                    </Button>
+                </div>
+                <hr/>
+                <SmartForm formData={formData} formFields={formFields} onSubmit={handleNavigate}
+                           submitButtonLabel={'Navegar'} validations={validations}
+                           inputButtonsSpecification={inputButtonSpecification}/>
 
                 <ButtonGroup aria-label="Transport means">
                     {Object.values(PathwayTransportMeans).map((transportMean) => (
@@ -155,14 +183,14 @@ export const Buscador = () => {
                             variant={pathwayTransportMean === transportMean ? "info" : "white"}
                             onClick={() => handleTransportChange(transportMean)}
                         >
-                            <i className={ transportMeanIcons[transportMean] }></i>
+                            <i className={transportMeanIcons[transportMean]}></i>
                         </Button>
                     ))}
                 </ButtonGroup>
 
-                <Dropdown onSelect={ handleSelectPathwayType } className="mt-3">
+                <Dropdown onSelect={handleSelectPathwayType} className="mt-3">
                     <Dropdown.Toggle variant="success" id="dropdown-basic">
-                        { selection }
+                        {selectedPathwayType}
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
@@ -174,7 +202,7 @@ export const Buscador = () => {
 
                 {
                     pathwayTransportMean === PathwayTransportMeans.VEHICLE
-                    ?   <>
+                        ? <>
                             <div className="input-group">
                                 <input
                                     className="form-control"
@@ -202,7 +230,9 @@ export const Buscador = () => {
                             <hr/>
                             <ul className="list-group">
                                 <li className="list-group-item">Distancia: {(distance / 1000).toFixed(4)} km</li>
-                                <li className="list-group-item">Duración: {Math.floor(duration / 3600) } horas y { Math.round((duration % 3600) / 60) } minutos</li>
+                                <li className="list-group-item">Duración: {Math.floor(duration / 3600)} horas
+                                    y {Math.round((duration % 3600) / 60)} minutos
+                                </li>
                                 <li className="list-group-item">Coste: {
                                     pathwayCost.toFixed(2)
                                 } {

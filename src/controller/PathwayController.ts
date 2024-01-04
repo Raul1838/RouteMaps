@@ -11,15 +11,11 @@ import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 
 export default class PathwayController {
 
-    private pathways: Pathway[];
-
     constructor(
         private openRouteService: OpenRouteService,
         private firebaseService: FirebaseService,
         private priceService: PriceService,
-    ) {
-        this.pathways = [];
-    }
+    ) { }
 
     getOpenRouteService() {
         return this.openRouteService;
@@ -50,34 +46,16 @@ export default class PathwayController {
         return await this.openRouteService.calculatePathway(from, to, pathwayTransportMean, pathwayType);
     }
 
-    async deletePathway(paramPathway: Pathway, userId: string) {
-        try {
-            // this.deletePathwayLocally(paramPathway);
-            await this.firebaseService.deletePathway(paramPathway, userId!);
-        } catch (error) {
-            throw error;
+    async calculatePrice(distance: number, vehicle: Vehicle): Promise<number> {
+        if (vehicle.consumption === undefined) {
+            throw new VehicleNotFoundException('El vehículo no existe');
         }
-    }
-
-    async getPathways(userId: string) {
-        try {
-            return await this.firebaseService.getPathways(userId);
-        } catch (error) {
-            throw error;
+        if (distance === undefined) {
+            throw new PathwayException(PathWayExceptionMessages.FarPathway);
         }
-    }
-
-    async replacePathways(pathways: Pathway[], userId: string): Promise<void> {
-        await this.firebaseService.replacePathways(pathways, userId);
-    }
-
-
-    async addPathway(pathway: Pathway, userId: string) {
-        try {
-            await this.firebaseService.storePathway(pathway, userId);
-        } catch (error) {
-            throw error;
-        }
+        const price = await this.priceService.getPrice(vehicle.propulsion);
+        let priceConsumido = ((price * vehicle.consumption * distance) / 10000);
+        return parseFloat(priceConsumido.toFixed(2));
     }
 
     calculateCalories(distance: number, vehicle: PathwayTransportMeans): number {
@@ -93,6 +71,42 @@ export default class PathwayController {
         }
     }
 
+    async getPathways(userId: string): Promise<Pathway[]> {
+        try {
+            const data = await this.firebaseService.getPathways(userId);
+            return data?.pathways || [];
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async updatePathways(pathways: Pathway[], userId: string) {
+        try {
+            await this.firebaseService.updatePathways(pathways, userId);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async addPathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
+        try {
+            return await this.firebaseService.storePathway(pathway, userId);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async deletePathway(paramPathway: Pathway, userId: string) {
+        try {
+            await this.firebaseService.deletePathway(paramPathway, userId!);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async replacePathways(pathways: Pathway[], userId: string): Promise<void> {
+        await this.firebaseService.replacePathways(pathways, userId);
+    }
 
     async setDefaultPathwayType(pathwayType: PathwayTypes, userId: string) {
         await this.firebaseService.setDefaultPathwayType(pathwayType, userId);
@@ -108,17 +122,13 @@ export default class PathwayController {
         return defaultPathwayType;
     }
 
-    async calculatePrice(distance: number, vehicle: Vehicle): Promise<number> {
-        if (vehicle.consumption <= 0) {
-            throw new VehicleNotFoundException('El vehículo no existe');
-        }
-        if (distance <= 0) {
-            throw new PathwayException(PathWayExceptionMessages.FarPathway);
-        }
-        const price = await this.priceService.getPrice(vehicle.propulsion);
-        let priceConsumido = ((price * vehicle.consumption * distance) / 10000);
-        return parseFloat(priceConsumido.toFixed(2));
+    pathwaysAreEqual( first: Pathway, second: Pathway ): boolean {
+        return first.start.name === second.start.name &&
+            first.end.name === second.end.name &&
+            first.type === second.type &&
+            (first.transportMean !== PathwayTransportMeans.VEHICLE || first.vehiclePlate === second.vehiclePlate)
     }
+
 }
 
 let _instance: PathwayController;

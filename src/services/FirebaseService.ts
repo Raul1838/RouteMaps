@@ -10,6 +10,7 @@ import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
 import {PathwayException, PathWayExceptionMessages} from "../exceptions/PathwayException.ts";
 import {PlaceException, PlaceExceptionMessages} from "../exceptions/PlaceException.ts";
+import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 
 export class FirebaseService {
 
@@ -89,10 +90,10 @@ export class FirebaseService {
         );
 
         if (existingPlaceIndex !== -1) {
-            // Update the existing pathway
+            // Update the existing place
             currentPlaces[existingPlaceIndex] = place;
         } else {
-            // Add the new pathway if not a duplicate
+            // Add the new place if not a duplicate
             currentPlaces.push(place);
         }
         await setDoc(docRef, { places: currentPlaces }, { merge: true });
@@ -253,11 +254,16 @@ export class FirebaseService {
         }
     }
 
+    private pathwaysAreEqual( first: Pathway, second: Pathway ): boolean {
+        return first.start.name === second.start.name &&
+            first.end.name === second.end.name &&
+            first.type === second.type &&
+            (first.transportMean !== PathwayTransportMeans.VEHICLE || first.vehiclePlate === second.vehiclePlate)
+    }
 
     async storePathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
-        const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
-        var pathwayData;
+        let pathwayData;
         try {
             pathwayData = await this.getPathways(userId);
         } catch (error) {
@@ -268,12 +274,8 @@ export class FirebaseService {
             }
         }
         const currentPathways: Pathway[] = pathwayData!.pathways || [];
-        const existingPathwayIndex = currentPathways.findIndex(element =>
-            _.isEqual(pathway.start, element.start) &&
-            _.isEqual(pathway.end, element.end) &&
-            pathway.type === element.type &&
-            pathway.vehicle === element.vehicle
-        );
+        //imprime ne un objeto el currentPathways[0].start y el pathway.start
+        const existingPathwayIndex = currentPathways.findIndex(element => this.pathwaysAreEqual(pathway, element) );
 
         if (existingPathwayIndex !== -1) {
             // Update the existing pathway
@@ -289,23 +291,15 @@ export class FirebaseService {
     }
 
     async deletePathway(paramPathway: Pathway, userId: string) {
-        const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
         const pathwayData = await this.getPathways(userId);
 
         if (pathwayData.pathways.length === 0) {
             throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
         }
-        var currentPathways: Pathway[] = pathwayData.pathways || [];
-        const existingPathwayIndex = currentPathways.findIndex(element =>
-            _.isEqual(paramPathway.start, element.start) &&
-            _.isEqual(paramPathway.end, element.end) &&
-            paramPathway.type === element.type &&
-            paramPathway.vehicle === element.vehicle
-        );
-        if (existingPathwayIndex !== -1) {
-            currentPathways = currentPathways.splice(existingPathwayIndex, 1);
-        } else {
+        let currentPathways: Pathway[] = pathwayData.pathways;
+        currentPathways = currentPathways.filter(element => !this.pathwaysAreEqual(paramPathway, element));
+        if (currentPathways.length === pathwayData.pathways.length) {
             throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
         }
 
@@ -327,6 +321,15 @@ export class FirebaseService {
             throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
         }
         return docSnap.data();
+    }
+
+    async updatePathways(newPathways: Pathway[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'pathways');
+        const docSnap = await getDoc(docRef);
+        if( docSnap.exists() )
+           await updateDoc(docRef, { pathways: newPathways });
+        else
+            await setDoc(docRef, { pathways: newPathways }, { merge: true });
     }
 
     async storeFuelPrice(fuel: Combustible, fuelPrice: number) {

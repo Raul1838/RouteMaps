@@ -3,7 +3,6 @@ import {PathwayTypes} from "../enums/PathwayTypes.ts";
 import {PathwayTransportMeans} from "../enums/PathwayTransportMeans.ts";
 
 export interface Pathway {
-    id?: number,
     type: PathwayTypes;
     start: Coords;
     end: Coords;
@@ -12,5 +11,6 @@ export interface Pathway {
     distance: number,
     favourite: boolean,
     transportMean: PathwayTransportMeans,
-    vehicle?: string
+    vehiclePlate?: string,
+    cost: number,
 }
