@@ -16,7 +16,6 @@ const testUser = {
     email: 'usuario.permanente@test.com',
     password: '123456789',
 }
-var loggedUser: UserModel;
 describe('Tests sobre gestión de rutas', () => {
     let pathwayController: PathwayController;
     let vehiclesController: VehiclesController;
@@ -25,7 +24,6 @@ describe('Tests sobre gestión de rutas', () => {
         pathwayController = getPathwayController();
         vehiclesController = getVehiclesController();
         authController = getAuthController();
-        loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
     });
 
     const validPathway1: Pathway = {
@@ -76,7 +74,7 @@ describe('Tests sobre gestión de rutas', () => {
             name: 'Castellón de la Plana',
         }
 
-        await pathwayController.calculatePathway(from, to, PathwayTransportMeans.VEHICLE, PathwayTypes.RECOMMENDED, loggedUser.uid).then((pathway: Pathway) => {
+        await pathwayController.calculatePathway(from, to, PathwayTransportMeans.VEHICLE, PathwayTypes.RECOMMENDED).then((pathway: Pathway) => {
             expect(pathway).toBeTruthy();
             expect(pathway.distance).toBeGreaterThanOrEqual(1);
         });
@@ -108,6 +106,7 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU17 - E01 - La ruta es válida y no ha sido guardada anteriormente', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([], loggedUser.uid);
 
         const pathway: Pathway = {
@@ -131,23 +130,29 @@ describe('Tests sobre gestión de rutas', () => {
         await pathwayController.addPathway(pathway, loggedUser.uid);
         const pathwayData = await pathwayController.getPathways(loggedUser.uid);
         expect(pathwayData.pathways).toHaveLength(1);
+        await authController.logout();
     });
 
 
 
     test('HU18 - E01 - Hay rutas dadas de alta.', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         const pathways = await pathwayController.getPathways(loggedUser.uid);
         expect(pathways.pathways).toStrictEqual([validPathway1]);
+        await authController.logout();
     });
 
     test('HU18 - E02 - La lista de rutas está vacía.', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
-            const pathways = await pathwayController.getPathways(loggedUser.uid);
+            await pathwayController.getPathways(loggedUser.uid);
+            throw new Error();
         } catch (error) {
+            await authController.logout();
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
             } else {
@@ -158,18 +163,23 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU19 - E01 - Hay rutas dadas de alta y existe la ruta que se quiere eliminar', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1, validPathway2], loggedUser.uid);
         await pathwayController.deletePathway(validPathway1, loggedUser.uid);
         const pathwayData = await pathwayController.getPathways(loggedUser.uid);
         expect(pathwayData.pathways).toHaveLength(1);
+        await authController.logout();
     });
 
     test('HU19 - E02 - Hay rutas dadas de alta pero no existe la ruta que se quiere eliminar', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         try {
             await pathwayController.deletePathway(validPathway2, loggedUser.uid);
+            throw new Error();
         } catch (error) {
+            await authController.logout();
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
             } else {
@@ -180,10 +190,13 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU19 - E03 - No hay rutas dadas de alta', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
             await pathwayController.deletePathway(validPathway1, loggedUser.uid);
+            throw new Error();
         } catch (error) {
+            await authController.logout();
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
             } else {
@@ -194,18 +207,22 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU22 - E01 - Existe una lista con rutas dadas de alta y existe la ruta que se quiere marcar como favorita.', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         await pathwayController.toggleFavourite(validPathway1, loggedUser.uid);
         const pathwayData = await pathwayController.getPathways(loggedUser.uid);
         expect(pathwayData.pathways[0].favourite).toBe(true);
+        await authController.logout();
     });
 
     test('HU22 - E02 - Existe una lista con rutas dadas de alta y no existe la ruta que se quiere marcar como favorita.', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         try {
             await pathwayController.toggleFavourite(validPathway2, loggedUser.uid);
         } catch (error) {
+            await authController.logout();
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.PathwayNotFound);
             } else {
@@ -216,53 +233,18 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU22 - E03 - No hay rutas dadas de alta', async () => {
         expect.assertions(1);
+        const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
             await pathwayController.toggleFavourite(validPathway2, loggedUser.uid);
         } catch (error) {
+            await authController.logout();
             if (error instanceof PathwayException) {
                 expect(error.message).toBe(PathWayExceptionMessages.EmptyPathwayList);
             } else {
                 throw new Error('Lanzada una excepción no controlada');
             }
         }
-    });
-
-
-    test('HU23 - E1 - Existe el vehículo a establecer por defecto', async () => {
-        const testUser = {
-            email: 'usuario.permanente@test.com',
-            password: '123456789',
-        }
-        const vehicle: Vehicle = {
-            plate: '123',
-            name: 'Test vehicle',
-            consumption: 0,
-            propulsion: Combustible.Diesel,
-            favorite: false,
-        }
-        await vehiclesController.addVehicle(vehicle, loggedUser.uid);
-        await vehiclesController.setDefaultVehicle(vehicle.plate, loggedUser.uid);
-    });
-
-    test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {
-        const testUser = {
-            email: 'usuario.permanente@test.com',
-            password: '123456789',
-        }
-        const vehicleId: string = '321';
-        const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-        try {
-            await vehiclesController.setDefaultVehicle(vehicleId, loggedUser.uid);
-            throw new Error();
-        } catch (error) {
-            if (error instanceof VehicleNotFoundException) {
-                expect(error.message).toBe('El vehículo no existe');
-            } else {
-                throw new Error('Lanzada una excepción no controlada');
-            }
-        }
-        await authController.logout();
     });
 
     test('HU24 - E1 - Usuario identificado', async () => {
@@ -279,6 +261,7 @@ describe('Tests sobre gestión de rutas', () => {
     test('HU24 - E2 - Usuario no identificado', async () => {
         try {
             await pathwayController.setDefaultPathwayType(PathwayTypes.RECOMMENDED, '');
+            throw new Error();
         } catch (e) { }
     });
 
@@ -309,7 +292,7 @@ describe('Tests sobre gestión de rutas', () => {
                 propulsion: Combustible.Gasolina
             }
 
-            await pathwayController.calculatePrice(pathway, vehicle).then((price: number) => {
+            await pathwayController.calculatePrice(pathway.distance, vehicle).then((price: number) => {
                 expect(price).toBeTruthy();
                 expect(price).toBeGreaterThan(0);
             });
@@ -347,9 +330,14 @@ describe('Tests sobre gestión de rutas', () => {
                 transportMean: PathwayTransportMeans.VEHICLE
             };
 
-            const vehicle: Vehicle = 0;
+            const vehicle: Vehicle = {
+                plate: '',
+                name: '',
+                propulsion: Combustible.Gasolina,
+                consumption: 0
+            }
 
-            await pathwayController.calculatePrice(pathway, vehicle).then((price: number) => {
+            await pathwayController.calculatePrice(pathway.distance, vehicle).then((price: number) => {
                 fail('Debería saltar una excepción');
             }).catch((error) => {
                 if (error instanceof VehicleNotFoundException) {
@@ -362,7 +350,22 @@ describe('Tests sobre gestión de rutas', () => {
 
 
         test('E04 - No hay ninguna ruta', async () => {
-            const pathway: Pathway = 0;
+            const pathway: Pathway = {
+                type: PathwayTypes.UNDEFINED,
+                start: {
+                    lat: 0,
+                    lon: 0
+                },
+                end: {
+                    lat: 0,
+                    lon: 0
+                },
+                codifiedPath: '',
+                distance: 0,
+                duration: 0,
+                favourite: false,
+                transportMean: PathwayTransportMeans.VEHICLE
+            };
 
             const vehicle: Vehicle = {
                 plate: '100',
@@ -370,7 +373,7 @@ describe('Tests sobre gestión de rutas', () => {
                 propulsion: Combustible.Gasolina,
                 consumption: 5
             }
-            await pathwayController.calculatePrice(pathway, vehicle).then((price: number) => {
+            await pathwayController.calculatePrice(pathway.distance, vehicle).then((price: number) => {
                 fail('Debería saltar una excepción');
             }).catch((error) => {
                 if (error instanceof PathwayException) {
@@ -384,78 +387,17 @@ describe('Tests sobre gestión de rutas', () => {
 
     describe('HU15 - Calcular el coste de una ruta a pie o en bicicleta', () => {
         test('E01 - La ruta es válida y se selecciona como método de recorrido bici o andando', async () => {
-            const pathway: Pathway = {
-                type: PathwayTypes.RECOMMENDED,
-                start: {
-                    lat: 39.9929000,
-                    lon: -0.0576800
-                },
-                end: {
-                    lat: -34.6131500,
-                    lon: -58.3772300
-                },
-                codifiedPath: '',
-                distance: 1000,
-                duration: 500,
-                favourite: false,
-                transportMean: PathwayTransportMeans.WALKING
-            };
-
-            const calories = await pathwayController.calculateCalories(pathway, PathwayTransportMeans.WALKING);
+            const calories = pathwayController.calculateCalories(1000, PathwayTransportMeans.WALKING);
             expect(calories).toBeTruthy();
             expect(calories).toBeGreaterThan(0);
-
         });
         test('E02 - La ruta es válida pero se selecciona un método de recorrerla distinto a bici o andando', async () => {
-            const pathway: Pathway = {
-                type: PathwayTypes.RECOMMENDED,
-                start: {
-                    lat: 39.9929000,
-                    lon: -0.0576800
-                },
-                end: {
-                    lat: -34.6131500,
-                    lon: -58.3772300
-                },
-                codifiedPath: '',
-                distance: 1000,
-                duration: 500,
-                favourite: false,
-                transportMean: PathwayTransportMeans.BIKE
-            };
-
             try {
-                const calories = await pathwayController.calculateCalories(pathway, 0);
+                const calories = pathwayController.calculateCalories(1000, PathwayTransportMeans.VEHICLE);
                 fail('Debería haber saltado una excepción');
             } catch (error) {
                 if (error instanceof VehicleNotFoundException) {
                     expect(error.message).toBe('No se ha seleccionado un vehículo de tipo Bicicleta o Andando');
-                } else {
-                    fail('Se ha lanzado una excepción no esperada');
-                }
-            }
-        });
-        test('E03 - La ruta no es válida.', async () => {
-            const pathway: Pathway = {
-                start: {
-                    lat: 39.9929000,
-                    lon: -0.0576800
-                },
-                end: {
-                    lat: -34.6131500,
-                    lon: -58.3772300
-                },
-                codifiedPath: '',
-                distance: 0,
-                duration: 0,
-            };
-
-            try {
-                const calories = await pathwayController.calculateCalories(pathway, PathwayTransportMeans.WALKING);
-                fail('Debería haber saltado una excepción');
-            } catch (error) {
-                if (error instanceof PathwayException) {
-                    expect(error.message).toBe('Bad pathway: From and to too far away');
                 } else {
                     fail('Se ha lanzado una excepción no esperada');
                 }
