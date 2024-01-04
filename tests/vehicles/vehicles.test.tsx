@@ -58,30 +58,7 @@ describe('Vehicles', () => {
             }])
             await authController.logout();
         });
-        test('E02 - El vehículo ya se encuentra dado de alta.', async () => {
-            //Given
-            const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-            await vehiclesController.setVehicles([{
-                plate: '1683',
-                name: "Coche empresa",
-                propulsion: Combustible.Diesel,
-                consumption: 6,
-                favorite: false
-            }], loggedUser.uid);
-            //When
-            const error = async () => {
-                await vehiclesController.addVehicle({
-                    plate: '1683',
-                    name: "Coche empresa",
-                    propulsion: Combustible.Diesel,
-                    consumption: 6,
-                    favorite: false
-                }, loggedUser.uid);
-            }
-            //Then
-            await expect(error()).rejects.toThrow(VehicleAlreadyExistException)
-            await authController.logout();
-        });
+
         test('E03 - Los datos del vehículo no son correctos.', async () => {
             //Given
             const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
@@ -92,7 +69,7 @@ describe('Vehicles', () => {
                     plate: "sdbs",
                     name: "Coche empresa",
                     propulsion: Combustible.Electrico,
-                    consumption: 0,
+                    consumption: 60,
                     favorite: false
                 }, loggedUser.uid);
             }

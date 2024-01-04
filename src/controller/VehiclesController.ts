@@ -3,6 +3,7 @@ import VehiclesInterface from "../interfaces/VehiclesInterface";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
 import {FirebaseService} from "../services/FirebaseService.ts";
+import InvalidVehicleException from "../exceptions/InvalidVehicleException.ts";
 
 
 export default class VehiclesController implements VehiclesInterface {
@@ -34,6 +35,9 @@ export default class VehiclesController implements VehiclesInterface {
 
 
     async addVehicle(paramVehicle: Vehicle, userId: string): Promise<boolean> {
+        if (paramVehicle.plate.length > 9 || paramVehicle.consumption > 50 || paramVehicle.name.length > 30) {
+            throw new InvalidVehicleException();
+        }
         try {
             await this.firebaseService.storeVehicle(paramVehicle, userId!);
             return true;
