@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react';
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Combustible from '../../enums/Combustible';
 import { FormState } from '../../hooks/useForm';
 import { Link, useNavigate } from "react-router-dom";
@@ -9,9 +8,6 @@ import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import VehiclesController, { getVehiclesController } from '../../controller/VehiclesController.ts';
 
 
-interface AddVehicleComponentProps {
-    vehiclesViewModel: VehiclesViewModel;
-}
 
 const AddVehicleComponent = () => {
     const { user }: AuthContextInterface = useContext(AuthContext);
@@ -63,7 +59,6 @@ const AddVehicleComponent = () => {
             };
     
             const result = await vehiclesController.addVehicle(vehicleData, user.uid);
-            console.log(result);
             if (result) {
                 setResultado('Vehículo añadido con éxito');
                 setOperationStatus(true);

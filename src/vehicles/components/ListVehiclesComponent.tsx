@@ -42,6 +42,7 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
     }
 
     const toggleFavorite = (vehicle: Vehicle) => {
+        vehiclesController.toggleFavourite(vehicle.plate, user.uid);
         vehicle.favorite = !vehicle.favorite;
         setVehicles([...vehicles]);
     };

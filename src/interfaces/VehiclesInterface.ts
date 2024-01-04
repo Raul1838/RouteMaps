@@ -6,6 +6,6 @@ export default interface VehiclesInterface {
     deleteVehicle(vehicle: Vehicle, userId?: string): Promise<void>;
     setVehicles(vehicles: Vehicle[], userId: string): Promise<void>;
     modifyVehicle(paramVehicle: Vehicle, userId?: string): Promise<boolean>;
-    toggleFavourite({ plate }: { plate: string }, userId?: string): Promise<boolean>;
+    toggleFavourite(plate: string , userId?: string): Promise<boolean>;
     setVehicle(vehicle: Vehicle, userId: string): Promise<Vehicle[]>;
 }

@@ -16,7 +16,7 @@ export default class VehiclesController implements VehiclesInterface {
         // });
     }
 
-    async toggleFavourite({ plate }: { plate: string }, userId: string): Promise<boolean> {
+    async toggleFavourite(plate: string , userId: string): Promise<boolean> {
         const data: any = await this.firebaseService.getVehicles(userId);
         const vehiclesLength: number = data.vehicles.length;
         if (vehiclesLength === 0) {
@@ -62,7 +62,7 @@ export default class VehiclesController implements VehiclesInterface {
 
 
     async deleteVehicle(vehicle: Vehicle, userId: string): Promise<void> {
-        await this.firebaseService.deleteVehicle(vehicle, userId!)
+        await this.firebaseService.deleteVehicle(vehicle, userId)
     }
 
     async modifyVehicle(paramVehicle: Vehicle, userId: string): Promise<boolean> {
