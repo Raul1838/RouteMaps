@@ -63,6 +63,7 @@ export const PathwayDetails = () => {
             console.log('Fallo al calcular el coste de la ruta');
             setPathwayCost(0);
         }
+        navigationContext.setCost(pathwayCost);
     }
 
     const handleTransportChange = (transportMean: PathwayTransportMeans) => {
