@@ -250,9 +250,8 @@ export class FirebaseService {
 
 
     async storePathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
-        const _ = require('lodash');
         const docRef = doc(FirebaseDB, userId, 'pathways');
-        var pathwayData;
+        let pathwayData;
         try {
             pathwayData = await this.getPathways(userId);
         } catch (error) {
@@ -264,10 +263,10 @@ export class FirebaseService {
         }
         const currentPathways: Pathway[] = pathwayData!.pathways || [];
         const existingPathwayIndex = currentPathways.findIndex(element =>
-            _.isEqual(pathway.start, element.start) &&
-            _.isEqual(pathway.end, element.end) &&
+            pathway.start === element.start &&
+            pathway.end === element.end &&
             pathway.type === element.type &&
-            pathway.vehicle === element.vehicle
+            pathway.vehiclePlate === element.vehiclePlate
         );
 
         if (existingPathwayIndex !== -1) {
@@ -296,7 +295,7 @@ export class FirebaseService {
             _.isEqual(paramPathway.start, element.start) &&
             _.isEqual(paramPathway.end, element.end) &&
             paramPathway.type === element.type &&
-            paramPathway.vehicle === element.vehicle
+            paramPathway.vehiclePlate === element.vehiclePlate
         );
         if (existingPathwayIndex !== -1) {
             currentPathways = currentPathways.splice(existingPathwayIndex, 1);

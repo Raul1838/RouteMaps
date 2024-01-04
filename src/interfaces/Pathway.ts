@@ -12,5 +12,6 @@ export interface Pathway {
     distance: number,
     favourite: boolean,
     transportMean: PathwayTransportMeans,
-    vehicle?: string
+    vehiclePlate: string,
+    cost: number,
 }

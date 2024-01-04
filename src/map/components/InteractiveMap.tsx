@@ -36,6 +36,7 @@ export const InteractiveMap = () => {
             const pathway = await pathwayController.calculatePathway(from, to, pathwayTransportMean, pathwayType);
             navigationContext.setDistance(pathway.distance);
             navigationContext.setDuration(pathway.duration);
+            navigationContext.setCodifiedPath(pathway.codifiedPath);
 
             const decodedPath: [number, number][] = polyline.decode(pathway.codifiedPath).map(coordinate => [coordinate[1], coordinate[0]]);
 
