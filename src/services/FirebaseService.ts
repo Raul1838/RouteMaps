@@ -214,7 +214,7 @@ export class FirebaseService {
         return docSnap.data();
     }
 
-    async setVehicles(newVehicles: Vehicle[], userId: string) {
+    async updateVehicles(newVehicles: Vehicle[], userId: string) {
         const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -232,6 +232,11 @@ export class FirebaseService {
         } else {
             await setDoc(docRef, { vehicles: newVehicles }, { merge: true });
         }
+    }
+
+    async setVehicles(newVehicles: Vehicle[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
+        await setDoc(docRef, { vehicles: newVehicles }, { merge: true });
     }
 
     async deleteVehicle(vehicle: Vehicle, userId: string) {
