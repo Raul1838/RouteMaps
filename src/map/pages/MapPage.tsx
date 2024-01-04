@@ -9,12 +9,7 @@ import {NavigationContext, NavigationContextInterface} from "../../context/Navig
 import {PlacesList} from "../../places/components/PlacesList.tsx";
 import Card from 'react-bootstrap/Card';
 import {ListVehiclesComponent} from "../../vehicles/components/ListVehiclesComponent.tsx";
-import VehiclesController from "../../controller/VehiclesController.ts";
-import {FirebaseService} from "../../services/FirebaseService.ts";
-import VehiclesViewModel from "../../vehicles/viewModel/VehiclesViewModel.ts";
 
-const vehiclesController = new VehiclesController(new FirebaseService);
-const vehiclesViewModel = new VehiclesViewModel(vehiclesController);
 
 export const MapPage = () => {
 
@@ -43,7 +38,7 @@ export const MapPage = () => {
                         <Buscador />
                         <Card style={{ width: 'calc(100% - 350px)', position: 'fixed', top: '55px', left: '350px', height: 'calc(100% - 60px)' }}>
                             <Card.Body>
-                                <ListVehiclesComponent vehiclesViewModel={ vehiclesViewModel } />
+                                <ListVehiclesComponent showCrudOptions={ false } />
                             </Card.Body>
                         </Card>
                     </div>

@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
-import VehiclesViewModel from '../viewModel/VehiclesViewModel';
+import React, {useContext, useEffect, useState} from 'react';
 import Vehicle from '../../interfaces/Vehicle';
-import EmptyVehiclesException from '../../exceptions/EmptyVehiclesException';
-import { MainLayout } from "../../layouts/MainLayout.tsx";
-import { Link, useNavigate } from "react-router-dom";
-import { Table, Button, Form } from "react-bootstrap";
+import {useNavigate} from "react-router-dom";
+import {Button, Form, Table} from "react-bootstrap";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+import VehiclesController, {getVehiclesController} from '../../controller/VehiclesController.ts';
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
-import VehiclesController, { getVehiclesController } from '../../controller/VehiclesController.ts';
-
 
 
 interface VehiclesListProps {
@@ -18,12 +14,12 @@ interface VehiclesListProps {
 export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOptions = true }) => {
 
     const navigate = useNavigate();
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const { user }: AuthContextInterface = useContext(AuthContext);
-    const [error, setError] = useState<string>("");
+    const { setShowVehicles, setVehicle }: NavigationContextInterface = useContext(NavigationContext);
 
     const vehiclesController: VehiclesController = getVehiclesController();
 
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [filterFavorites, setFilterFavorites] = useState(false);
 
 
@@ -47,8 +43,13 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
         setVehicles([...vehicles]);
     };
 
-    const goToDetails = (vehiclePlate: string) => {
-        navigate(`/vehicles/modifyVehicle/${vehiclePlate}`);
+    const goToDetails = (selectedVehicle: Vehicle) => {
+        if( !showCrudOptions ) {
+            setVehicle(selectedVehicle);
+            setShowVehicles(false);
+            return;
+        }
+        navigate(`/vehicles/modifyVehicle/${selectedVehicle.plate}`);
     };
 
     const deleteVehicle = (vehicle: Vehicle) => {
@@ -93,7 +94,7 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                                 vehicles
                                     .filter(vehicle => !filterFavorites || vehicle.favorite)
                                     .map((vehicle, index) => (
-                                        <tr key={index} onClick={() => goToDetails(vehicle.plate)}>
+                                        <tr key={index} onClick={() => goToDetails(vehicle)}>
                                             <td>{vehicle.plate}</td>
                                             <td className="text-center">
                                                 <Button disabled={ !showCrudOptions } variant={vehicle.favorite ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(vehicle);}}>
