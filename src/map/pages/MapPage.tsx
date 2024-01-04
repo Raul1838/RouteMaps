@@ -1,9 +1,6 @@
-import {DetailsPage} from "../../auth/pages/DetailsPage.tsx";
-import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {useContext} from "react";
 import {Buscador} from "../components/Buscador.tsx";
 import {InteractiveMap} from "../components/InteractiveMap.tsx";
-import {PreferencesPage} from "../../auth/pages/PreferencesPage.tsx";
 import {MainLayout} from "../../layouts/MainLayout.tsx";
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 import {PlacesList} from "../../places/components/PlacesList.tsx";
@@ -13,7 +10,6 @@ import {ListVehiclesComponent} from "../../vehicles/components/ListVehiclesCompo
 
 export const MapPage = () => {
 
-    const {wantDetails, wantPreferences}: AuthContextInterface = useContext(AuthContext);
     const { showSavedPlaces, showVehicles }: NavigationContextInterface = useContext(NavigationContext);
 
     return (
@@ -42,12 +38,6 @@ export const MapPage = () => {
                             </Card.Body>
                         </Card>
                     </div>
-                }
-                {
-                    wantDetails && <DetailsPage />
-                }
-                {
-                    wantPreferences && <PreferencesPage />
                 }
             </MainLayout>
         </>
