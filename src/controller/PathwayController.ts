@@ -38,7 +38,7 @@ export default class PathwayController {
         } catch (error) {
             throw error;
         }
-    }
+    } 
 
 
     async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
