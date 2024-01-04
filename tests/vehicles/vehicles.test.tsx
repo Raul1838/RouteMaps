@@ -102,7 +102,7 @@ describe('Vehicles', () => {
             await vehiclesController.setVehicles([], loggedUser.uid);
             //When
             const error = async () => {
-                await vehiclesController.deleteVehicle(vehicle, loggedUser.uid);
+                await vehiclesController.getVehicle(vehicle.plate, loggedUser.uid);
             }
             //Then
             await expect(error()).rejects.toThrow(EmptyVehiclesException);
@@ -121,7 +121,7 @@ describe('Vehicles', () => {
             expect(await vehiclesController.getVehicles(loggedUser.uid)).toHaveLength(0);
             await authController.logout();
         });
-        test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', async () => {
+        test('E02 - No existe el vehículo que se quiere eliminar.', async () => {
             //Given
             const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
             await vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}], loggedUser.uid);
@@ -131,18 +131,6 @@ describe('Vehicles', () => {
             }
             //Then
             await expect(error()).rejects.toThrow(VehicleNotFoundException);
-            await authController.logout();
-        });
-        test('E03 - No hay vehículos dados de alta.', async () => {
-            //Given
-            const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-            await vehiclesController.setVehicles([], loggedUser.uid);
-            //When
-            const error = async () => {
-                await vehiclesController.deleteVehicle({ plate: '1111', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}, loggedUser.uid);
-            }
-            //Then
-            await expect(error()).rejects.toThrow(EmptyVehiclesException);
             await authController.logout();
         });
 
@@ -158,31 +146,16 @@ describe('Vehicles', () => {
             expect(await vehiclesController.getVehicles(loggedUser.uid)).toStrictEqual([{ plate: '1683', name: 'Coche familiar', propulsion: Combustible.Diesel, consumption: 5, favorite: false }]); 
             await authController.logout();
         });
-        test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.', async () => {
+        test('E02 - No existe el vehículo que se quiere modificar.', async () => {
             //Given
             const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
             await vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 }], loggedUser.uid);
             //When
-            const error = async () => {
-                await vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 }, loggedUser.uid);
-            }
+            await vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 }, loggedUser.uid);
             //Then
-            await expect(error()).rejects.toThrow(VehicleNotFoundException);
+            expect(await vehiclesController.getVehicles(loggedUser.uid)).toStrictEqual([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 },{ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 }]); 
             await authController.logout();
         });
-        test('E03 - No hay vehículos dados de alta.', async () => {
-            //Given
-            const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-            await vehiclesController.setVehicles([], loggedUser.uid);
-            //When
-            const error = async () => {
-                await vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 }, loggedUser.uid);
-            }
-            //Then
-            await expect(error()).rejects.toThrow(EmptyVehiclesException);
-            await authController.logout();
-        });
-
     });
     describe('Vehicles', () => {
         describe('HU21 - Marcar como favorito vehículos', () => {
