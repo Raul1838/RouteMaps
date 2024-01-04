@@ -67,7 +67,7 @@ export default class VehiclesController implements VehiclesInterface {
 
     async modifyVehicle(paramVehicle: Vehicle, userId: string): Promise<boolean> {
         try {
-            await this.firebaseService.storeVehicle(paramVehicle, userId!);
+            await this.firebaseService.storeVehicle(paramVehicle, userId);
             return true;
         } catch (error) {
             throw error;

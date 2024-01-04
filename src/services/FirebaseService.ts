@@ -165,35 +165,33 @@ export class FirebaseService {
         const docRef = doc(FirebaseDB, userId, 'vehicles');
         const vehicleData = await this.getVehicles(userId);
         const currentVehicles: Vehicle[] = vehicleData.vehicles || [];
-        const currentVehiclesIndex = currentVehicles.findIndex(element =>
-            vehicle.plate === element.plate &&
-            vehicle.name === element.name &&
-            vehicle.propulsion === element.propulsion &&
-            vehicle.consumption === element.consumption
-        );
-
-        if (currentVehiclesIndex !== -1) {
-            // Update the existing pathway
-            currentVehicles[currentVehiclesIndex] = vehicle;
+        const currentVehicleIndex = currentVehicles.findIndex(v => v.plate === vehicle.plate);
+    
+        if (currentVehicleIndex !== -1) {
+            currentVehicles[currentVehicleIndex] = vehicle;
         } else {
-            // Add the new pathway if not a duplicate
             currentVehicles.push(vehicle);
         }
-
-        // Save the updated pathways to Firestore
+    
         await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
         return currentVehicles;
     }
+    
 
     async getVehicle(userId: string, plate: string): Promise<Vehicle> {
         const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
         const docSnap = await getDoc(docRef);
     
         if (!docSnap.exists()) {
-            throw new Error('No such document!');
+            throw new Error('No vehicles document found for the user!');
         }
     
-        const vehicles: Vehicle[] = docSnap.data().vehicles || [];
+        const vehicleData = docSnap.data();
+        if (!vehicleData || !Array.isArray(vehicleData.vehicles)) {
+            throw new Error('Invalid vehicle data!');
+        }
+    
+        const vehicles: Vehicle[] = vehicleData.vehicles;
         const foundVehicle = vehicles.find(vehicle => vehicle.plate === plate);
     
         if (!foundVehicle) {
@@ -202,6 +200,7 @@ export class FirebaseService {
     
         return foundVehicle;
     }
+    
     
 
     async getVehicles(userId: string) {
@@ -239,18 +238,17 @@ export class FirebaseService {
     async deleteVehicle(vehicle: Vehicle, userId: string) {
         const docRef = doc(FirebaseDB, userId, 'vehicles');
         const vehicleData = await this.getVehicles(userId);
-        var currentVehicles: Vehicle[] = vehicleData.vehicles || [];
-        const existingVehicleIndex = currentVehicles.findIndex(element =>
-            element.plate === vehicle.plate
-        );
-
+        let currentVehicles: Vehicle[] = vehicleData.vehicles || [];
+        const existingVehicleIndex = currentVehicles.findIndex(element => element.plate === vehicle.plate);
+    
         if (existingVehicleIndex !== -1) {
-            currentVehicles = currentVehicles.splice(existingVehicleIndex, 1);
+            currentVehicles.splice(existingVehicleIndex, 1);
+            await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
+        } else {
+            throw new Error('Vehicle not found!');
         }
-
-        await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
-
     }
+    
 
     async storePathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
         const _ = require('lodash');
