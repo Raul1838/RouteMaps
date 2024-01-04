@@ -18,6 +18,7 @@ export const SideBar = () => {
             <NavLink to="/" className={`nav-link ${location.pathname === "/" ? "active" : ""}`} style={{ padding: '20px', textAlign: 'center', color: location.pathname === "/" ? "#0000FF" : "#000000" }}><i className="fas fa-route"></i></NavLink>
             <NavLink to="/places" className={`nav-link ${location.pathname.startsWith("/places") ? "active" : ""}`} style={{ padding: '20px', textAlign: 'center', color: location.pathname.startsWith("/places") ? "#ffa600" : "#000000" }}><i className="fas fa-map-marker-alt"></i></NavLink>
             <NavLink to="/vehicles" className={`nav-link ${location.pathname.startsWith("/vehicles") ? "active" : ""}`} style={{ padding: '20px', textAlign: 'center', color: location.pathname.startsWith("/vehicles") ? "#ff0090" : "#000000" }}><i className="fas fa-car-side"></i></NavLink>
+            <NavLink to="/pathways" className={`nav-link ${location.pathname.startsWith("/pathways") ? "active" : ""}`} style={{ padding: '20px', textAlign: 'center', color: location.pathname.startsWith("/pathways") ? "#ff0090" : "#000000" }}><i className="fas fa-map"></i></NavLink>
         </div>
     );
 };

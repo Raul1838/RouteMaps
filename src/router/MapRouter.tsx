@@ -3,6 +3,7 @@ import { PreferencesPage } from "../auth/pages/PreferencesPage.tsx";
 import { MapPage } from "../map/pages/MapPage.tsx";
 import { PlacesRouter } from "../places/router/PlacesRouter.tsx";
 import { VehiclesRouter } from "../vehicles/router/VehiclesRouter.tsx";
+import { PathwayRouter } from "../pathways/router/PathwayRouter.tsx";
 
 export const MapRouter = () => {
     return (
@@ -11,6 +12,7 @@ export const MapRouter = () => {
             <Route path='/' element={<MapPage />} />
             <Route path='/places/*' element={<PlacesRouter />} />
             <Route path='/vehicles/*' element={<VehiclesRouter />} />
+            <Route path='/pathways/*' element={<PathwayRouter />} />
             <Route path='/*' element={<Navigate to={'/'} />} />
         </Routes>
     )
