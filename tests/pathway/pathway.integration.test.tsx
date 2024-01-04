@@ -1,24 +1,18 @@
-import { Coords } from "../../src/interfaces/Coords";
-import PathwayController, { getPathwayController } from "../../src/controller/PathwayController";
-import { PathwayException, PathWayExceptionMessages } from "../../src/exceptions/PathwayException";
-import { Pathway } from "../../src/interfaces/Pathway";
-import VehiclesController, { getVehiclesController } from "../../src/controller/VehiclesController";
+import {Coords} from "../../src/interfaces/Coords";
+import PathwayController, {getPathwayController} from "../../src/controller/PathwayController";
+import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/PathwayException";
+import {Pathway} from "../../src/interfaces/Pathway";
+import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
-import { AuthController, getAuthController } from "../../src/controller/AuthController";
-import { UserModel } from "../../src/interfaces/UserModel";
-import { PathwayTypes } from "../../src/enums/PathwayTypes";
-import { PathwayTransportMeans } from "../../src/enums/PathwayTransportMeans";
-import { fail } from "assert";
-import { FirebaseService } from "../../src/services/FirebaseService";
-import { OpenRouteService } from "../../src/services/OpenRouteService";
-import { PriceService } from "../../src/services/PriceService";
-
-const testUser = {
-    email: 'usuario.permanente@test.com',
-    password: '123456789',
-}
+import {AuthController, getAuthController} from "../../src/controller/AuthController";
+import {PathwayTypes} from "../../src/enums/PathwayTypes";
+import {PathwayTransportMeans} from "../../src/enums/PathwayTransportMeans";
+import {fail} from "assert";
+import {FirebaseService} from "../../src/services/FirebaseService";
+import {OpenRouteService} from "../../src/services/OpenRouteService";
+import {PriceService} from "../../src/services/PriceService";
 const loggedUser = {
     uid: '1234'
 }

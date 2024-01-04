@@ -1,175 +1,269 @@
-import VehiclesController from "../../src/controller/VehiclesController";
+import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
 import Combustible from "../../src/enums/Combustible";
-import EmptyVehiclesException from "../../src/exceptions/EmptyVehiclesException";
 import InvalidVehicleException from "../../src/exceptions/InvalidVehicleException";
-import VehicleAlreadyExistException from "../../src/exceptions/VehicleAlreadyExistException";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import Vehicle from "../../src/interfaces/Vehicle";
-
-
-var vehiclesController: VehiclesController = new VehiclesController();
+import {FirebaseService} from "../../src/services/FirebaseService";
 
 
 describe('Vehicles', () => {
+
+    let vehiclesController: VehiclesController;
+    let firebaseService: FirebaseService;
+    let dbMockVehicles: Vehicle[];
+
+    beforeAll(() => {
+        firebaseService = new FirebaseService();
+        vehiclesController = getVehiclesController(firebaseService);
+    });
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        dbMockVehicles = [{
+            plate: '1683BCD',
+            name: 'Coche empresa',
+            propulsion: Combustible.Diesel,
+            consumption: 6,
+            favorite: false
+        }];
+        jest.spyOn(firebaseService, 'getVehicles')
+            .mockImplementation(() => Promise.resolve({ vehicles: [...dbMockVehicles] }));
+    });
+
     describe('HU09 - Dar de alta un vehículo', () => {
-        test('E01 - Se añade un vehículo no registrado anteriormente con datos correctos.', () => {
-            //Given
-            vehiclesController.updateVehicles([{
-                plate: '1683',
-                name: "Coche empresa",
-                propulsion: Combustible.Diesel,
-                consumption: 6,
-                favorite: false
-            }]);
-            //When
-            vehiclesController.addVehicle({
-                plate: '1684',
-                name: "Coche personal",
-                propulsion: Combustible.Gasolina,
-                consumption: 5.5,
-                favorite: true
-            })
-            //Then
-            expect(vehiclesController.getVehicles()).toStrictEqual([{
-                plate: '1683',
-                name: "Coche empresa",
-                propulsion: Combustible.Diesel,
-                consumption: 6,
-                favorite: false
-            },
-            {
-                plate: '1684',
-                name: "Coche personal",
-                propulsion: Combustible.Gasolina,
-                consumption: 5.5,
-                favorite: true
-            }])
-        });
-        test('E02 - El vehículo ya se encuentra dado de alta.', () => {
-            //Given
-            vehiclesController.updateVehicles([{
-                plate: '1683',
-                name: "Coche empresa",
-                propulsion: Combustible.Diesel,
-                consumption: 6,
-                favorite: false
-            }]);
-            //When
-            const error = () => {
-                vehiclesController.addVehicle({
-                    plate: '1683',
-                    name: "Coche empresa",
-                    propulsion: Combustible.Diesel,
-                    consumption: 6,
-                    favorite: false
+        test('E01 - Se añade un vehículo no registrado anteriormente con datos correctos.', async () => {
+
+            jest.spyOn(firebaseService, 'storeVehicle')
+                .mockImplementation((vehicle: Vehicle, userId: string): Promise<Vehicle[]> => {
+                    dbMockVehicles.push(vehicle);
+                    return Promise.resolve(dbMockVehicles);
                 });
-            }
-            //Then
-            expect(error).toThrow(VehicleAlreadyExistException)
-        });
-        test('E03 - Los datos del vehículo no son correctos.', () => {
+
             //Given
-            vehiclesController.updateVehicles([{
-                plate: '1683',
-                name: "Coche empresa",
-                propulsion: Combustible.Diesel,
-                consumption: 6,
-                favorite: false
-            }])
+            const initialVehicles = await vehiclesController.getVehicles('userId');
+
             //When
-            const error = () => {
-                vehiclesController.addVehicle({
-                    plate: "sdbs",
-                    name: "Coche empresa",
-                    propulsion: Combustible.Caballo,
-                    consumption: null,
-                    favorite: null
-                })
-            }
+            await vehiclesController.addVehicle({
+                plate: '1684XFG',
+                name: "Coche personal",
+                propulsion: Combustible.Gasolina,
+                consumption: 5.5,
+                favorite: true
+            }, 'userId')
+
             //Then
-            expect(error).toThrow(InvalidVehicleException);
+            const updatedVehicles = await vehiclesController.getVehicles('userId');
+            expect(updatedVehicles).toStrictEqual([...initialVehicles, {
+                plate: '1684XFG',
+                name: "Coche personal",
+                propulsion: Combustible.Gasolina,
+                consumption: 5.5,
+                favorite: true
+            }])
+        });
+        test('E03 - Los datos del vehículo no son correctos.', async () => {
+
+            jest.spyOn(firebaseService, 'storeVehicle')
+                .mockImplementation((vehicle: Vehicle, userId: string): Promise<Vehicle[]> => {
+                    dbMockVehicles.push(vehicle);
+                    return Promise.resolve(dbMockVehicles);
+                });
+
+            //Given
+            const initialVehicles = await vehiclesController.getVehicles('userId');
+
+            //When
+            try {
+                await vehiclesController.addVehicle({
+                    plate: '123',
+                    name: "Coche personal",
+                    propulsion: Combustible.Gasolina,
+                    consumption: 5.5,
+                    favorite: true
+                }, 'userId')
+            } catch (error) {
+                //Then
+                const updatedVehicles = await vehiclesController.getVehicles('userId');
+                expect(updatedVehicles).toStrictEqual(initialVehicles);
+                expect(error).toBeInstanceOf(InvalidVehicleException);
+            }
         });
     });
     describe('HU10 - Consultar lista de vehículos', () => {
-        test('E01 - Existe una lista con vehículos dados de alta.', () => {
+        test('E01 - Existe una lista con vehículos dados de alta.', async () => {
+
             //Given
-            vehiclesController.updateVehicles([{ plate: '1683', name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false }]);
+            let vehicles: Vehicle[] = [];
             //When
-            var vehicles: Vehicle[] = vehiclesController.getVehicles();
+            vehicles = await vehiclesController.getVehicles('userId');
             //Then
-            expect(vehicles).toStrictEqual([{ plate: '1683', name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false }]);
+            expect(vehicles.length).toBeGreaterThan(0);
+            expect(vehicles).toStrictEqual(dbMockVehicles);
+
         });
-        test('E02 - No contamos con una lista con vehículos dados de alta.', () => {
+        test('E02 - No contamos con una lista con vehículos dados de alta.', async () => {
             //Given
-            vehiclesController.updateVehicles([]);
+            jest.spyOn(firebaseService, 'getVehicles')
+                .mockResolvedValue({ vehicles: [] }); // Lista vacía de vehículos
+            let vehicles: Vehicle[] = [];
+
             //When
-            const error = () => {
-                vehiclesController.deleteVehicle('1000');
-            }
+            vehicles = await vehiclesController.getVehicles('userId');
+
             //Then
-            expect(error).toThrow(EmptyVehiclesException);
+            expect(vehicles.length).toBe(0);
         });
     });
     describe('HU11 - Eliminar un vehículo', () => {
-        test('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', () => {
+        test('Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', async () => {
             //Given
-            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false }])
-            //When
-            vehiclesController.deleteVehicle('1683');
-            //Then
-            expect(vehiclesController.getVehicles()).toHaveLength(0);
-        });
-        test('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', () => {
-            //Given
-            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false }]);
-            //When
-            const error = () => {
-                vehiclesController.deleteVehicle('1000');
-            }
-            //Then
-            expect(error).toThrow(VehicleNotFoundException);
-        });
-        test('E03 - No hay vehículos dados de alta.', () => {
-            //Given
-            vehiclesController.updateVehicles([]);
-            //When
-            const error = () => {
-                vehiclesController.deleteVehicle('1000');
-            }
-            //Then
-            expect(error).toThrow(EmptyVehiclesException);
-        });
+            jest.spyOn(firebaseService, 'deleteVehicle')
+                .mockImplementation((vehicle: Vehicle, userId: string): Promise<void> => {
+                    dbMockVehicles = dbMockVehicles.filter(dbVehicle => dbVehicle.plate !== vehicle.plate);
+                    return Promise.resolve();
+                });
+            let vehicles = await vehiclesController.getVehicles('userId');
+            const vehicleToDelete = vehicles[0];
 
+            //When
+            await vehiclesController.deleteVehicle(vehicleToDelete, 'userId');
+            vehicles = await vehiclesController.getVehicles('userId');
+
+            //Then
+            expect(vehicles.length).toBe(0);
+        });
+        test('Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', async () => {
+            //Given
+            jest.spyOn(firebaseService, 'deleteVehicle')
+                .mockImplementation((vehicle: Vehicle, userId: string): Promise<void> => {
+                    throw new VehicleNotFoundException();
+                });
+            const vehicles = await vehiclesController.getVehicles('userId');
+            const vehicleToDelete = vehicles[0];
+            //When
+            try {
+                await vehiclesController.deleteVehicle(vehicleToDelete, 'userId');
+            } catch (error) {
+                //Then
+                expect(error).toBeInstanceOf(VehicleNotFoundException);
+            }
+        });
     });
     describe('HU12 - Modificar datos de un vehículo', () => {
-        test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.', () => {
+        test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.', async () => {
             //Given
-            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false }]);
+            jest.spyOn(firebaseService, 'storeVehicle')
+                .mockImplementation((vehicle: Vehicle, userId: string): Promise<Vehicle[]> => {
+                    dbMockVehicles = dbMockVehicles.map(dbVehicle => {
+                        if (dbVehicle.plate === vehicle.plate) {
+                            return vehicle;
+                        }
+                        return dbVehicle;
+                    });
+                    return Promise.resolve(dbMockVehicles);
+                });
+            const initialVehicles = await vehiclesController.getVehicles('userId');
+
             //When
-            vehiclesController.modifyVehicle({ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 5 });
+            const updatedVehicles: Vehicle[] = await vehiclesController.setVehicle({
+                plate: '1683BCD',
+                name: 'Coche propio',
+                propulsion: Combustible.Diesel,
+                consumption: 5
+            }, 'userId');
+
             //Then
-            expect(vehiclesController.getVehicles()).toStrictEqual([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 5, favorite: false }]);
+            expect(updatedVehicles).toStrictEqual(initialVehicles.map(vehicle => {
+                if (vehicle.plate === '1683BCD') {
+                    return {
+                        plate: '1683BCD',
+                        name: 'Coche propio',
+                        propulsion: Combustible.Diesel,
+                        consumption: 5
+                    }
+                }
+                return vehicle;
+            }));
+            expect(updatedVehicles.length).toBe(initialVehicles.length);
         });
-        test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.', () => {
+        test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.', async () => {
             //Given
-            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 }]);
-            //When
-            const error = () => {
-                vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
+            jest.spyOn(firebaseService, 'storeVehicle')
+                .mockImplementation((vehicle: Vehicle, userId: string): Promise<Vehicle[]> => {
+                    dbMockVehicles.push(vehicle);
+                    return Promise.resolve(dbMockVehicles);
+                });
+            const initialVehicles = await vehiclesController.getVehicles('userId');
+            const vehicleToUpdate = {
+                plate: '1684XFG',
+                name: 'Coche propio',
+                propulsion: Combustible.Diesel,
+                consumption: 5
             }
+
+            //When
+            const updatedVehicles: Vehicle[] = await vehiclesController.setVehicle(vehicleToUpdate, 'userId');
+
             //Then
-            expect(error).toThrow(VehicleNotFoundException);
+            const expectedVehicles = [...initialVehicles, vehicleToUpdate];
+            expect(updatedVehicles.length).toBe(expectedVehicles.length);
+            expect(updatedVehicles).toStrictEqual(expectedVehicles);
         });
-        test('E03 - No hay vehículos dados de alta.', () => {
-            //Given
-            vehiclesController.updateVehicles([]);
-            //When
-            const error = () => {
-                vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
-            }
-            //Then
-            expect(error).toThrow(EmptyVehiclesException);
+    });
+
+    describe('HU23 - Establecer vehículo por defecto', () => {
+
+        beforeEach(() => {
+            let defaultVehiclePlate: string = '';
+            jest.spyOn(firebaseService, 'setDefaultVehicle')
+                .mockImplementation((vehiclePlate: string, userId: string): Promise<void> => {
+                    defaultVehiclePlate = vehiclePlate;
+                    return Promise.resolve();
+                });
+            jest.spyOn(firebaseService, 'getDefaultVehicle')
+                .mockImplementation((userId: string) => {
+                    return Promise.resolve({vehiclePlate: defaultVehiclePlate });
+                });
+            jest.spyOn(firebaseService, 'getVehicle')
+                .mockImplementation((vehiclePlate: string, userId: string): Promise<Vehicle> => {
+                    return Promise.resolve(dbMockVehicles.find(vehicle => vehicle.plate === vehiclePlate) || dbMockVehicles[0]);
+                });
+
         });
 
+        test('E1 - Existe el vehículo a establecer por defecto', async () => {
+            //Given
+            jest.spyOn(firebaseService, 'getVehicle')
+                .mockImplementation((vehiclePlate: string, userId: string): Promise<Vehicle> => {
+                    return Promise.resolve(dbMockVehicles.find(vehicle => vehicle.plate === vehiclePlate) || dbMockVehicles[0]);
+                });
+
+            const testUserUid: string = '123';
+            const [vehicle] = await vehiclesController.getVehicles(testUserUid);
+
+            //When
+            await vehiclesController.setDefaultVehicle(vehicle.plate, testUserUid);
+            const dbDefaultVehiclePlate: string = await vehiclesController.getDefaultVehicle(testUserUid);
+
+            //Then
+            expect(dbDefaultVehiclePlate).toBe(vehicle.plate);
+        });
+
+        test('E2 - No existe el vehículo a establecer por defecto', async () => {
+            //Given
+
+            jest.spyOn(firebaseService, 'getVehicle')
+                .mockImplementation((vehiclePlate: string, userId: string): Promise<Vehicle> => {
+                    throw new VehicleNotFoundException();
+                });
+
+            //When
+            try {
+                await vehiclesController.setDefaultVehicle('123', '123');
+            } catch (error) {
+                //Then
+                expect(error).toBeInstanceOf(VehicleNotFoundException);
+            }
+        });
     });
 });

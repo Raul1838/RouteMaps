@@ -33,9 +33,9 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
-
     async addVehicle(paramVehicle: Vehicle, userId: string): Promise<boolean> {
-        if (paramVehicle.plate.length > 9 || paramVehicle.consumption > 50 || paramVehicle.name.length > 30) {
+        const spanishPlateRegex = /^[0-9]{4}[BCDFGHJKLMNPRSTVWXYZ]{3}$/;
+        if (!spanishPlateRegex.test(paramVehicle.plate) || paramVehicle.consumption > 50 || paramVehicle.name.length > 30) {
             throw new InvalidVehicleException();
         }
         try {
@@ -58,12 +58,10 @@ export default class VehiclesController implements VehiclesInterface {
         return await this.firebaseService.storeVehicle(vehicle, userId);
     }
 
-
     async getVehicles(userId: string): Promise<Vehicle[]> {
         const data = await this.firebaseService.getVehicles(userId);
         return data?.vehicles || [];
     }
-
 
     async deleteVehicle(vehicle: Vehicle, userId: string): Promise<void> {
         await this.firebaseService.deleteVehicle(vehicle, userId)
@@ -78,12 +76,9 @@ export default class VehiclesController implements VehiclesInterface {
         }
     }
 
- 
-
     async updateVehicles(vehicles: Vehicle[], userId: string): Promise<void> {
         await this.firebaseService.updateVehicles(vehicles, userId);
     }
-
 
     async setDefaultVehicle(plate: string, userId: string): Promise<void> {
         await this.getVehicle(plate, userId).catch(() => {
