@@ -259,7 +259,6 @@ describe('Tests sobre gestión de rutas', () => {
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         await pathwayController.updatePathways([validPathway1], loggedUser.uid);
         const pathways = await pathwayController.getPathways(loggedUser.uid);
-        console.log(pathways)
         expect(pathways[0].favourite).toBe(true);
     });
 
