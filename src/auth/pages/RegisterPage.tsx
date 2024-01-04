@@ -7,6 +7,8 @@ import {useContext} from "react";
 import {FormState} from "../../hooks/useForm.ts";
 import {AuthController, getAuthController} from "../../controller/AuthController.ts";
 import {UserModel} from "../../interfaces/UserModel.ts";
+import routeMapsAuthImage from "../../assets/routeMapsAuthImage.jpeg";
+import logoRouteMapsSinFondo from "../../assets/logoRouteMapsSinFondo.png";
 
 export const RegisterPage = () => {
 
@@ -79,8 +81,17 @@ export const RegisterPage = () => {
             <div className="col-6">
                 <div className="card">
                     <div className="card-body">
-                        <h1 className="card-title" style={{ marginBottom: '20px' }} >Registrarse</h1>
-                        <hr style={{ marginBottom: '20px' }} />
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                            <h1 className="card-title">Registrarse</h1>
+                            <img
+                                src={logoRouteMapsSinFondo}
+                                width="55"
+                                height="55"
+                                alt="Logo Route Maps"
+                                style={{marginRight: '10px'}}
+                            />
+                        </div>
+                        <hr style={{marginBottom: '20px'}}/>
                         <SmartForm
                             formData={registerFormData}
                             formFields={registerFormFields}
@@ -93,8 +104,11 @@ export const RegisterPage = () => {
                 </div>
             </div>
             <div className="col-6">
-                <img src="https://i.pinimg.com/originals/89/54/f8/8954f88c60dfde5438e2a5233579b580.jpg"
-                     alt="Imagen del register page"/>
+                <img
+                    src={routeMapsAuthImage}
+                    alt="RouteMaps welcome image | auth"
+                    style={{maxWidth: '90%', maxHeight: '100%', objectFit: 'contain'}}
+                />
             </div>
         </div>
     )

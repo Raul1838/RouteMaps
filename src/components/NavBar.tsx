@@ -7,8 +7,8 @@ export const NavBar = () => {
                 <div className="container-fluid justify-content-between">
                     <a className="navbar-brand d-flex align-items-center" href="">
                         <img
-                            src="https://www.creativefabrica.com/wp-content/uploads/2022/11/28/Map-Logo-Location-Vector-Graphics-49058452-1-580x363.jpg"
-                            width="45"
+                            src="../assets/logoRouteMapsSinFondo.png"
+                            width="30"
                             height="30"
                             className="d-inline-block align-top"
                             alt="Logo Route Maps"

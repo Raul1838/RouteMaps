@@ -10,6 +10,8 @@ import {FormValidations} from "../../interfaces/FormValidations.ts";
 import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
 import {PathwayTypes} from "../../enums/PathwayTypes.ts";
 import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
+import {AuthImage} from "../components/AuthImage.tsx";
+import logoRouteMapsSinFondo from '../../assets/logoRouteMapsSinFondo.png';
 
 export const LoginPage = () => {
     const authContext : AuthContextInterface = useContext(AuthContext);
@@ -67,21 +69,29 @@ export const LoginPage = () => {
 
     return(
         <>
-            <div className="row d-flex align-items-center" style={{ margin: '20px', minHeight: '80vh' }}>
+            <div className="row d-flex align-items-center" style={{margin: '20px', minHeight: '80vh'}}>
                 <div className="col-6">
                     <div className="card">
                         <div className="card-body">
-                            <h2 className="card-title" style={{ marginBottom: '20px' }}>Iniciar Sesión</h2>
-                            <hr style={{ marginBottom: '20px' }} />
-                            <SmartForm formData={ formData } formFields={ formFields } additionalFormLink={ formLink }
-                                       onSubmit={ handleLogin } submitButtonLabel="Iniciar sesión" validations={ validations } />
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h2 className="card-title">Iniciar Sesión</h2>
+                                <img
+                                    src={logoRouteMapsSinFondo}
+                                    width="55"
+                                    height="55"
+                                    alt="Logo Route Maps"
+                                    style={{marginRight: '10px'}}
+                                />
+                            </div>
+                            <hr style={{marginBottom: '20px'}}/>
+                            <SmartForm formData={formData} formFields={formFields} additionalFormLink={formLink}
+                                       onSubmit={handleLogin} submitButtonLabel="Iniciar sesión"
+                                       validations={validations}/>
                         </div>
                     </div>
                 </div>
                 <div className="col-6">
-                    <img src="https://i.pinimg.com/originals/89/54/f8/8954f88c60dfde5438e2a5233579b580.jpg"
-                         alt="RouteMaps welcome image | auth"
-                         style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}/>
+                    <AuthImage/>
                 </div>
             </div>
         </>
