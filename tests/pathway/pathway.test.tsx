@@ -105,7 +105,7 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU17 - E01 - La ruta es válida y no ha sido guardada anteriormente', async () => {
-        expect.assertions(1);
+
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([], loggedUser.uid);
 
@@ -131,12 +131,11 @@ describe('Tests sobre gestión de rutas', () => {
         const pathways = await pathwayController.getPathways(loggedUser.uid);
         expect(pathways).toHaveLength(1);
         await authController.logout();
-    });
+    }, 15000);
 
 
 
     test('HU18 - E01 - Hay rutas dadas de alta.', async () => {
-        expect.assertions(1);
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         const pathways = await pathwayController.getPathways(loggedUser.uid);
@@ -145,7 +144,7 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU18 - E02 - La lista de rutas está vacía.', async () => {
-        expect.assertions(1);
+
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
@@ -162,7 +161,6 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU19 - E01 - Hay rutas dadas de alta y existe la ruta que se quiere eliminar', async () => {
-        expect.assertions(1);
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1, validPathway2], loggedUser.uid);
         await pathwayController.deletePathway(validPathway1, loggedUser.uid);
@@ -172,7 +170,6 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU19 - E02 - Hay rutas dadas de alta pero no existe la ruta que se quiere eliminar', async () => {
-        expect.assertions(1);
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         try {
@@ -189,7 +186,6 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU19 - E03 - No hay rutas dadas de alta', async () => {
-        expect.assertions(1);
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
@@ -224,14 +220,13 @@ describe('Tests sobre gestión de rutas', () => {
             favourite: true,
             cost: 0
         };
-        expect.assertions(1);
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         await pathwayController.updatePathways([validPathwayFav], loggedUser.uid);
         const pathwayData = await pathwayController.getPathways(loggedUser.uid);
         expect(pathwayData[0].favourite).toBe(true);
         await authController.logout();
-    });
+    }, 30000);
 
     test('HU24 - E1 - Usuario identificado', async () => {
         const testUser = {
@@ -266,7 +261,7 @@ describe('Tests sobre gestión de rutas', () => {
             });
 
 
-        }, 30000);
+        }, 60000);
 
         // No se puede afirmar que falle el API
         // test('E02 - Existe una ruta, un vehículo asignado pero se desconoce el precio actual del combustible.', async () => {

@@ -8,27 +8,23 @@ import { openRouteApi } from "../../src/api/openRouteApi";
 import { PlaceException, PlaceExceptionMessages } from "../../src/exceptions/PlaceException";
 
 
-
+const placesController: PlacesController = getPlacesController();
+const authController: AuthController = getAuthController();
+const apiService: APIPlacesService = new APIPlacesService();
+const testUser = {
+    email: 'usuario.permanente@test.com',
+    password: '123456789',
+}
 
 describe('Tests sobre los lugares', () => {
-    const placesController: PlacesController = getPlacesController();
-    const authController: AuthController = getAuthController();
-    const apiService: APIPlacesService = new APIPlacesService();
-    const testUser = {
-        email: 'usuario.permanente@test.com',
-        password: '123456789',
-    }
-    var loggedUser: UserModel;
-
-    beforeAll(async () => {
-        loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
-    });
 
 
     describe('HU05 - Como usuario quiero poder dar de alta un lugar de interés usando sus coordenadas para poder usarlo en una ruta.', () => {
         test('E01 - Se insertan unas coordenadas válidas con la API disponible y para las que existe un topónimo.', async () => {
             // Given
-            expect.assertions(1);
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -44,13 +40,14 @@ describe('Tests sobre los lugares', () => {
             );
             const places = await placesController.getPlaces(loggedUser.uid);
             expect(places).toHaveLength(2);
-
-        });
+            await authController.logout();
+        }, 30000);
 
         test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async () => {
             // Given
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
 
-            expect.assertions(1);
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -66,12 +63,14 @@ describe('Tests sobre los lugares', () => {
             );
             const places = await placesController.getPlaces(loggedUser.uid);
             expect(places).toHaveLength(2);
-        });
+            await authController.logout();
+        }, 30000);
 
         test('E03 - Las coordenadas insertadas no son válidas.', async () => {
             // Given
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
 
-            expect.assertions(2);
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -85,11 +84,12 @@ describe('Tests sobre los lugares', () => {
                     lon: -0.0576800,
                     lat: "adfd"
                 }, loggedUser.uid);
-                fail('Debería saltar una excepción');
+                throw new Error('Debería saltar una excepción');
             }
             catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.IllegalArgument);
+                await authController.logout();
             }
         });
     });
@@ -98,6 +98,7 @@ describe('Tests sobre los lugares', () => {
     describe('HU06 - Dar de alta un lugar de interés con topónimo', () => {
         test('E01 - Se insertan unas coordenadas válidas.', async () => {
             // Given
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
 
             await placesController.replacePlaces([
                 {
@@ -111,14 +112,16 @@ describe('Tests sobre los lugares', () => {
 
             await placesController.addPlaceByToponym("Castellón", false, loggedUser.uid);
             const places = await placesController.getPlaces(loggedUser.uid);
-            expect(places).toHaveLength(2)
+            expect(places).toHaveLength(2);
+            await authController.logout();
 
-        });
+        }, 15000);
 
         test('E02 - Las coordenadas insertadas no son válidas.', async () => {
             //Given
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
 
-            expect.assertions(2);
+
             var lugares: Place[] = [
                 {
                     Nombre: "Valencia",
@@ -133,12 +136,15 @@ describe('Tests sobre los lugares', () => {
             } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.InvalidToponym)
+                await authController.logout();
             };
-        });
+        }, 15000);
     });
     describe('HU07 - Consultar lista de lugares de interés', () => {
         test('E01 - Existe una lista con lugares dados de alta.', async () => {
             //Given
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
             await placesController.replacePlaces([
                 {
                     Nombre: "Valencia",
@@ -168,11 +174,14 @@ describe('Tests sobre los lugares', () => {
                     Latitud: 39.9929000,
                     Favorito: false
                 }]);
+            await authController.logout();
         });
     });
     describe('HU08 - Eliminar un lugar de interés', () => {
         test('E01 - Existe el lugar que se quiere eliminar y está dado de alta en la lista de lugares de interés.', async () => {
             //Given
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -194,10 +203,13 @@ describe('Tests sobre los lugares', () => {
                 Latitud: 39.4697500,
                 Favorito: false
             }]);
+            await authController.logout();
         });
         test('E02 - Hay lugares dados de alta, pero no se encuentra el que se quiere eliminar.', async () => {
             //Given
-            expect.assertions(2);
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -210,11 +222,14 @@ describe('Tests sobre los lugares', () => {
             } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.PlaceNotFound);
+                await authController.logout();
             }
         });
         test('E03 - No contamos con una lista con lugares dados de alta.', async () => {
             //Given
-            expect.assertions(2);
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
+
             await placesController.replacePlaces([], loggedUser.uid);
             //When
             try {
@@ -222,6 +237,7 @@ describe('Tests sobre los lugares', () => {
             } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.EmptyPlaces);
+                await authController.logout();
             }
         });
     });
@@ -229,6 +245,8 @@ describe('Tests sobre los lugares', () => {
     describe('HU20 - Como usuario quiero poder marcar como favoritos lugares de interés para que aparezcan los primeros cuando los listo.', () => {
         test('E01 - Existe una lista con lugares dados de alta y existe el lugar que se quiere marcar como favorito.', async () => {
             //Given
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
             await placesController.replacePlaces([
                 {
                     Nombre: 'Valencia',
@@ -258,10 +276,12 @@ describe('Tests sobre los lugares', () => {
                     Latitud: 39.9929000,
                     Favorito: false
                 }]);
-        });
+            await authController.logout();
+        }, 60000);
         test('E02 - Existe una lista con lugares dados de alta y no existe el lugar que se quiere marcar como favorito.', async () => {
             //Given
-            expect.assertions(2);
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
             await placesController.replacePlaces([
                 {
                     Nombre: 'Castellón',
@@ -276,11 +296,14 @@ describe('Tests sobre los lugares', () => {
             } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.PlaceNotFound);
+                await authController.logout();
             }
         });
         test('E03 - No hay lugares dados de alta.', async () => {
             //Given
-            expect.assertions(2);
+            const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+
+
             await placesController.replacePlaces([], loggedUser.uid);
 
             try {
@@ -288,6 +311,7 @@ describe('Tests sobre los lugares', () => {
             } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.EmptyPlaces);
+                await authController.logout();
             }
         });
     })

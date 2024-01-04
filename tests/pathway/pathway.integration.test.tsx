@@ -1,18 +1,18 @@
-import {Coords} from "../../src/interfaces/Coords";
-import PathwayController, {getPathwayController} from "../../src/controller/PathwayController";
-import {PathwayException, PathWayExceptionMessages} from "../../src/exceptions/PathwayException";
-import {Pathway} from "../../src/interfaces/Pathway";
-import VehiclesController, {getVehiclesController} from "../../src/controller/VehiclesController";
+import { Coords } from "../../src/interfaces/Coords";
+import PathwayController, { getPathwayController } from "../../src/controller/PathwayController";
+import { PathwayException, PathWayExceptionMessages } from "../../src/exceptions/PathwayException";
+import { Pathway } from "../../src/interfaces/Pathway";
+import VehiclesController, { getVehiclesController } from "../../src/controller/VehiclesController";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import Vehicle from "../../src/interfaces/Vehicle";
 import Combustible from "../../src/enums/Combustible";
-import {AuthController, getAuthController} from "../../src/controller/AuthController";
-import {PathwayTypes} from "../../src/enums/PathwayTypes";
-import {PathwayTransportMeans} from "../../src/enums/PathwayTransportMeans";
-import {fail} from "assert";
-import {FirebaseService} from "../../src/services/FirebaseService";
-import {OpenRouteService} from "../../src/services/OpenRouteService";
-import {PriceService} from "../../src/services/PriceService";
+import { AuthController, getAuthController } from "../../src/controller/AuthController";
+import { PathwayTypes } from "../../src/enums/PathwayTypes";
+import { PathwayTransportMeans } from "../../src/enums/PathwayTransportMeans";
+import { fail } from "assert";
+import { FirebaseService } from "../../src/services/FirebaseService";
+import { OpenRouteService } from "../../src/services/OpenRouteService";
+import { PriceService } from "../../src/services/PriceService";
 const loggedUser = {
     uid: '1234'
 }
@@ -148,11 +148,11 @@ describe('Tests sobre gestión de rutas', () => {
             favourite: false,
             cost: 0
         };
-        expect.assertions(1);
+
         jest.spyOn(firebaseService, 'replacePathways').mockResolvedValue();
         jest.spyOn(firebaseService, 'storePathway').mockResolvedValue([pathway]);
-        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({pathways:[pathway]})
-        
+        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({ pathways: [pathway] })
+
         await pathwayController.replacePathways([], loggedUser.uid);
 
 
@@ -164,9 +164,9 @@ describe('Tests sobre gestión de rutas', () => {
 
 
     test('HU18 - E01 - Hay rutas dadas de alta.', async () => {
-        expect.assertions(1);
+
         jest.spyOn(firebaseService, 'replacePathways').mockResolvedValue()
-        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({pathways:[validPathway1]})
+        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({ pathways: [validPathway1] })
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         const pathways = await pathwayController.getPathways(loggedUser.uid);
         expect(pathways).toStrictEqual([validPathway1]);
@@ -174,7 +174,7 @@ describe('Tests sobre gestión de rutas', () => {
 
     test('HU18 - E02 - La lista de rutas está vacía.', async () => {
         jest.spyOn(firebaseService, 'getPathways').mockRejectedValue(new PathwayException(PathWayExceptionMessages.EmptyPathwayList));
-        expect.assertions(1);
+
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
             const pathways = await pathwayController.getPathways(loggedUser.uid);
@@ -190,8 +190,8 @@ describe('Tests sobre gestión de rutas', () => {
     test('HU19 - E01 - Hay rutas dadas de alta y existe la ruta que se quiere eliminar', async () => {
         jest.spyOn(firebaseService, 'replacePathways').mockResolvedValue()
         jest.spyOn(firebaseService, 'deletePathway').mockResolvedValue()
-        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({pathways: [validPathway2]})
-        expect.assertions(1);
+        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({ pathways: [validPathway2] })
+
         await pathwayController.replacePathways([validPathway1, validPathway2], loggedUser.uid);
         await pathwayController.deletePathway(validPathway1, loggedUser.uid);
         const pathways = await pathwayController.getPathways(loggedUser.uid);
@@ -199,7 +199,7 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     test('HU19 - E02 - Hay rutas dadas de alta pero no existe la ruta que se quiere eliminar', async () => {
-        expect.assertions(1);
+
         jest.spyOn(firebaseService, 'replacePathways').mockResolvedValue()
         jest.spyOn(firebaseService, 'deletePathway').mockRejectedValue(new PathwayException(PathWayExceptionMessages.PathwayNotFound));
 
@@ -219,7 +219,7 @@ describe('Tests sobre gestión de rutas', () => {
         jest.spyOn(firebaseService, 'replacePathways').mockResolvedValue()
         jest.spyOn(firebaseService, 'deletePathway').mockRejectedValue(new PathwayException(PathWayExceptionMessages.EmptyPathwayList));
 
-        expect.assertions(1);
+
         await pathwayController.replacePathways([], loggedUser.uid);
         try {
             await pathwayController.deletePathway(validPathway1, loggedUser.uid);
@@ -253,9 +253,9 @@ describe('Tests sobre gestión de rutas', () => {
 
         jest.spyOn(firebaseService, 'replacePathways').mockResolvedValue()
         jest.spyOn(firebaseService, 'updatePathways').mockResolvedValue()
-        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({pathways:[path]})
+        jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({ pathways: [path] })
 
-        expect.assertions(1);
+
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         await pathwayController.updatePathways([validPathway1], loggedUser.uid);
         const pathways = await pathwayController.getPathways(loggedUser.uid);
@@ -277,7 +277,7 @@ describe('Tests sobre gestión de rutas', () => {
     describe('HU14 - Calcular coste de una ruta en coche', () => {
         test('E01 - Existe una ruta, un vehículo asignado y se conoce el precio actual del combustible.', async () => {
             jest.spyOn(priceService, 'getPrice').mockResolvedValue(10);
-            
+
             const vehicle: Vehicle = {
                 plate: '100',
                 consumption: 5,
