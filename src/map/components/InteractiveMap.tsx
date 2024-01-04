@@ -1,18 +1,27 @@
 import {Map, Marker} from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import {useContext, useEffect, useRef} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
 import {Coords} from "../../interfaces/Coords.ts";
 import polyline from '@mapbox/polyline';
+import {PathwayContext, PathwayContextInterface} from "../../context/PathwayContext.tsx";
+import {PathwayTypes} from "../../enums/PathwayTypes.ts";
+import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
 
 export const InteractiveMap = () => {
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { from, to, pathwayTransportMean, pathwayType } = navigationContext;
 
+    const { loadedPathway, setLoadedPathway }: PathwayContextInterface = useContext(PathwayContext);
+
+    const pathwayController: PathwayController = getPathwayController();
+
     const mapDiv = useRef<HTMLDivElement>(null);
     const map = useRef<Map>({} as Map);
     const markers = useRef<Marker[]>([]);
+
+    const [firstLoad, setFirstLoad] = useState<boolean>(false);
 
     useEffect(() => {
         if (mapDiv.current) {
@@ -24,6 +33,23 @@ export const InteractiveMap = () => {
             center: [ -3.703790, 40.416775 ],
             zoom: 6,
         });
+        setFirstLoad(true);
+        map.current.on('load', () => {
+            drawPathwayBetween(from, to).then(() => {
+                setFirstLoad(false);
+                setLoadedPathway({
+                    type: PathwayTypes.UNDEFINED,
+                    start: from,
+                    end: to,
+                    codifiedPath: '',
+                    distance: navigationContext.distance,
+                    duration: navigationContext.duration,
+                    transportMean: PathwayTransportMeans.VEHICLE,
+                    favourite: false,
+                    cost: 0,
+                })
+            });
+        });
     }, []);
 
     useEffect(() => {
@@ -32,8 +58,12 @@ export const InteractiveMap = () => {
 
     const drawPathwayBetween = async (from: Coords, to: Coords) => {
         if ( map.current && from && to && from.lon !== to.lon && from.lat !== to.lat ) {
-            const pathwayController: PathwayController = getPathwayController();
-            const pathway = await pathwayController.calculatePathway(from, to, pathwayTransportMean, pathwayType);
+            let pathway;
+            if( firstLoad ) {
+                pathway = loadedPathway;
+            } else {
+                pathway = await pathwayController.calculatePathway(from, to, pathwayTransportMean, pathwayType);
+            }
             navigationContext.setDistance(pathway.distance);
             navigationContext.setDuration(pathway.duration);
             navigationContext.setCodifiedPath(pathway.codifiedPath);

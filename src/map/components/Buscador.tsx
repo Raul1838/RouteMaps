@@ -29,7 +29,7 @@ export const Buscador = () => {
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { distance, duration, pathwayTransportMean, vehicle} = navigationContext;
 
-    const { setPathways }: PathwayContextInterface = useContext(PathwayContext);
+    const { setPathways, loadedPathway }: PathwayContextInterface = useContext(PathwayContext);
 
     const pathwayController: PathwayController = getPathwayController();
     const vehiclesController: VehiclesController = getVehiclesController();
@@ -50,6 +50,7 @@ export const Buscador = () => {
                 setSelectedVehicle(vehicle);
             });
         }
+        if( loadedPathway.type !== PathwayTypes.UNDEFINED ) setSelectedPathwayType(loadedPathway.type);
     }, []);
 
     useEffect(() => {

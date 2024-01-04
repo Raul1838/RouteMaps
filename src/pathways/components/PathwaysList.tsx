@@ -5,11 +5,16 @@ import PathwayController, {getPathwayController} from "../../controller/PathwayC
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {Pathway} from "../../interfaces/Pathway.ts";
 import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
+import {useNavigate} from "react-router-dom";
+import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 
 export const PathwaysList = () => {
 
+    const navigation = useNavigate();
+
     const { user }: AuthContextInterface = useContext(AuthContext);
-    const { pathways, setPathways }: PathwayContextInterface = useContext(PathwayContext);
+    const { pathways, setPathways, setLoadedPathway }: PathwayContextInterface = useContext(PathwayContext);
+    const navigationContext : NavigationContextInterface = useContext(NavigationContext);
 
     const pathwayController: PathwayController = getPathwayController();
 
@@ -40,6 +45,15 @@ export const PathwaysList = () => {
         pathwayController.deletePathway(pathway, user.uid).then(() => {
             setPathways([...pathways.filter(element => !pathwayController.pathwaysAreEqual(pathway, element))] );
         });
+    }
+
+    const loadPathwayIntoMap = (pathway: Pathway) => {
+        navigationContext.setFrom(pathway.start);
+        navigationContext.setTo(pathway.end);
+        navigationContext.setPathwayType(pathway.type);
+        navigationContext.setPathwayTransportMean(pathway.transportMean);
+        setLoadedPathway(pathway);
+        navigation('/');
     }
 
     return (
@@ -73,7 +87,7 @@ export const PathwaysList = () => {
                         <tbody>
                         {
                             pathways.filter(p => !filterFavorites || p.favourite).map((pathway, index) => (
-                                <tr key={index}>
+                                <tr key={index} onClick={ () => loadPathwayIntoMap(pathway) }>
                                     <td>{pathway.start.name}</td>
                                     <td>{pathway.end.name}</td>
                                     <td>{(pathway.distance / 1000).toFixed(4)} km</td>
