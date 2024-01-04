@@ -85,13 +85,19 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                                 {
                                     showCrudOptions
                                     ?   <>
-                                            <th className="col-9"></th>
+                                            <th className="col-2">Matrícula</th>
+                                            <th className="col-3">Nombre</th>
+                                            <th className="col-2">Tipo de combustible</th>
+                                            <th className="col-2">Consumo</th>
                                             <th className="col-1"></th>
                                             <th className="col-1"></th>
                                             <th className="col-1"></th>
                                         </>
                                     :   <>
-                                            <th className="col-10"></th>
+                                            <th className="col-3">Matrícula</th>
+                                            <th className="col-3">Nombre</th>
+                                            <th className="col-2">Tipo de combustible</th>
+                                            <th className="col-2">Consumo</th>
                                             <th className="col-2"></th>
                                         </>
                                 }
@@ -104,6 +110,9 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                                     .map((vehicle, index) => (
                                         <tr key={index} onClick={() => goToDetails(vehicle)}>
                                             <td>{vehicle.plate}</td>
+                                            <td>{vehicle.name}</td>
+                                            <td>{vehicle.propulsion}</td>
+                                            <td>{vehicle.consumption}</td>
                                             <td className="text-center">
                                                 <Button disabled={ !showCrudOptions } variant={vehicle.favorite ? "warning" : "outline-warning"} onClick={(e) => {e.stopPropagation(); toggleFavorite(vehicle);}}>
                                                     <i className={'fas fa-star'}></i>
