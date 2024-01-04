@@ -88,9 +88,9 @@ export default class PathwayController {
         }
     }
 
-    async addPathway(pathway: Pathway, userId: string) {
+    async addPathway(pathway: Pathway, userId: string): Promise<Pathway[]> {
         try {
-            await this.firebaseService.storePathway(pathway, userId);
+            return await this.firebaseService.storePathway(pathway, userId);
         } catch (error) {
             throw error;
         }

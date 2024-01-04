@@ -15,6 +15,7 @@ import Vehicle from "../../interfaces/Vehicle.ts";
 import Combustible from "../../enums/Combustible.ts";
 import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
 import {useNavigate} from "react-router-dom";
+import {PathwayContext, PathwayContextInterface} from "../../context/PathwayContext.tsx";
 
 const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => value !== PathwayTypes.UNDEFINED);
 
@@ -27,6 +28,8 @@ export const Buscador = () => {
 
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { distance, duration, pathwayTransportMean, vehicle} = navigationContext;
+
+    const { setPathways }: PathwayContextInterface = useContext(PathwayContext);
 
     const pathwayController: PathwayController = getPathwayController();
     const vehiclesController: VehiclesController = getVehiclesController();
@@ -145,9 +148,9 @@ export const Buscador = () => {
             distance: distance,
             favourite: false,
             transportMean: pathwayTransportMean,
-            vehiclePlate: selectedVehicle.plate,
+            vehiclePlate: pathwayTransportMean === PathwayTransportMeans.VEHICLE ? selectedVehicle.plate : 'Sin vehículo',
             cost: pathwayCost
-        }, user.uid);
+        }, user.uid).then(pathways => setPathways(pathways));
         navigation('/pathways');
     }
 

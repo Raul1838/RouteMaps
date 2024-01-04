@@ -90,10 +90,10 @@ export class FirebaseService {
         );
 
         if (existingPlaceIndex !== -1) {
-            // Update the existing pathway
+            // Update the existing place
             currentPlaces[existingPlaceIndex] = place;
         } else {
-            // Add the new pathway if not a duplicate
+            // Add the new place if not a duplicate
             currentPlaces.push(place);
         }
         await setDoc(docRef, { places: currentPlaces }, { merge: true });
