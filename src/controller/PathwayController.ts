@@ -29,16 +29,16 @@ export default class PathwayController {
         return this.firebaseService;
     }
 
-
-    async toggleFavourite(paramPathway: Pathway, userId: string) {
-        try {
-            paramPathway = { ...paramPathway, favourite: !paramPathway.favourite };
-            // this.toggleFavouriteLocally(paramPathway);
-            await this.firebaseService.toggleFavouritePathway(paramPathway, userId!);
-        } catch (error) {
-            throw error;
-        }
-    }
+    //? Se ha borrado el método? Porque en FirebaseService no existe el método toggleFavouritePathway
+    // async toggleFavourite(paramPathway: Pathway, userId: string) {
+    //     try {
+    //         paramPathway = { ...paramPathway, favourite: !paramPathway.favourite };
+    //         // this.toggleFavouriteLocally(paramPathway);
+    //         await this.firebaseService.toggleFavouritePathway(paramPathway, userId!);
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
 
     async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
         if ((!from.lat || !from.lon) && from.name) {

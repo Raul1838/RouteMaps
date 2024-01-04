@@ -34,7 +34,7 @@ export const PreferencesPage = () => {
         } else {
             dbVehicleId = defaultVehiclePlate;
         }
-        setDefaultVehicle(vehiclesController.getVehicle(dbVehicleId));
+        setDefaultVehicle(await vehiclesController.getVehicle(dbVehicleId));
     }
 
     const getPathwayTypeFromDb = async () => {
