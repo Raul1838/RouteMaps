@@ -14,7 +14,7 @@ interface VehiclesListProps {
 export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOptions = true }) => {
 
     const navigate = useNavigate();
-    const { user }: AuthContextInterface = useContext(AuthContext);
+    const { user, defaultVehiclePlate, setDefaultVehiclePlate }: AuthContextInterface = useContext(AuthContext);
     const { setShowVehicles, setVehicle }: NavigationContextInterface = useContext(NavigationContext);
 
     const vehiclesController: VehiclesController = getVehiclesController();
@@ -41,6 +41,12 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
         vehiclesController.toggleFavourite(vehicle.plate, user.uid);
         vehicle.favorite = !vehicle.favorite;
         setVehicles([...vehicles]);
+    };
+
+    const toggleDefault = (vehicle: Vehicle) => {
+        vehiclesController.setDefaultVehicle(vehicle.plate, user.uid).then(() => {
+            setDefaultVehiclePlate(vehicle.plate);
+        });
     };
 
     const goToDetails = (selectedVehicle: Vehicle) => {
@@ -76,17 +82,19 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                         <Table striped bordered hover>
                             <thead>
                             <tr>
-                                <th className="col-10"></th>
                                 {
                                     showCrudOptions
                                     ?   <>
+                                            <th className="col-9"></th>
+                                            <th className="col-1"></th>
                                             <th className="col-1"></th>
                                             <th className="col-1"></th>
                                         </>
-                                    :   <th className="col-2"></th>
+                                    :   <>
+                                            <th className="col-10"></th>
+                                            <th className="col-2"></th>
+                                        </>
                                 }
-                                <th className="col-1"></th>
-                                <th className="col-1"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -103,11 +111,18 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
                                             </td>
                                             {
                                                 showCrudOptions &&
-                                                <td className="text-center">
-                                                    <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deleteVehicle(vehicle);}}>
-                                                        <i className={'fas fa-trash'}></i>
-                                                    </Button>
-                                                </td>
+                                                <>
+                                                    <td className="text-center">
+                                                        <Button variant={ vehicle.plate === defaultVehiclePlate ? "info" : 'outline-info'} onClick={(e) => {e.stopPropagation(); toggleDefault(vehicle);}}>
+                                                            <i className={'fas fa-check'}></i>
+                                                        </Button>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        <Button variant={'outline-danger'} onClick={(e) => {e.stopPropagation(); deleteVehicle(vehicle);}}>
+                                                            <i className={'fas fa-trash'}></i>
+                                                        </Button>
+                                                    </td>
+                                                </>
                                             }
                                         </tr>
                                     ))
