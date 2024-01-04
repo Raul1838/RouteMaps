@@ -17,6 +17,14 @@ export class PlacesController {
         private firebaseService: FirebaseService,
     ) { }
 
+    getApiService() {
+        return this.apiService;
+    }
+
+    getOpenRouteService(){
+        return this.openRouteService;
+    }
+
     async toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }, userId: string): Promise<Boolean> {
         const data: any = await this.firebaseService.getPlaces(userId);
         const placesLength: number = data.places.length;
