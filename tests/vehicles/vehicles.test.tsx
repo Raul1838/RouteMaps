@@ -14,7 +14,7 @@ describe('Vehicles', () => {
     describe('HU09 - Dar de alta un vehículo', () => {
         test('E01 - Se añade un vehículo no registrado anteriormente con datos correctos.', () => {
             //Given
-            vehiclesController.setVehicles([{
+            vehiclesController.updateVehicles([{
                 plate: '1683',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
@@ -47,7 +47,7 @@ describe('Vehicles', () => {
         });
         test('E02 - El vehículo ya se encuentra dado de alta.', () => {
             //Given
-            vehiclesController.setVehicles([{
+            vehiclesController.updateVehicles([{
                 plate: '1683',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
@@ -69,7 +69,7 @@ describe('Vehicles', () => {
         });
         test('E03 - Los datos del vehículo no son correctos.', () => {
             //Given
-            vehiclesController.setVehicles([{
+            vehiclesController.updateVehicles([{
                 plate: '1683',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
@@ -93,7 +93,7 @@ describe('Vehicles', () => {
     describe('HU10 - Consultar lista de vehículos', () => {
         test('E01 - Existe una lista con vehículos dados de alta.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: '1683', name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
+            vehiclesController.updateVehicles([{ plate: '1683', name: "Coche empresa", propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
             //When
             var vehicles: Vehicle[] = vehiclesController.getVehicles();
             //Then
@@ -101,7 +101,7 @@ describe('Vehicles', () => {
         });
         test('E02 - No contamos con una lista con vehículos dados de alta.', () => {
             //Given
-            vehiclesController.setVehicles([]);
+            vehiclesController.updateVehicles([]);
             //When
             const error = () => {
                 vehiclesController.deleteVehicle(1000);
@@ -113,7 +113,7 @@ describe('Vehicles', () => {
     describe('HU11 - Eliminar un vehículo', () => {
         test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere eliminar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}])
+            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}])
             //When
             vehiclesController.deleteVehicle('1683');
             //Then
@@ -121,7 +121,7 @@ describe('Vehicles', () => {
         });
         test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere eliminar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
+            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
             //When
             const error = () => {
                 vehiclesController.deleteVehicle('1000');
@@ -131,7 +131,7 @@ describe('Vehicles', () => {
         });
         test('E03 - No hay vehículos dados de alta.', () => {
             //Given
-            vehiclesController.setVehicles([]);
+            vehiclesController.updateVehicles([]);
             //When
             const error = () => {
                 vehiclesController.deleteVehicle('1000');
@@ -144,7 +144,7 @@ describe('Vehicles', () => {
     describe('HU12 - Modificar datos de un vehículo', () => {
         test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere modificar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
+            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false}]);
             //When
             vehiclesController.modifyVehicle({ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 5});
             //Then
@@ -152,7 +152,7 @@ describe('Vehicles', () => {
         });
         test('E02 - Existe una lista con vehículos dados de alta pero no existe el vehículo que se quiere modificar.', () => {
             //Given
-            vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 }]);
+            vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6 }]);
             //When
             const error = () => {
                 vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
@@ -162,7 +162,7 @@ describe('Vehicles', () => {
         });
         test('E03 - No hay vehículos dados de alta.', () => {
             //Given
-            vehiclesController.setVehicles([]);
+            vehiclesController.updateVehicles([]);
             //When
             const error = () => {
                 vehiclesController.modifyVehicle({ plate: '1000', name: 'Coche propio', propulsion: Combustible.Diesel, consumption: 5 });
@@ -176,7 +176,7 @@ describe('Vehicles', () => {
         describe('HU21 - Marcar como favorito vehículos', () => {
             test('E01 - Existe una lista con vehículos dados de alta y existe el vehículo que se quiere marcar como favorite.', () => {
                 //Given
-                vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false }])
+                vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false }])
                 //When
                 vehiclesController.toggleFavourite({ plate: '1683' });
                 //Then
@@ -184,7 +184,7 @@ describe('Vehicles', () => {
             });
             test('E02 - Existe una lista con vehículos dados de alta y no existe el vehículo que se quiere marcar como favorite.', () => {
                 //Given
-                vehiclesController.setVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false }])
+                vehiclesController.updateVehicles([{ plate: '1683', name: 'Coche empresa', propulsion: Combustible.Diesel, consumption: 6, favorite: false }])
 
                 //When
                 const error = () => vehiclesController.toggleFavourite({ plate: '1000' });
@@ -194,7 +194,7 @@ describe('Vehicles', () => {
             });
             test('E03 - No hay vehículos dados de alta.', () => {
                 //Given
-                vehiclesController.setVehicles([]);
+                vehiclesController.updateVehicles([]);
 
                 //When
                 const error = () => vehiclesController.toggleFavourite({ plate: '1000' });

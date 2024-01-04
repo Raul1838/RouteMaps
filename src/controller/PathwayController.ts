@@ -80,6 +80,14 @@ export default class PathwayController {
         }
     }
 
+    async updatePathways(pathways: Pathway[], userId: string) {
+        try {
+            await this.firebaseService.updatePathways(pathways, userId);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async addPathway(pathway: Pathway, userId: string) {
         try {
             await this.firebaseService.storePathway(pathway, userId);
@@ -95,7 +103,6 @@ export default class PathwayController {
             throw error;
         }
     }
-
 
     async replacePathways(pathways: Pathway[], userId: string): Promise<void> {
         await this.firebaseService.replacePathways(pathways, userId);
@@ -113,6 +120,13 @@ export default class PathwayController {
         });
         localStorage.setItem('defaultPathwayType', defaultPathwayType);
         return defaultPathwayType;
+    }
+
+    pathwaysAreEqual( first: Pathway, second: Pathway ): boolean {
+        return first.start.name === second.start.name &&
+            first.end.name === second.end.name &&
+            first.type === second.type &&
+            (first.transportMean !== PathwayTransportMeans.VEHICLE || first.vehiclePlate === second.vehiclePlate)
     }
 
 }

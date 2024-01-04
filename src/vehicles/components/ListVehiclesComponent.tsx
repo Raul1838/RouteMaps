@@ -34,7 +34,7 @@ export const ListVehiclesComponent: React.FC<VehiclesListProps> = ({ showCrudOpt
     }, []);
 
     const saveVehiclesOnExit = async() => {
-        await vehiclesController.setVehicles(vehicles, user.uid);
+        await vehiclesController.updateVehicles(vehicles, user.uid);
     }
 
     const toggleFavorite = (vehicle: Vehicle) => {

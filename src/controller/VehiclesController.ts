@@ -74,8 +74,8 @@ export default class VehiclesController implements VehiclesInterface {
 
  
 
-    async setVehicles(vehicles: Vehicle[], userId: string): Promise<void> {
-        await this.firebaseService.setVehicles(vehicles, userId);
+    async updateVehicles(vehicles: Vehicle[], userId: string): Promise<void> {
+        await this.firebaseService.updateVehicles(vehicles, userId);
     }
 
 
