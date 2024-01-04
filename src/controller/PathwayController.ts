@@ -25,6 +25,9 @@ export default class PathwayController {
         // });
     }
 
+    getOpenRouteService() {
+        return this.openRouteService;
+    }
 
 
     async toggleFavourite(paramPathway: Pathway, userId: string) {
