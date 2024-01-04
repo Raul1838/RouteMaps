@@ -27,7 +27,6 @@ describe('Tests sobre gestión de rutas', () => {
     });
 
     const validPathway1: Pathway = {
-        id: 100,
         start: {
             lat: 39.988126910927626,
             lon: -0.05202140449041774
@@ -41,11 +40,11 @@ describe('Tests sobre gestión de rutas', () => {
         distance: 555.4,
         type: PathwayTypes.RECOMMENDED,
         transportMean: PathwayTransportMeans.VEHICLE,
-        favourite: false
+        favourite: false,
+        cost: 0
     };
 
     const validPathway2: Pathway = {
-        id: 102,
         start: {
             lat: 39.988126910927626,
             lon: -0.05202140449041774
@@ -59,7 +58,8 @@ describe('Tests sobre gestión de rutas', () => {
         distance: 500.4,
         type: PathwayTypes.SHORTEST,
         transportMean: PathwayTransportMeans.BIKE,
-        favourite: true
+        favourite: true,
+        cost: 0
     };
 
 
@@ -110,7 +110,6 @@ describe('Tests sobre gestión de rutas', () => {
         await pathwayController.replacePathways([], loggedUser.uid);
 
         const pathway: Pathway = {
-
             start: {
                 lat: 39.988126910927626,
                 lon: -0.05202140449041774
@@ -124,12 +123,13 @@ describe('Tests sobre gestión de rutas', () => {
             distance: 555.4,
             type: PathwayTypes.RECOMMENDED,
             transportMean: PathwayTransportMeans.VEHICLE,
-            favourite: false
+            favourite: false,
+            cost: 0
         };
 
         await pathwayController.addPathway(pathway, loggedUser.uid);
-        const pathwayData = await pathwayController.getPathways(loggedUser.uid);
-        expect(pathwayData.pathways).toHaveLength(1);
+        const pathways = await pathwayController.getPathways(loggedUser.uid);
+        expect(pathways).toHaveLength(1);
         await authController.logout();
     });
 
@@ -140,7 +140,7 @@ describe('Tests sobre gestión de rutas', () => {
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
         const pathways = await pathwayController.getPathways(loggedUser.uid);
-        expect(pathways.pathways).toStrictEqual([validPathway1]);
+        expect(pathways).toStrictEqual([validPathway1]);
         await authController.logout();
     });
 
@@ -166,8 +166,8 @@ describe('Tests sobre gestión de rutas', () => {
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1, validPathway2], loggedUser.uid);
         await pathwayController.deletePathway(validPathway1, loggedUser.uid);
-        const pathwayData = await pathwayController.getPathways(loggedUser.uid);
-        expect(pathwayData.pathways).toHaveLength(1);
+        const pathways = await pathwayController.getPathways(loggedUser.uid);
+        expect(pathways).toHaveLength(1);
         await authController.logout();
     });
 
@@ -221,14 +221,15 @@ describe('Tests sobre gestión de rutas', () => {
             distance: 555.4,
             type: PathwayTypes.RECOMMENDED,
             transportMean: PathwayTransportMeans.VEHICLE,
-            favourite: true
+            favourite: true,
+            cost: 0
         };
         expect.assertions(1);
         const loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         await pathwayController.replacePathways([validPathway1], loggedUser.uid);
-        await pathwayController.updatePathways(validPathwayFav, loggedUser.uid);
+        await pathwayController.updatePathways([validPathwayFav], loggedUser.uid);
         const pathwayData = await pathwayController.getPathways(loggedUser.uid);
-        expect(pathwayData.pathways[0].favourite).toBe(true);
+        expect(pathwayData[0].favourite).toBe(true);
         await authController.logout();
     });
 
@@ -253,30 +254,13 @@ describe('Tests sobre gestión de rutas', () => {
     describe('HU14 - Calcular coste de una ruta en coche', () => {
         test('E01 - Existe una ruta, un vehículo asignado y se conoce el precio actual del combustible.', async () => {
 
-            const pathway: Pathway = {
-                type: PathwayTypes.RECOMMENDED,
-                start: {
-                    lat: 39.9929000,
-                    lon: -0.0576800
-                },
-                end: {
-                    lat: -34.6131500,
-                    lon: -58.3772300
-                },
-                codifiedPath: '',
-                distance: 1000,
-                duration: 500,
-                favourite: false,
-                transportMean: PathwayTransportMeans.VEHICLE
-            };
-
             const vehicle: Vehicle = {
                 plate: '100',
                 consumption: 5,
                 name: 'Empresa',
                 propulsion: Combustible.Gasolina
             }
-            await pathwayController.calculatePrice(pathway.distance, vehicle).then((price: number) => {
+            await pathwayController.calculatePrice(1000, vehicle).then((price: number) => {
                 expect(price).toBeTruthy();
                 expect(price).toBeGreaterThan(0);
             });
@@ -297,23 +281,6 @@ describe('Tests sobre gestión de rutas', () => {
 
         // });
         test('E03 - Existe una ruta pero se desconoce el vehículo a usar.', async () => {
-            const pathway: Pathway = {
-                type: PathwayTypes.RECOMMENDED,
-                start: {
-                    lat: 39.9929000,
-                    lon: -0.0576800
-                },
-                end: {
-                    lat: -34.6131500,
-                    lon: -58.3772300
-                },
-                codifiedPath: '',
-                distance: 1000,
-                duration: 500,
-                favourite: false,
-                transportMean: PathwayTransportMeans.VEHICLE
-            };
-
             const vehicle: Vehicle = {
                 plate: '',
                 name: '',
@@ -321,7 +288,7 @@ describe('Tests sobre gestión de rutas', () => {
                 consumption: 0
             }
 
-            await pathwayController.calculatePrice(pathway.distance, vehicle).then((price: number) => {
+            await pathwayController.calculatePrice(1000, vehicle).then((price: number) => {
                 fail('Debería saltar una excepción');
             }).catch((error) => {
                 if (error instanceof VehicleNotFoundException) {
@@ -334,30 +301,13 @@ describe('Tests sobre gestión de rutas', () => {
 
 
         test('E04 - No hay ninguna ruta', async () => {
-            const pathway: Pathway = {
-                type: PathwayTypes.UNDEFINED,
-                start: {
-                    lat: 0,
-                    lon: 0
-                },
-                end: {
-                    lat: 0,
-                    lon: 0
-                },
-                codifiedPath: '',
-                distance: 0,
-                duration: 0,
-                favourite: false,
-                transportMean: PathwayTransportMeans.VEHICLE
-            };
-
             const vehicle: Vehicle = {
                 plate: '100',
                 name: 'Empresa',
                 propulsion: Combustible.Gasolina,
                 consumption: 5
             }
-            await pathwayController.calculatePrice(pathway.distance, vehicle).then((price: number) => {
+            await pathwayController.calculatePrice(0, vehicle).then((price: number) => {
                 fail('Debería saltar una excepción');
             }).catch((error) => {
                 if (error instanceof PathwayException) {
