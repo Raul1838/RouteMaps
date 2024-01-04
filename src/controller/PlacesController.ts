@@ -26,12 +26,12 @@ export class PlacesController {
     async toggleFavourite({ Longitud, Latitud }: { Longitud: number; Latitud: number; }, userId: string): Promise<Boolean> {
         const data: any = await this.firebaseService.getPlaces(userId);
         const placesLength: number = data.places.length;
+
         if (placesLength === 0) {
             throw new PlaceException(PlaceExceptionMessages.EmptyPlaces);
         }
-        console.log("AQUIII")
 
-        const index = data.places.findIndex((place: Place) => (this.areFloatsEqual(place.Longitud, Longitud)
+        const index = await data.places.findIndex((place: Place) => (this.areFloatsEqual(place.Longitud, Longitud)
             && this.areFloatsEqual(place.Latitud, Latitud)));
 
         if (index !== -1) {
@@ -41,7 +41,6 @@ export class PlacesController {
         } else {
             throw new PlaceException(PlaceExceptionMessages.PlaceNotFound);
         }
-
     }
 
     private areFloatsEqual(a: number, b: number, epsilon: number = Number.EPSILON): boolean {

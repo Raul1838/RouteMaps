@@ -63,11 +63,9 @@ describe('Tests sobre los lugares', () => {
                     lon: -0.0576800,
                     lat: 39.9929000
                 }, loggedUser.uid
-            ).then(async () => {
-                expect(await placesController.getPlaces(loggedUser.uid)).toHaveLength(2);
-            });
-            // Then
-
+            );
+            const places = await placesController.getPlaces(loggedUser.uid);
+            expect(places).toHaveLength(2);
         });
 
         test('E03 - Las coordenadas insertadas no son válidas.', async () => {
@@ -82,13 +80,17 @@ describe('Tests sobre los lugares', () => {
             }], loggedUser.uid);
 
             // When
-            await placesController.addPlaceByCoords({
-                lon: -0.0576800,
-                lat: "adfd"
-            }, loggedUser.uid).then(() => fail('Expected an error to be thrown')).catch((error) => {
+            try {
+                await placesController.addPlaceByCoords({
+                    lon: -0.0576800,
+                    lat: "adfd"
+                }, loggedUser.uid);
+                fail('Debería saltar una excepción');
+            }
+            catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.IllegalArgument);
-            })
+            }
         });
     });
 
@@ -107,9 +109,10 @@ describe('Tests sobre los lugares', () => {
             ], loggedUser.uid);
             // When
 
-            await placesController.addPlaceByToponym("Castellón", false, loggedUser.uid).then(async () =>
-                expect(await placesController.getPlaces(loggedUser.uid)).toHaveLength(2)
-            );
+            await placesController.addPlaceByToponym("Castellón", false, loggedUser.uid);
+            const places = await placesController.getPlaces(loggedUser.uid);
+            expect(places).toHaveLength(2)
+
         });
 
         test('E02 - Las coordenadas insertadas no son válidas.', async () => {
@@ -124,11 +127,13 @@ describe('Tests sobre los lugares', () => {
                     Favorito: false
                 }]
             //When
-
-            await placesController.addPlaceByToponym("1234", false, loggedUser.uid).then(() => fail('Expected an error to be thrown')).catch((error) => {
+            try {
+                await placesController.addPlaceByToponym("1234", false, loggedUser.uid);
+                fail('Expected an error to be thrown');
+            } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.InvalidToponym)
-            });
+            };
         });
     });
     describe('HU07 - Consultar lista de lugares de interés', () => {

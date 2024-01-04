@@ -6,6 +6,7 @@ import APINotAvailableExeption from "../../src/exceptions/APINotAvailableExeptio
 import APIPlacesService from "../../src/api/APIPlacesService";
 import { openRouteApi } from "../../src/api/openRouteApi";
 import { PlaceException, PlaceExceptionMessages } from "../../src/exceptions/PlaceException";
+import { FirebaseService } from "../../src/services/FirebaseService";
 
 
 
@@ -14,6 +15,7 @@ describe('Tests sobre los lugares', () => {
     const placesController: PlacesController = getPlacesController();
     const authController: AuthController = getAuthController();
     const apiService: APIPlacesService = new APIPlacesService();
+    let firebaseService: FirebaseService;
     const testUser = {
         email: 'usuario.permanente@test.com',
         password: '123456789',
@@ -22,6 +24,7 @@ describe('Tests sobre los lugares', () => {
 
     beforeAll(async () => {
         loggedUser = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
+        firebaseService = new FirebaseService();
     });
 
     beforeEach(() => jest.clearAllMocks());
@@ -36,6 +39,10 @@ describe('Tests sobre los lugares', () => {
                 Nombre: "Castellón",
                 Favorito: false
             });
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'storePlace').mockResolvedValue([place]);
+            jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({ place: [place] })
 
             expect.assertions(1);
             await placesController.replacePlaces([{
@@ -78,15 +85,21 @@ describe('Tests sobre los lugares', () => {
                     lon: -0.0576800,
                     lat: 39.9929000
                 }, loggedUser.uid
-            ).then(async () => {
-                expect(await placesController.getPlaces(loggedUser.uid)).toHaveLength(2);
-            });
-            // Then
+            );
+
+            expect(await placesController.getPlaces(loggedUser.uid)).toHaveLength(2);
+
 
         });
 
         test('E03 - Las coordenadas insertadas no son válidas.', async () => {
             // Given
+            jest.spyOn(placesController.getApiService(), 'getPlaceByCoord').mockResolvedValue({
+                Latitud: 39.9929000,
+                Longitud: -0.0576800,
+                Nombre: "none",
+                Favorito: false
+            });
 
             expect.assertions(2);
             await placesController.replacePlaces([{
@@ -97,38 +110,46 @@ describe('Tests sobre los lugares', () => {
             }], loggedUser.uid);
 
             // When
-            await placesController.addPlaceByCoords({
-                lon: -0.0576800,
-                lat: "adfd"
-            }, loggedUser.uid).then(() => fail('Expected an error to be thrown')).catch((error) => {
+            try {
+                await placesController.addPlaceByCoords({
+                    lon: -0.0576800,
+                    lat: "adfd"
+                }, loggedUser.uid);
+                fail('Expected an error to be thrown');
+            } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.IllegalArgument);
-            })
+            };
         });
-        // If no error is thrown, fail the test
+
+    });
+    // If no error is thrown, fail the test
 
 
 
 
-        test('E04 - La API no se encuentra disponible.', async () => {
-            jest.spyOn(placesController.getApiService(), 'getPlaceByCoord').mockRejectedValue(new APINotAvailableExeption());
-            expect.assertions(1);
-            // Given
-            await placesController.replacePlaces([{
-                Nombre: "Valencia",
-                Longitud: -0.3773900,
-                Latitud: 39.4697500,
-                Favorito: false
-            }], loggedUser.uid);
-            // When
+    test('E04 - La API no se encuentra disponible.', async () => {
+        jest.spyOn(placesController.getApiService(), 'getPlaceByCoord').mockRejectedValue(new APINotAvailableExeption());
+        expect.assertions(1);
+        // Given
+        await placesController.replacePlaces([{
+            Nombre: "Valencia",
+            Longitud: -0.3773900,
+            Latitud: 39.4697500,
+            Favorito: false
+        }], loggedUser.uid);
+        // When
 
+        try {
             await placesController.addPlaceByCoords({
                 lon: -0.0576800,
                 lat: 0,
-            }, loggedUser.uid).then(() => fail('Expected an error to be thrown')).catch((error) => expect(error).toBeInstanceOf(APINotAvailableExeption));
+            }, loggedUser.uid);
+            fail('Expected an error to be thrown');
+        } catch (error) { expect(error).toBeInstanceOf(APINotAvailableExeption) }
 
-        });
     });
+
 
 
     describe('HU06 - Dar de alta un lugar de interés con topónimo', () => {
@@ -150,9 +171,9 @@ describe('Tests sobre los lugares', () => {
             ], loggedUser.uid);
             // When
 
-            await placesController.addPlaceByToponym("Castellón", false, loggedUser.uid).then(async () =>
-                expect(await placesController.getPlaces(loggedUser.uid)).toHaveLength(2)
-            );
+            await placesController.addPlaceByToponym("Castellón", false, loggedUser.uid);
+            expect(await placesController.getPlaces(loggedUser.uid)).toHaveLength(2)
+
         });
 
         test('E02 - Las coordenadas insertadas no son válidas.', async () => {
@@ -168,11 +189,13 @@ describe('Tests sobre los lugares', () => {
                     Favorito: false
                 }]
             //When
-
-            await placesController.addPlaceByToponym("1234", false, loggedUser.uid).then(() => fail('Expected an error to be thrown')).catch((error) => {
+            try {
+                await placesController.addPlaceByToponym("1234", false, loggedUser.uid);
+                fail('Expected an error to be thrown')
+            } catch (error) {
                 expect(error).toBeInstanceOf(PlaceException);
                 expect(error.message).toBe(PlaceExceptionMessages.InvalidToponym)
-            });
+            };
         });
     });
     describe('HU07 - Consultar lista de lugares de interés', () => {

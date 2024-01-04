@@ -106,6 +106,13 @@ export class FirebaseService {
     async deletePlace(placeToDelete: Place, userId: string) {
         const docRef = doc(FirebaseDB, userId, 'places');
         const placeData = await this.getPlaces(userId);
+
+        console.log(placeData.places);
+        console.log(placeData.places);
+        console.log(placeData.places);
+        console.log(placeData.places);
+
+
         if (placeData.places.length === 0) {
             throw new PlaceException(PlaceExceptionMessages.EmptyPlaces);
         }
