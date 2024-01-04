@@ -2,11 +2,10 @@ import VehiclesController, {getVehiclesController} from "../../src/controller/Ve
 import Combustible from "../../src/enums/Combustible";
 import EmptyVehiclesException from "../../src/exceptions/EmptyVehiclesException";
 import InvalidVehicleException from "../../src/exceptions/InvalidVehicleException";
-import VehicleAlreadyExistException from "../../src/exceptions/VehicleAlreadyExistException";
 import VehicleNotFoundException from "../../src/exceptions/VehicleNotFoundException";
 import Vehicle from "../../src/interfaces/Vehicle";
-import { AuthController, getAuthController } from "../../src/controller/AuthController";
-import { UserModel } from "../../src/interfaces/UserModel";
+import {AuthController, getAuthController} from "../../src/controller/AuthController";
+import {UserModel} from "../../src/interfaces/UserModel";
 
 const testUser = {
     email: 'usuario.permanente@test.com',
@@ -27,7 +26,7 @@ describe('Vehicles', () => {
             //Given
             const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
             await vehiclesController.setVehicles([{
-                plate: '1683',
+                plate: '1683DFG',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
                 consumption: 6,
@@ -35,7 +34,7 @@ describe('Vehicles', () => {
             }], loggedUser.uid);
             //When
             await vehiclesController.addVehicle({
-                plate: '1684',
+                plate: '1864XCV',
                 name: "Coche personal",
                 propulsion: Combustible.Gasolina,
                 consumption: 5.5,
@@ -43,14 +42,14 @@ describe('Vehicles', () => {
             }, loggedUser.uid)
             //Then
             expect(await vehiclesController.getVehicles(loggedUser.uid)).toStrictEqual([{
-                plate: '1683',
+                plate: '1683DFG',
                 name: "Coche empresa",
                 propulsion: Combustible.Diesel,
                 consumption: 6,
                 favorite: false
             },
             {
-                plate: '1684',
+                plate: '1864XCV',
                 name: "Coche personal",
                 propulsion: Combustible.Gasolina,
                 consumption: 5.5,
@@ -198,7 +197,7 @@ describe('Vehicles', () => {
 
     test('HU23 - E1 - Existe el vehículo a establecer por defecto', async () => {
         const vehicle: Vehicle = {
-            plate: '123',
+            plate: '1234BCD',
             name: 'Test vehicle',
             consumption: 0,
             propulsion: Combustible.Diesel,
@@ -211,7 +210,7 @@ describe('Vehicles', () => {
     });
 
     test('HU23 - E2 - No existe el vehículo a establecer por defecto', async () => {
-        const vehicleId: string = '321';
+        const vehicleId: string = '4321NTR';
         const loggedUser: UserModel = await authController.loginWithEmailAndPassword(testUser.email, testUser.password);
         try {
             await vehiclesController.setDefaultVehicle(vehicleId, loggedUser.uid);
