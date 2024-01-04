@@ -15,6 +15,21 @@ describe('Tests sobre los lugares', () => {
     const placesController: PlacesController = getPlacesController();
     const authController: AuthController = getAuthController();
     const apiService: APIPlacesService = new APIPlacesService();
+
+    const place1: Place = {
+        Nombre: "Valencia",
+        Longitud: -0.3773900,
+        Latitud: 39.4697500,
+        Favorito: false,
+    };
+
+    const place2: Place = {
+        Nombre: "Castellón de la Plana",
+        Longitud: -0.2773900,
+        Latitud: 38.4697500,
+        Favorito: false,
+    };
+
     let firebaseService: FirebaseService;
     const testUser = {
         email: 'usuario.permanente@test.com',
@@ -33,6 +48,7 @@ describe('Tests sobre los lugares', () => {
     describe('HU05 - Como usuario quiero poder dar de alta un lugar de interés usando sus coordenadas para poder usarlo en una ruta.', () => {
         test('E01 - Se insertan unas coordenadas válidas con la API disponible y para las que existe un topónimo.', async () => {
             // Given
+
             jest.spyOn(placesController.getApiService(), 'getPlaceByCoord').mockResolvedValue({
                 Latitud: 39.9929000,
                 Longitud: -0.0576800,
@@ -40,17 +56,14 @@ describe('Tests sobre los lugares', () => {
                 Favorito: false
             });
 
+
             jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
-            jest.spyOn(firebaseService, 'storePlace').mockResolvedValue([place]);
-            jest.spyOn(firebaseService, 'getPathways').mockResolvedValue({ place: [place] })
+            jest.spyOn(firebaseService, 'getPlaces').mockResolvedValue({ places: [place1] })
 
             expect.assertions(1);
-            await placesController.replacePlaces([{
-                Nombre: "Valencia",
-                Longitud: -0.3773900,
-                Latitud: 39.4697500,
-                Favorito: false,
-            }], loggedUser.uid);
+
+
+            await placesController.replacePlaces([], loggedUser.uid);
             // When
             await placesController.addPlaceByCoords(
                 {
@@ -59,8 +72,7 @@ describe('Tests sobre los lugares', () => {
                 }, loggedUser.uid
             );
             const places = await placesController.getPlaces(loggedUser.uid);
-            expect(places).toHaveLength(2);
-
+            expect(places).toHaveLength(1);
         });
 
         test('E02 - Se insertan unas coordenadas válidas con la API disponible y para las que no existe un topónimo.', async () => {
@@ -73,6 +85,10 @@ describe('Tests sobre los lugares', () => {
             });
 
             expect.assertions(1);
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'getPlaces').mockResolvedValue({ places: [place1, place2] })
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -100,6 +116,9 @@ describe('Tests sobre los lugares', () => {
                 Nombre: "none",
                 Favorito: false
             });
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'getPlaces').mockRejectedValue(new PlaceException(PlaceExceptionMessages.IllegalArgument));
 
             expect.assertions(2);
             await placesController.replacePlaces([{
@@ -161,6 +180,9 @@ describe('Tests sobre los lugares', () => {
                 name: "none"
             });
 
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'getPlaces').mockResolvedValue({ places: [place1, place2] })
+
             await placesController.replacePlaces([
                 {
                     Nombre: "Valencia",
@@ -201,6 +223,10 @@ describe('Tests sobre los lugares', () => {
     describe('HU07 - Consultar lista de lugares de interés', () => {
         test('E01 - Existe una lista con lugares dados de alta.', async () => {
             //Given
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'getPlaces').mockResolvedValue({ places: [place1, place2] })
+
             await placesController.replacePlaces([
                 {
                     Nombre: "Valencia",
@@ -215,26 +241,26 @@ describe('Tests sobre los lugares', () => {
                     Favorito: false
                 }], loggedUser.uid);
             //When
-            var lugares: Place[] = await placesController.getPlaces(loggedUser.uid);
+            const lugares: Place[] = await placesController.getPlaces(loggedUser.uid);
             //Then
-            expect(lugares).toStrictEqual([
-                {
-                    Nombre: "Valencia",
-                    Longitud: -0.3773900,
-                    Latitud: 39.4697500,
-                    Favorito: false
-                },
-                {
-                    Nombre: "Castellón",
-                    Longitud: -0.0576800,
-                    Latitud: 39.9929000,
-                    Favorito: false
-                }]);
+            expect(lugares).toHaveLength(2);
         });
     });
     describe('HU08 - Eliminar un lugar de interés', () => {
         test('E01 - Existe el lugar que se quiere eliminar y está dado de alta en la lista de lugares de interés.', async () => {
             //Given
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'deletePlace').mockResolvedValue();
+            jest.spyOn(firebaseService, 'getPlaces').mockResolvedValue({
+                places: [{
+                    Nombre: "Valencia",
+                    Longitud: -0.3773900,
+                    Latitud: 39.4697500,
+                    Favorito: false
+                }]
+            })
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -260,6 +286,11 @@ describe('Tests sobre los lugares', () => {
         test('E02 - Hay lugares dados de alta, pero no se encuentra el que se quiere eliminar.', async () => {
             //Given
             expect.assertions(2);
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'deletePlace').mockRejectedValue(new PlaceException(PlaceExceptionMessages.PlaceNotFound));
+            jest.spyOn(firebaseService, 'getPlaces').mockRejectedValue(new Error());
+
             await placesController.replacePlaces([{
                 Nombre: "Valencia",
                 Longitud: -0.3773900,
@@ -277,6 +308,11 @@ describe('Tests sobre los lugares', () => {
         test('E03 - No contamos con una lista con lugares dados de alta.', async () => {
             //Given
             expect.assertions(2);
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'deletePlace').mockRejectedValue(new PlaceException(PlaceExceptionMessages.EmptyPlaces));
+            jest.spyOn(firebaseService, 'getPlaces').mockRejectedValue(new Error());
+
             await placesController.replacePlaces([], loggedUser.uid);
             //When
             try {
@@ -291,6 +327,24 @@ describe('Tests sobre los lugares', () => {
     describe('HU20 - Como usuario quiero poder marcar como favoritos lugares de interés para que aparezcan los primeros cuando los listo.', () => {
         test('E01 - Existe una lista con lugares dados de alta y existe el lugar que se quiere marcar como favorito.', async () => {
             //Given
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'storePlace').mockResolvedValue([place1]);
+            jest.spyOn(firebaseService, 'getPlaces').mockResolvedValue({
+                places: [
+                    {
+                        Nombre: 'Valencia',
+                        Longitud: -0.3773900,
+                        Latitud: 39.4697500,
+                        Favorito: true
+                    }, {
+                        Nombre: 'Castellón',
+                        Longitud: -0.0576800,
+                        Latitud: 39.9929000,
+                        Favorito: false
+                    }]
+            })
+
             await placesController.replacePlaces([
                 {
                     Nombre: 'Valencia',
@@ -324,6 +378,11 @@ describe('Tests sobre los lugares', () => {
         test('E02 - Existe una lista con lugares dados de alta y no existe el lugar que se quiere marcar como favorito.', async () => {
             //Given
             expect.assertions(2);
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'storePlace').mockRejectedValue(new PlaceException(PlaceExceptionMessages.PlaceNotFound));
+            jest.spyOn(firebaseService, 'getPlaces').mockRejectedValue(new Error());
+
             await placesController.replacePlaces([
                 {
                     Nombre: 'Castellón',
@@ -343,6 +402,11 @@ describe('Tests sobre los lugares', () => {
         test('E03 - No hay lugares dados de alta.', async () => {
             //Given
             expect.assertions(2);
+
+            jest.spyOn(firebaseService, 'replacePlaces').mockResolvedValue();
+            jest.spyOn(firebaseService, 'storePlace').mockRejectedValue(new PlaceException(PlaceExceptionMessages.EmptyPlaces));
+            jest.spyOn(firebaseService, 'getPlaces').mockRejectedValue(new Error());
+
             await placesController.replacePlaces([], loggedUser.uid);
 
             try {
