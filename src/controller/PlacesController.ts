@@ -1,13 +1,11 @@
-import InvalidToponymException from "../exceptions/InvalidToponymException";
 import APIPlacesInterface from "../interfaces/APIPlacesInterface";
 import { Coords } from "../interfaces/Coords";
 import Place from "../interfaces/Place";
-import IllegalArgumentException from "../exceptions/IllegalArgumentException";
 import APIPlacesService from "../api/APIPlacesService.ts";
 import { OpenRouteService } from "../services/OpenRouteService.ts";
 import { FirebaseService } from "../services/FirebaseService.ts";
-import PlaceNotFoundException from "../exceptions/PlaceNotFoundException.ts";
-import EmptyPlacesException from "../exceptions/EmptyPlacesException.ts";
+import { PlaceException, PlaceExceptionMessages } from "../exceptions/PlaceException.ts";
+
 
 
 export class PlacesController {
@@ -21,7 +19,7 @@ export class PlacesController {
         return this.apiService;
     }
 
-    getOpenRouteService(){
+    getOpenRouteService() {
         return this.openRouteService;
     }
 
@@ -29,7 +27,7 @@ export class PlacesController {
         const data: any = await this.firebaseService.getPlaces(userId);
         const placesLength: number = data.places.length;
         if (placesLength === 0) {
-            throw new EmptyPlacesException();
+            throw new PlaceException(PlaceExceptionMessages.EmptyPlaces);
         }
 
         const index = data.places.findIndex((place: Place) => (this.areFloatsEqual(place.Longitud, Longitud)
@@ -40,7 +38,7 @@ export class PlacesController {
             await this.firebaseService.storePlace(data.places[index], userId);
             return true;
         } else {
-            throw new PlaceNotFoundException();
+            throw new PlaceException(PlaceExceptionMessages.PlaceNotFound);
         }
 
     }
@@ -82,7 +80,7 @@ export class PlacesController {
 
     private checkValidCoordinates(coordenadas: Coords) {
         if ((typeof coordenadas.lat !== 'number') || (typeof coordenadas.lon !== 'number')) {
-            throw new IllegalArgumentException();
+            throw new PlaceException(PlaceExceptionMessages.IllegalArgument);
         }
     }
 
@@ -115,7 +113,7 @@ export class PlacesController {
 
     checkForValidToponym(placeName: string | undefined) {
         if (this.containsNumber(placeName!)) {
-            throw new InvalidToponymException("El nombre del lugar no puede contener números");
+            throw new PlaceException(PlaceExceptionMessages.InvalidToponym);
         }
     }
 

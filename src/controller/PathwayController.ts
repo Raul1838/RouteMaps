@@ -17,16 +17,16 @@ export default class PathwayController {
         private openRouteService: OpenRouteService,
         private firebaseService: FirebaseService,
         private priceService: PriceService,
-        // userId: string
     ) {
         this.pathways = [];
-        // firebaseService.getPathways().then(pathways => {
-        //     this.setPathways(pathways as Pathway[]);
-        // });
     }
 
     getOpenRouteService() {
         return this.openRouteService;
+    }
+
+    getFirebaseService() {
+        return this.firebaseService;
     }
 
 
@@ -38,8 +38,7 @@ export default class PathwayController {
         } catch (error) {
             throw error;
         }
-    } 
-
+    }
 
     async calculatePathway(from: Coords, to: Coords, pathwayTransportMean?: PathwayTransportMeans, pathwayType?: PathwayTypes): Promise<Pathway> {
         if ((!from.lat || !from.lon) && from.name) {
@@ -59,30 +58,6 @@ export default class PathwayController {
             throw error;
         }
     }
-
-
-
-    // private deletePathwayLocally(paramPathway: number | Pathway) {
-    //     if (this.pathways.length === 0) {
-    //         throw new PathwayException(PathWayExceptionMessages.EmptyPathwayList);
-    //     }
-    //     var searchPar: number;
-
-    //     if (typeof paramPathway === 'number') {
-    //         searchPar = paramPathway;
-    //     } else {
-    //         searchPar = paramPathway.id!;
-    //     }
-
-    //     const index = this.pathways.findIndex(pathway => pathway.id === searchPar);
-
-    //     if (index !== -1) {
-    //         this.pathways.splice(index, 1);
-
-    //     } else {
-    //         throw new PathwayException(PathWayExceptionMessages.PathwayNotFound);
-    //     }
-    // }
 
     async getPathways(userId: string) {
         try {
@@ -105,20 +80,6 @@ export default class PathwayController {
             throw error;
         }
     }
-
-
-    // private addPathwayLocally(pathway: Pathway) {
-    //     if (!pathway || pathway.distance === 0) {
-    //         throw new PathwayException(PathWayExceptionMessages.InvalidPathway);
-    //     }
-    //     const _ = require('lodash');
-    //     const isDuplicate = this.pathways.some(element => (_.isEqual(pathway.start, element.start) && _.isEqual(pathway.end, element.end) && pathway.type === element.type && pathway.vehicle === element.vehicle));
-    //     if (!isDuplicate) {
-    //         this.pathways.push(pathway);
-    //     } else {
-    //         throw new PathwayException(PathWayExceptionMessages.AlreadyExists);
-    //     }
-    // }
 
     calculateCalories(pathway: Pathway, vehicle: PathwayTransportMeans): number {
         if (!pathway || pathway.distance === 0) {

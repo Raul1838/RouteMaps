@@ -8,9 +8,8 @@ import Combustible from "../enums/Combustible.ts";
 import { PathwayTypes } from "../enums/PathwayTypes.ts";
 import Vehicle from "../interfaces/Vehicle.ts";
 import Place from "../interfaces/Place.ts";
-import EmptyPlacesException from "../exceptions/EmptyPlacesException.ts";
-import PlaceNotFoundException from "../exceptions/PlaceNotFoundException.ts";
 import { PathWayExceptionMessages, PathwayException } from "../exceptions/PathwayException.ts";
+import { PlaceException, PlaceExceptionMessages } from "../exceptions/PlaceException.ts";
 
 export class FirebaseService {
     async toggleFavouritePathway(pathway: Pathway, userId: string) {
@@ -133,13 +132,13 @@ export class FirebaseService {
         const docRef = doc(FirebaseDB, userId, 'places');
         const placeData = await this.getPlaces(userId);
         if (placeData.places.length === 0) {
-            throw new EmptyPlacesException();
+            throw new PlaceException(PlaceExceptionMessages.EmptyPlaces);
         }
 
         let currentPlaces: Place[] = placeData?.places || [];
         const modifiedPlaces: Place[] = currentPlaces.filter(currentPlace => currentPlace.Nombre !== placeToDelete.Nombre);
         if (modifiedPlaces.length === currentPlaces.length) {
-            throw new PlaceNotFoundException();
+            throw new PlaceException(PlaceExceptionMessages.PlaceNotFound);
         }
         await setDoc(docRef, { places: modifiedPlaces }, { merge: true });
     }
