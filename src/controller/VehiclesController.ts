@@ -1,11 +1,8 @@
-import VehicleAlreadyExistException from "../exceptions/VehicleAlreadyExistException";
 import Vehicle from "../interfaces/Vehicle";
 import VehiclesInterface from "../interfaces/VehiclesInterface";
-import Combustible from "../enums/Combustible";
-import InvalidVehicleException from "../exceptions/InvalidVehicleException";
 import EmptyVehiclesException from "../exceptions/EmptyVehiclesException";
 import VehicleNotFoundException from "../exceptions/VehicleNotFoundException";
-import { FirebaseService } from "../services/FirebaseService.ts";
+import {FirebaseService} from "../services/FirebaseService.ts";
 
 
 export default class VehiclesController implements VehiclesInterface {
@@ -84,18 +81,18 @@ export default class VehiclesController implements VehiclesInterface {
 
     async setDefaultVehicle(plate: string, userId: string): Promise<void> {
             await this.firebaseService.setDefaultVehicle(plate, userId);
-            localStorage.setItem('defaultVehicle', plate);
+            localStorage.setItem('defaultVehiclePlate', plate);
     }
 
     async getDefaultVehicle(userId: string): Promise<string> {
-        let data: string = '';
+        let vehiclePlate: string = '';
         await this.firebaseService.getDefaultVehicle(userId).then((data) => {
-            data = data.vehiclePlate;
+            vehiclePlate = data.vehiclePlate;
         }).catch(() => {
             throw new VehicleNotFoundException('El usuario no tiene vehículo por defecto');
         });
-        localStorage.setItem('defaultVehicle', data);
-        return data;
+        localStorage.setItem('defaultVehiclePlate', vehiclePlate);
+        return vehiclePlate;
     }
 }
 
