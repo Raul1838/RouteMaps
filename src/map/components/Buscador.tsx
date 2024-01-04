@@ -20,7 +20,7 @@ const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => va
 export const Buscador = () => {
 
     const authContext: AuthContextInterface = useContext(AuthContext);
-    const { defaultPathwayType, defaultVehiclePlate } = authContext;
+    const { user, defaultPathwayType, defaultVehiclePlate } = authContext;
 
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
     const { distance, duration, pathwayTransportMean, vehicle} = navigationContext;
@@ -39,8 +39,9 @@ export const Buscador = () => {
     const [pathwayCost, setPathwayCost] = useState<number>(0);
 
     useEffect(() => {
+        console.log(defaultVehiclePlate);
         if( defaultVehiclePlate ) {
-           vehiclesController.getVehicle(defaultVehiclePlate).then((vehicle) => {
+           vehiclesController.getVehicle(defaultVehiclePlate, user.uid).then((vehicle) => {
                 setSelectedVehicle(vehicle);
             });
         }

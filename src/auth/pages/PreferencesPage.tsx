@@ -22,19 +22,19 @@ export const PreferencesPage = () => {
     }, []);
 
     const getVehicleFromDb = async () => {
-        let dbVehicleId: string = '';
+        let dbVehiclePlate: string = '';
         if( !defaultVehiclePlate ) {
             try {
-                dbVehicleId = await vehiclesController.getDefaultVehicle(user.uid);
+                dbVehiclePlate = await vehiclesController.getDefaultVehicle(user.uid);
             } catch (error) {
                 setVehicleErrorMessage('No hay vehículo por defecto');
                 return;
             }
-            authContext.setDefaultVehiclePlate(dbVehicleId);
+            authContext.setDefaultVehiclePlate(dbVehiclePlate);
         } else {
-            dbVehicleId = defaultVehiclePlate;
+            dbVehiclePlate = defaultVehiclePlate;
         }
-        setDefaultVehicle(await vehiclesController.getVehicle(dbVehicleId));
+        setDefaultVehicle(await vehiclesController.getVehicle(dbVehiclePlate, user.uid));
     }
 
     const getPathwayTypeFromDb = async () => {
