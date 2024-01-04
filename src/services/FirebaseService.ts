@@ -161,8 +161,7 @@ export class FirebaseService {
         await setDoc(docRef, { pathways: newPathways }, { merge: true });
     }
 
-    async storeVehicle(vehicle: Vehicle, userId: string): Promise<void> {
-        const _ = require('lodash');
+    async storeVehicle(vehicle: Vehicle, userId: string): Promise<Vehicle[]> {
         const docRef = doc(FirebaseDB, userId, 'vehicles');
         const vehicleData = await this.getVehicles(userId);
         const currentVehicles: Vehicle[] = vehicleData.vehicles || [];
@@ -183,14 +182,33 @@ export class FirebaseService {
 
         // Save the updated pathways to Firestore
         await setDoc(docRef, { vehicles: currentVehicles }, { merge: true });
+        return currentVehicles;
     }
+
+    async getVehicle(userId: string, plate: string): Promise<Vehicle> {
+        const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
+        const docSnap = await getDoc(docRef);
+    
+        if (!docSnap.exists()) {
+            throw new Error('No such document!');
+        }
+    
+        const vehicles: Vehicle[] = docSnap.data().vehicles || [];
+        const foundVehicle = vehicles.find(vehicle => vehicle.plate === plate);
+    
+        if (!foundVehicle) {
+            throw new Error('Vehicle not found!');
+        }
+    
+        return foundVehicle;
+    }
+    
 
     async getVehicles(userId: string) {
         const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
         const docSnap = await getDoc(docRef);
 
         if (!docSnap.exists()) {
-            // Crea el documento si no existe
             await setDoc(docRef, { vehicles: [] });
             return { vehicles: [] };
         }
@@ -198,9 +216,27 @@ export class FirebaseService {
         return docSnap.data();
     }
 
-    async deleteVehicle(vehicle: Vehicle, userId: string) {
+    async setVehicles(newVehicles: Vehicle[], userId: string) {
+        const docRef = doc(FirebaseDB, `${userId}`, 'vehicles');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const currentVehicles: Vehicle[] = docSnap.data().vehicles;
 
-        const _ = require('lodash');
+            const modifiedVehicles: Vehicle[] = currentVehicles.map(currentVehicle => {
+                const modifiedVehicle = newVehicles.find(vehicle => vehicle.plate === currentVehicle.plate);
+                if (modifiedVehicle) {
+                    return { ...currentVehicle, favorite: modifiedVehicle.favorite };
+                } else {
+                    return currentVehicle;
+                }
+            });
+            await updateDoc(docRef, { vehicles: modifiedVehicles });
+        } else {
+            await setDoc(docRef, { vehicles: newVehicles }, { merge: true });
+        }
+    }
+
+    async deleteVehicle(vehicle: Vehicle, userId: string) {
         const docRef = doc(FirebaseDB, userId, 'vehicles');
         const vehicleData = await this.getVehicles(userId);
         var currentVehicles: Vehicle[] = vehicleData.vehicles || [];

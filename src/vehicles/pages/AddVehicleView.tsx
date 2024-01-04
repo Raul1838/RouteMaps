@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import VehiclesViewModel from '../viewModel/VehiclesViewModel';
 import Combustible from '../../enums/Combustible';
 import { FormState } from '../../hooks/useForm';
 import { Link, useNavigate } from "react-router-dom";
 import { SmartForm } from "../../components/SmartForm.tsx";
 import { MainLayout } from '../../layouts/MainLayout.tsx';
+import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
+import VehiclesController, { getVehiclesController } from '../../controller/VehiclesController.ts';
+
 
 interface AddVehicleComponentProps {
     vehiclesViewModel: VehiclesViewModel;
 }
 
-const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) => {
+const AddVehicleComponent = () => {
+    const { user }: AuthContextInterface = useContext(AuthContext);
+
+    const vehiclesController: VehiclesController = getVehiclesController();
+
     const [resultado, setResultado] = useState('');
     const navigate = useNavigate();
     const [operationStatus, setOperationStatus] = useState(false);
@@ -55,14 +62,14 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
                 favorite: currentFormState.favorite
             };
     
-            const result = await vehiclesViewModel.addVehicle(vehicleData);
+            const result = await vehiclesController.addVehicle(vehicleData, user.uid);
+            console.log(result);
             if (result) {
                 setResultado('Vehículo añadido con éxito');
                 setOperationStatus(true);
                 resetFormState();
-                setTimeout(() => {
-                    navigate('/vehicles/getVehicles');
-                }, 2000);
+                navigate('/vehicles/getVehicles');
+                
             } else {
                 setResultado('Error al añadir vehículo');
             }
@@ -84,7 +91,7 @@ const AddVehicleComponent = ({ vehiclesViewModel }: AddVehicleComponentProps) =>
                 />
                 {resultado && (<div className={`alert ${operationStatus ? 'alert-info' : 'alert-danger'}`}>{resultado}</div>)}
 
-                <Link to={'/vehicles/getVehicles'}>Ver vehículos</Link>
+                <Link className="btn btn-outline-primary mt-3" to={'/vehicles/getVehicles'}>Ver vehículos</Link>
             </div>
         </MainLayout>
     );
