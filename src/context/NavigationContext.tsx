@@ -28,6 +28,8 @@ export interface NavigationContextInterface {
     setVehicle(vehicle: Vehicle): void;
     codifiedPath: string;
     setCodifiedPath(codifiedPath: string): void;
+    cost: number;
+    setCost(cost: number): void;
 }
 
 export const NavigationContext = React.createContext<NavigationContextInterface>({
@@ -53,6 +55,8 @@ export const NavigationContext = React.createContext<NavigationContextInterface>
     setVehicle: () => {},
     codifiedPath: '',
     setCodifiedPath: () => {},
+    cost: 0,
+    setCost: () => {},
 });
 
 export const NavigationProvider = ({children}: { children: React.ReactNode }) => {
@@ -68,6 +72,7 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
     const [showVehicles, setShowVehicles] = useState<boolean>(false);
     const [vehicle, setVehicle] = useState<Vehicle>({ name: '', plate: '', propulsion: Combustible.Gasolina, consumption: 0, favorite: false });
     const [codifiedPath, setCodifiedPath] = useState<string>('');
+    const [cost, setCost] = useState<number>(0);
 
     const value: NavigationContextInterface = {
         from,
@@ -92,6 +97,8 @@ export const NavigationProvider = ({children}: { children: React.ReactNode }) =>
         setVehicle,
         codifiedPath,
         setCodifiedPath,
+        cost,
+        setCost
     };
 
     return (

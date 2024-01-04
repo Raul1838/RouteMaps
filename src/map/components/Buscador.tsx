@@ -1,78 +1,32 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext} from "react";
 import {FormField} from "../../interfaces/FormField.ts";
 import {FormState} from "../../hooks/useForm.ts";
 import {NavigationContext, NavigationContextInterface} from "../../context/NavigationContext.tsx";
 import {SmartForm} from "../../components/SmartForm.tsx";
 import {getPlacesController, PlacesController} from "../../controller/PlacesController.ts";
 import {FormValidations} from "../../interfaces/FormValidations.ts";
-import {Button, ButtonGroup, Dropdown} from "react-bootstrap";
+import {Button} from "react-bootstrap";
 import {PathwayTransportMeans} from "../../enums/PathwayTransportMeans.ts";
-import {PathwayTypes} from "../../enums/PathwayTypes.ts";
 import {AuthContext, AuthContextInterface} from "../../context/AuthContext.tsx";
 import {InputButtonSpecification} from "../../interfaces/InputButtonSpecification.ts";
 import PathwayController, {getPathwayController} from "../../controller/PathwayController.ts";
-import Vehicle from "../../interfaces/Vehicle.ts";
-import Combustible from "../../enums/Combustible.ts";
-import VehiclesController, {getVehiclesController} from "../../controller/VehiclesController.ts";
 import {useNavigate} from "react-router-dom";
 import {PathwayContext, PathwayContextInterface} from "../../context/PathwayContext.tsx";
-
-const options: PathwayTypes[] = Object.values(PathwayTypes).filter((value) => value !== PathwayTypes.UNDEFINED);
+import {PathwayDetails} from "./PathwayDetails.tsx";
 
 export const Buscador = () => {
 
     const navigation = useNavigate();
 
     const authContext: AuthContextInterface = useContext(AuthContext);
-    const { user, defaultPathwayType, defaultVehiclePlate } = authContext;
+    const { user, defaultPathwayType} = authContext;
 
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
-    const { distance, duration, pathwayTransportMean, vehicle} = navigationContext;
+    const { distance, duration, pathwayTransportMean, pathwayType, vehicle, cost} = navigationContext;
 
-    const { setPathways, loadedPathway }: PathwayContextInterface = useContext(PathwayContext);
+    const { setPathways }: PathwayContextInterface = useContext(PathwayContext);
 
     const pathwayController: PathwayController = getPathwayController();
-    const vehiclesController: VehiclesController = getVehiclesController();
-
-    const [selectedPathwayType, setSelectedPathwayType] = useState<PathwayTypes>(defaultPathwayType);
-    const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>({
-        consumption: 0,
-        favorite: false,
-        name: "",
-        plate: "",
-        propulsion: Combustible.Gasolina
-    });
-    const [pathwayCost, setPathwayCost] = useState<number>(0);
-
-    useEffect(() => {
-        if( defaultVehiclePlate ) {
-           vehiclesController.getVehicle(defaultVehiclePlate, user.uid).then((vehicle) => {
-                setSelectedVehicle(vehicle);
-            });
-        }
-        if( loadedPathway.type !== PathwayTypes.UNDEFINED ) setSelectedPathwayType(loadedPathway.type);
-    }, []);
-
-    useEffect(() => {
-        if( vehicle.plate === '' || vehicle.plate === selectedVehicle.plate ) return;
-        setSelectedVehicle(vehicle);
-    }, [vehicle]);
-
-    useEffect(() => {
-        calculatePathwayCost();
-    }, [pathwayTransportMean, selectedVehicle, distance, duration]);
-
-    const calculatePathwayCost = async () => {
-        try {
-            if( pathwayTransportMean === PathwayTransportMeans.VEHICLE )
-                setPathwayCost( await pathwayController.calculatePrice(distance, selectedVehicle) );
-            else
-                setPathwayCost( pathwayController.calculateCalories(distance, pathwayTransportMean) );
-        } catch (e) {
-            console.log('Fallo al calcular el coste de la ruta');
-            setPathwayCost(0);
-        }
-    }
 
     const formData = {
         from: navigationContext.from.name,
@@ -107,7 +61,7 @@ export const Buscador = () => {
         if( navigationContext.to.name !== formState.to ) toCoords = await placesController.transformToValidCoords(formState.to);
         navigationContext.setFrom({...fromCoords});
         navigationContext.setTo({...toCoords});
-        navigationContext.setPathwayType(selectedPathwayType as PathwayTypes);
+        navigationContext.setPathwayType(defaultPathwayType);
     }
 
     const inputButtonSpecification: InputButtonSpecification = {
@@ -118,30 +72,9 @@ export const Buscador = () => {
         }
     }
 
-    const handleTransportChange = (transportMean: PathwayTransportMeans) => {
-        navigationContext.setPathwayTransportMean(transportMean);
-    }
-
-    const handleSelectPathwayType = ( eventKey: string | null ) => {
-        if( eventKey ) {
-            setSelectedPathwayType(eventKey as PathwayTypes);
-            navigationContext.setPathwayType(eventKey as PathwayTypes);
-        }
-    }
-
-    const transportMeanIcons: { [key: string]: string } = {
-        [PathwayTransportMeans.BIKE]: 'fas fa-bicycle',
-        [PathwayTransportMeans.VEHICLE]: 'fas fa-car',
-        [PathwayTransportMeans.WALKING]: 'fas fa-walking',
-    }
-
-    const handleShowVehicles = () => {
-        navigationContext.setShowVehicles(!navigationContext.showVehicles);
-    }
-
     const saveRoute = async () => {
         await pathwayController.addPathway({
-            type: selectedPathwayType,
+            type: pathwayType,
             start: navigationContext.from,
             end: navigationContext.to,
             codifiedPath: navigationContext.codifiedPath,
@@ -149,8 +82,8 @@ export const Buscador = () => {
             distance: distance,
             favourite: false,
             transportMean: pathwayTransportMean,
-            vehiclePlate: pathwayTransportMean === PathwayTransportMeans.VEHICLE ? selectedVehicle.plate : 'Sin vehículo',
-            cost: pathwayCost
+            vehiclePlate: pathwayTransportMean === PathwayTransportMeans.VEHICLE ? vehicle.plate : 'Sin vehículo',
+            cost: cost
         }, user.uid).then(pathways => setPathways(pathways));
         navigation('/pathways');
     }
@@ -167,82 +100,19 @@ export const Buscador = () => {
             <div className="card-body">
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <h3 className="card-title">Ruta</h3>
-                    <Button style={{ 'display': duration > 0 && distance > 0 && pathwayCost > 0 ? 'block' : 'none' }} variant={"outline-info"} onClick={ saveRoute } >
+                    <Button style={{ 'display': duration > 0 && distance > 0 && cost > 0 ? 'block' : 'none' }} variant={"outline-info"} onClick={ saveRoute } >
                         <i className={'fas fa-save'}></i>
                     </Button>
                 </div>
                 <hr/>
                 <SmartForm formData={formData} formFields={formFields} onSubmit={handleNavigate}
                            submitButtonLabel={'Navegar'} validations={validations}
-                           inputButtonsSpecification={inputButtonSpecification}/>
-
-                <ButtonGroup aria-label="Transport means">
-                    {Object.values(PathwayTransportMeans).map((transportMean) => (
-                        <Button
-                            key={transportMean}
-                            variant={pathwayTransportMean === transportMean ? "info" : "white"}
-                            onClick={() => handleTransportChange(transportMean)}
-                        >
-                            <i className={transportMeanIcons[transportMean]}></i>
-                        </Button>
-                    ))}
-                </ButtonGroup>
-
-                <Dropdown onSelect={handleSelectPathwayType} className="mt-3">
-                    <Dropdown.Toggle variant="success" id="dropdown-basic">
-                        {selectedPathwayType}
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                        {options.map((option, index) =>
-                            <Dropdown.Item eventKey={option} key={index}>{option}</Dropdown.Item>
-                        )}
-                    </Dropdown.Menu>
-                </Dropdown>
-
+                           inputButtonsSpecification={inputButtonSpecification}
+                />
                 {
-                    pathwayTransportMean === PathwayTransportMeans.VEHICLE
-                        ? <>
-                            <div className="input-group">
-                                <input
-                                    className="form-control"
-                                    id="selectedVehicle"
-                                    type="text"
-                                    name="selectedVehicle"
-                                    value={selectedVehicle.name || 'No vehículo seleccionado'}
-                                    readOnly={true}
-                                />
-                                <div className="input-group-append">
-                                    <button className="btn btn-outline-info"
-                                            onClick={handleShowVehicles}>
-                                        <i className="fa fa-info-circle"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </>
-                        : <></>
+                    distance > 0 && duration > 0 &&
+                    <PathwayDetails />
                 }
-
-                {
-                    (distance > 0 && duration > 0)
-                        ? <>
-                            <h3>Costes de la ruta</h3>
-                            <hr/>
-                            <ul className="list-group">
-                                <li className="list-group-item">Distancia: {(distance / 1000).toFixed(4)} km</li>
-                                <li className="list-group-item">Duración: {Math.floor(duration / 3600)} horas
-                                    y {Math.round((duration % 3600) / 60)} minutos
-                                </li>
-                                <li className="list-group-item">Coste: {
-                                    pathwayCost.toFixed(2)
-                                } {
-                                    pathwayTransportMean === PathwayTransportMeans.VEHICLE ? '€' : 'cal'
-                                }</li>
-                            </ul>
-                        </>
-                        : <></>
-                }
-
             </div>
         </div>
     )
