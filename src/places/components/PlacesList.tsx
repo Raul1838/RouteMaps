@@ -92,8 +92,6 @@ export const PlacesList: React.FC<PlacesListProps> = ({ showCrudOptions = true }
                                         </>
                                     :   <th className="col-2"></th>
                                 }
-                                <th className="col-1"></th>
-                                <th className="col-1"></th>
                             </tr>
                             </thead>
                             <tbody>
