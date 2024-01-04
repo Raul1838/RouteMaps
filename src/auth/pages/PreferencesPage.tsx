@@ -67,7 +67,7 @@ export const PreferencesPage = () => {
                         : <DefaultPathwayTypeSwitcher pathwayType={defaultPathwayType} />
                 }
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <button className="btn btn-outline-primary mt-3" onClick={closePreferences}>Cerrar</button>
+                    <button className="btn btn-primary mt-3" onClick={closePreferences}>Cerrar</button>
                 </div>
             </div>
         </div>
