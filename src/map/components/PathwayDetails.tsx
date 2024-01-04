@@ -18,7 +18,7 @@ export const PathwayDetails = () => {
     const { user, defaultPathwayType, defaultVehiclePlate } = authContext;
 
     const navigationContext : NavigationContextInterface = useContext(NavigationContext);
-    const { distance, duration, pathwayTransportMean, vehicle} = navigationContext;
+    const { distance, duration, pathwayTransportMean, vehicle, showVehicles} = navigationContext;
 
     const { loadedPathway }: PathwayContextInterface = useContext(PathwayContext);
 
@@ -101,7 +101,7 @@ export const PathwayDetails = () => {
             </ButtonGroup>
 
             <Dropdown onSelect={handleSelectPathwayType} className="mt-3">
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
                     {selectedPathwayType}
                 </Dropdown.Toggle>
 
@@ -127,7 +127,8 @@ export const PathwayDetails = () => {
                             <div className="input-group-append">
                                 <button className="btn btn-outline-info"
                                         onClick={handleShowVehicles}>
-                                    <i className="fa fa-info-circle"></i>
+                                    {/*<i className="fas fa-car"></i>*/}
+                                    <i className={ showVehicles ? 'fas fa-chevron-left' : 'fas fa-chevron-right' }></i>
                                 </button>
                             </div>
                         </div>
