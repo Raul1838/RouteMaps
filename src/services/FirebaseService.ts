@@ -323,6 +323,43 @@ export class FirebaseService {
         return docSnap.data();
     }
 
+    async setPathways(newPathways: Pathway[], userId: string): Promise<Pathway[]> {
+        const docRef = doc(FirebaseDB, userId, 'pathways');
+        let pathwayData;
+        try {
+            pathwayData = await this.getPathways(userId);
+        } catch (error) {
+            if (error instanceof PathwayException) {
+                pathwayData = { pathways: [] };
+            } else {
+                throw error;
+            }
+        }
+        const currentPathways: Pathway[] = pathwayData!.pathways || [];
+
+        const modifiedPathways: Pathway[] = newPathways.map(newPathway => {
+            const existingPathwayIndex = currentPathways.findIndex(currentPathway =>
+                newPathway.start === currentPathway.start &&
+                newPathway.end === currentPathway.end &&
+                newPathway.type === currentPathway.type &&
+                newPathway.vehiclePlate === currentPathway.vehiclePlate
+            );
+
+            if (existingPathwayIndex !== -1) {
+                // Update the existing pathway
+                return newPathway;
+            } else {
+                // Return the current pathway if not a duplicate
+                return currentPathways[existingPathwayIndex];
+            }
+        });
+
+        // Save the updated pathways to Firestore
+        await setDoc(docRef, { pathways: modifiedPathways }, { merge: true });
+        return modifiedPathways;
+    }
+
+
     async storeFuelPrice(fuel: Combustible, fuelPrice: number) {
         const docRef = doc(FirebaseDB, 'fuel', `${fuel}`);
         const updateData = {
