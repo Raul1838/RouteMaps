@@ -115,7 +115,7 @@ export const PathwayDetails = () => {
             {
                 pathwayTransportMean === PathwayTransportMeans.VEHICLE
                     ? <>
-                        <div className="input-group">
+                        <div className="input-group mt-2 mb-2">
                             <input
                                 className="form-control"
                                 id="selectedVehicle"
