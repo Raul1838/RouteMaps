@@ -30,6 +30,7 @@ describe('Tests sobre gestión de usuarios en Firebase', () => {
             email: testUser.email,
             displayName: testUser.displayName
         })
+        jest.spyOn(firebaseService, 'setDefaultPathwayType').mockResolvedValue();
 
         if (FirebaseAuth.currentUser) {
             await updateProfile(FirebaseAuth.currentUser, { displayName: testUser.displayName });

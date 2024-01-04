@@ -109,10 +109,10 @@ export default class PathwayController {
     }
 
     async calculatePrice(distance: number, vehicle: Vehicle): Promise<number> {
-        if (vehicle.consumption === undefined) {
+        if (vehicle.consumption <= 0) {
             throw new VehicleNotFoundException('El vehículo no existe');
         }
-        if (distance === undefined) {
+        if (distance <= 0) {
             throw new PathwayException(PathWayExceptionMessages.FarPathway);
         }
         const price = await this.priceService.getPrice(vehicle.propulsion);
